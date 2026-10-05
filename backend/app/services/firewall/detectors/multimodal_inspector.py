@@ -16,7 +16,10 @@ import os
 import re
 import tempfile
 
-from PIL import Image
+try:
+    from PIL import Image
+except ImportError:
+    Image = None
 
 from app.core.logging import get_logger
 from app.schemas.schemas import DetectionResult

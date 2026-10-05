@@ -1,6 +1,9 @@
 import re
 
-from bs4 import BeautifulSoup
+try:
+    from bs4 import BeautifulSoup
+except ImportError:
+    BeautifulSoup = None
 
 from app.core.logging import get_logger
 from app.schemas.schemas import DetectionResult
@@ -24,7 +27,7 @@ class RAGSandbox:
             return detections, sanitized, trust_score
             
         # Detect HTML injections and invisible elements
-        if "<html" in context.lower() or "<div" in context.lower() or "<span" in context.lower():
+        if BeautifulSoup and ("<html" in context.lower() or "<div" in context.lower() or "<span" in context.lower()):
             soup = BeautifulSoup(context, "html.parser")
             
             hidden_elements = soup.find_all(style=re.compile(r"display:\s*none|visibility:\s*hidden|opacity:\s*0|font-size:\s*0|color:\s*(?:white|#ffffff)", re.IGNORECASE))

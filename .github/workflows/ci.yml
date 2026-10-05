@@ -8,8 +8,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  BACKEND_IMAGE: ghcr.io/${{ github.repository }}/backend
-  FRONTEND_IMAGE: ghcr.io/${{ github.repository }}/frontend
 
 jobs:
   # ============================================
@@ -148,6 +146,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set lower case image names
+        run: |
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "BACKEND_IMAGE=${{ env.REGISTRY }}/${REPO_LOWER}/backend" >> $GITHUB_ENV
+          echo "FRONTEND_IMAGE=${{ env.REGISTRY }}/${REPO_LOWER}/frontend" >> $GITHUB_ENV
+
       - name: Log in to Container Registry
         uses: docker/login-action@v3
         with:
@@ -189,6 +193,12 @@ jobs:
     environment: staging
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set lower case image names
+        run: |
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "BACKEND_IMAGE=${{ env.REGISTRY }}/${REPO_LOWER}/backend" >> $GITHUB_ENV
+          echo "FRONTEND_IMAGE=${{ env.REGISTRY }}/${REPO_LOWER}/frontend" >> $GITHUB_ENV
 
       - name: Deploy to staging
         run: |

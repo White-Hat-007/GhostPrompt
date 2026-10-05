@@ -15,9 +15,10 @@ Never logs:
 - Raw request bodies (may contain secrets)
 """
 
-import structlog
 from datetime import datetime, timezone
-from typing import Optional, Any
+from typing import Any
+
+import structlog
 
 logger = structlog.get_logger("security.audit")
 
@@ -71,13 +72,13 @@ class AuditAction:
 
 def audit_log(
     action: str,
-    actor_id: Optional[str] = None,
-    actor_email: Optional[str] = None,
-    ip_address: Optional[str] = None,
-    user_agent: Optional[str] = None,
-    resource_type: Optional[str] = None,
-    resource_id: Optional[str] = None,
-    details: Optional[dict[str, Any]] = None,
+    actor_id: str | None = None,
+    actor_email: str | None = None,
+    ip_address: str | None = None,
+    user_agent: str | None = None,
+    resource_type: str | None = None,
+    resource_id: str | None = None,
+    details: dict[str, Any] | None = None,
     outcome: str = "success",
 ) -> None:
     """

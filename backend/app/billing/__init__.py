@@ -5,9 +5,9 @@ Hard budget limits, soft alerts, token rate limiting per tenant/workspace/key/us
 """
 
 import time
-from typing import Optional
-from dataclasses import dataclass, field
 from collections import defaultdict
+from dataclasses import dataclass, field
+from typing import Optional
 
 
 @dataclass
@@ -129,7 +129,7 @@ class CostController:
                         "timestamp": now,
                     })
 
-    def get_budget(self, entity_id: str, entity_type: str) -> Optional[dict]:
+    def get_budget(self, entity_id: str, entity_type: str) -> dict | None:
         key = f"{entity_type}:{entity_id}"
         budget = self._budgets.get(key)
         return budget.to_dict() if budget else None

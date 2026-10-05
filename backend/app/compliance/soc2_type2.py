@@ -15,7 +15,9 @@ not point-in-time design. Evidence must demonstrate continuous operation.
 """
 
 from app.compliance.framework_base import (
-    ComplianceFramework, ControlRequirement, ControlStatus, ComplianceSnapshot
+    ComplianceFramework,
+    ControlRequirement,
+    ControlStatus,
 )
 
 

@@ -10,6 +10,7 @@ Async task processing for background jobs:
 """
 
 from celery import Celery
+
 from app.core.config import get_settings
 
 settings = get_settings()

@@ -7,6 +7,7 @@ https://cloud.google.com/chronicle/docs/reference/ingestion-api
 
 import json
 from datetime import datetime, timezone
+
 from app.services.siem_connectors.base import ConnectorInterface, ConnectorResult
 
 

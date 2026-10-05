@@ -1,22 +1,32 @@
 """GhostPrompt Database Models"""
 
-from app.models.organization import Organization
-from app.models.user import User
-from app.models.api_key import APIKey
-from app.models.scan_event import ScanEvent
-from app.models.policy import Policy, PolicyRule
-from app.models.threat import ThreatSignature, ThreatEvent
-from app.models.audit_log import AuditLog
-from app.models.advanced_telemetry import MultimodalThreat, RAGTrustScore, DependencyReputation, TokenAnalytics
-from app.models.attribution import (
-    ThreatActor, ThreatCampaign, AttackCluster, AttributionProfile,
-    ModelIntegrityEvent, GroomingTimeline, ExfiltrationEvent,
-    AdversarialMediaEvent, TokenizerThreat,
+from app.models.advanced_telemetry import (
+    DependencyReputation,
+    MultimodalThreat,
+    RAGTrustScore,
+    TokenAnalytics,
 )
-
-from app.models.provider_config import ProviderConfig
-from app.models.training import TrainingJobModel
+from app.models.api_key import APIKey
+from app.models.attribution import (
+    AdversarialMediaEvent,
+    AttackCluster,
+    AttributionProfile,
+    ExfiltrationEvent,
+    GroomingTimeline,
+    ModelIntegrityEvent,
+    ThreatActor,
+    ThreatCampaign,
+    TokenizerThreat,
+)
+from app.models.audit_log import AuditLog
 from app.models.notification import UserNotification
+from app.models.organization import Organization
+from app.models.policy import Policy, PolicyRule
+from app.models.provider_config import ProviderConfig
+from app.models.scan_event import ScanEvent
+from app.models.threat import ThreatEvent, ThreatSignature
+from app.models.training import TrainingJobModel
+from app.models.user import User
 
 __all__ = [
     "Organization",

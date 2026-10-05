@@ -13,8 +13,8 @@ Run:
     python scripts/heavy_training.py
 """
 
-import sys
 import os
+import sys
 
 if sys.platform == "win32":
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
@@ -22,8 +22,12 @@ if sys.platform == "win32":
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.ml.training.lora_trainer import (
-    TrainingJob, train_threat_classifier, validate_jsonl_dataset, get_device
+    TrainingJob,
+    get_device,
+    train_threat_classifier,
+    validate_jsonl_dataset,
 )
+
 
 def main():
     dataset_path = os.path.join(
@@ -63,12 +67,12 @@ def main():
         total_epochs=10,  # 10 epochs for maximum accuracy
     )
 
-    print(f"\n[HEAVY TRAINING START]")
+    print("\n[HEAVY TRAINING START]")
     print(f"   Job ID: {job.id}")
     print(f"   Model: {job.base_model}")
     print(f"   Epochs: {job.total_epochs}")
     print(f"   Dataset: {count} samples")
-    print(f"   Trainable params: ~886K (LoRA r=16, alpha=32)")
+    print("   Trainable params: ~886K (LoRA r=16, alpha=32)")
     print()
 
     # 4. Train!
@@ -78,7 +82,7 @@ def main():
     if result.status == "completed":
         print("[SUCCESS] HEAVY TRAINING COMPLETE!")
         print(f"   Output: {result.output_dir}")
-        print(f"   Metrics:")
+        print("   Metrics:")
         for k, v in result.metrics.items():
             if isinstance(v, float):
                 print(f"      {k}: {v:.4f}")

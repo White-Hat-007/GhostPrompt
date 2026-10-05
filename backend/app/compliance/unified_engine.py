@@ -30,22 +30,24 @@ import io
 import json
 from datetime import datetime, timezone
 
+from app.compliance.ccpa import ccpa_framework
+from app.compliance.dpdpa import dpdpa_framework
+from app.compliance.eu_ai_act import eu_ai_act_framework
 from app.compliance.framework_base import (
-    ComplianceFramework, ComplianceSnapshot, ControlRequirement, DISCLAIMERS
+    DISCLAIMERS,
+    ComplianceFramework,
+    ComplianceSnapshot,
+    ControlRequirement,
 )
-from app.compliance.signing_engine import signing_engine
+from app.compliance.gdpr import gdpr_framework
+from app.compliance.hipaa import hipaa_framework
+from app.compliance.iso_42001 import ISO_42001_MAPPING, get_iso_summary
 
 # ── Import all 9 framework singletons ──
 from app.compliance.nist_ai_rmf import NIST_AI_RMF_MAPPING, get_nist_summary
-from app.compliance.iso_42001 import ISO_42001_MAPPING, get_iso_summary
-from app.compliance.soc2_type2 import soc2_type2_framework
 from app.compliance.pci_dss import pci_dss_framework
-from app.compliance.gdpr import gdpr_framework
-from app.compliance.eu_ai_act import eu_ai_act_framework
-from app.compliance.hipaa import hipaa_framework
-from app.compliance.ccpa import ccpa_framework
-from app.compliance.dpdpa import dpdpa_framework
-
+from app.compliance.signing_engine import signing_engine
+from app.compliance.soc2_type2 import soc2_type2_framework
 
 # ── Framework registry (new framework modules that use ComplianceFramework base) ──
 FRAMEWORK_REGISTRY: dict[str, ComplianceFramework] = {
@@ -190,6 +192,7 @@ class UnifiedComplianceEngine:
 
         # Create a minimal snapshot for signing
         import uuid
+
         from app.compliance.framework_base import ComplianceSnapshot
         snap = ComplianceSnapshot(
             tenant_id="legacy",
@@ -407,8 +410,8 @@ class UnifiedComplianceEngine:
 
     def _sign_report(self, report: dict) -> str:
         """HMAC-SHA256 sign a report for tamper evidence."""
-        import hmac
         import hashlib
+        import hmac
         serializable = {k: v for k, v in report.items() if k != "hmac_signature"}
         payload = json.dumps(serializable, sort_keys=True, default=str)
         return hmac.new(self._hmac_key, payload.encode(), hashlib.sha256).hexdigest()

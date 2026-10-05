@@ -11,13 +11,13 @@ Methods:
   4. Jailbreak Genealogy Tracking (evolutionary descent from known attacks)
 """
 
-import time
 import hashlib
 import re
+import time
 from collections import defaultdict
-from typing import Optional
-from app.schemas.schemas import DetectionResult
+
 from app.core.logging import get_logger
+from app.schemas.schemas import DetectionResult
 
 logger = get_logger("detector.campaign")
 
@@ -54,9 +54,9 @@ class CampaignDetector:
     async def detect(
         self,
         text: str,
-        session_id: Optional[str] = None,
+        session_id: str | None = None,
         threat_score: float = 0.0,
-        detections: Optional[list[DetectionResult]] = None,
+        detections: list[DetectionResult] | None = None,
     ) -> list[DetectionResult]:
         """
         Analyze a detected attack for campaign correlation.
@@ -155,7 +155,7 @@ class CampaignDetector:
         return hashlib.md5(fingerprint.encode()).hexdigest()[:12]
 
     def _detect_campaign(
-        self, fingerprint: str, session_id: Optional[str], now: float
+        self, fingerprint: str, session_id: str | None, now: float
     ) -> list[DetectionResult]:
         """
         Detect coordinated campaigns by finding structurally similar

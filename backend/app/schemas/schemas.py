@@ -5,11 +5,12 @@ All API contracts are defined here with full validation.
 """
 
 from datetime import datetime
-from typing import Optional, Any
+from typing import Any
 from uuid import UUID
-from pydantic import BaseModel, Field, EmailStr, ConfigDict
-from app.services.firewall.detectors.attacker_profiler import AttackerProfile
 
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
+
+from app.services.firewall.detectors.attacker_profiler import AttackerProfile
 
 # ============================================================
 # Auth Schemas
@@ -24,7 +25,7 @@ class RegisterRequest(BaseModel):
     email: EmailStr
     username: str = Field(..., min_length=3, max_length=100, pattern=r"^[a-zA-Z0-9_-]+$")
     password: str = Field(..., min_length=8, max_length=128)
-    full_name: Optional[str] = Field(None, max_length=255)
+    full_name: str | None = Field(None, max_length=255)
     organization_name: str = Field(..., min_length=2, max_length=255)
 
 
@@ -49,18 +50,18 @@ class UserResponse(BaseModel):
     id: UUID
     email: str
     username: str
-    full_name: Optional[str]
+    full_name: str | None
     role: str
     organization_id: UUID
     organization_plan: str = "starter"
     is_active: bool
-    last_login_at: Optional[datetime]
+    last_login_at: datetime | None
     created_at: datetime
 
 
 class UserUpdate(BaseModel):
-    full_name: Optional[str] = None
-    role: Optional[str] = Field(None, pattern=r"^(owner|admin|analyst|viewer)$")
+    full_name: str | None = None
+    role: str | None = Field(None, pattern=r"^(owner|admin|analyst|viewer)$")
 
 
 # ============================================================
@@ -72,20 +73,20 @@ class RoleResponse(BaseModel):
 
     id: UUID
     name: str
-    description: Optional[str]
+    description: str | None
     is_builtin: bool
     permissions: dict
-    organization_id: Optional[UUID]
+    organization_id: UUID | None
 
 class RoleCreate(BaseModel):
     name: str = Field(..., min_length=2, max_length=64)
-    description: Optional[str] = None
+    description: str | None = None
     permissions: dict = Field(default_factory=dict)
 
 class RoleUpdate(BaseModel):
-    name: Optional[str] = Field(None, min_length=2, max_length=64)
-    description: Optional[str] = None
-    permissions: Optional[dict] = None
+    name: str | None = Field(None, min_length=2, max_length=64)
+    description: str | None = None
+    permissions: dict | None = None
 
 
 # ============================================================
@@ -107,10 +108,10 @@ class OrganizationResponse(BaseModel):
 
 
 class OrganizationUpdate(BaseModel):
-    name: Optional[str] = Field(None, max_length=255)
-    firewall_mode: Optional[str] = Field(None, pattern=r"^(enforce|monitor|disabled)$")
-    threat_score_threshold: Optional[int] = Field(None, ge=0, le=100)
-    settings: Optional[dict] = None
+    name: str | None = Field(None, max_length=255)
+    firewall_mode: str | None = Field(None, pattern=r"^(enforce|monitor|disabled)$")
+    threat_score_threshold: int | None = Field(None, ge=0, le=100)
+    settings: dict | None = None
 
 
 # ============================================================
@@ -120,13 +121,13 @@ class OrganizationUpdate(BaseModel):
 class ScanRequest(BaseModel):
     """Request to scan a prompt or output through the AI Firewall."""
     prompt: str = Field(..., max_length=100000)
-    model: Optional[str] = None
-    provider: Optional[str] = None
-    context: Optional[dict] = None
+    model: str | None = None
+    provider: str | None = None
+    context: dict | None = None
     scan_type: str = Field(default="prompt", pattern=r"^(prompt|output|rag|agent)$")
-    metadata: Optional[dict] = None
-    media_payloads: Optional[list[str]] = None
-    rag_context: Optional[str] = None
+    metadata: dict | None = None
+    media_payloads: list[str] | None = None
+    rag_context: str | None = None
 
 
 class DetectionResult(BaseModel):
@@ -134,8 +135,8 @@ class DetectionResult(BaseModel):
     confidence: float = Field(..., ge=0.0, le=1.0)
     category: str
     description: str
-    matched_content: Optional[str] = None
-    raw_content: Optional[str] = Field(None, exclude=True)
+    matched_content: str | None = None
+    raw_content: str | None = Field(None, exclude=True)
     severity: str = "medium"
 
 
@@ -146,8 +147,8 @@ class ScanResponse(BaseModel):
     threat_score: float
     action: str  # allowed, blocked, sanitized, flagged
     detections: list[DetectionResult] = []
-    sanitized_prompt: Optional[str] = None
-    prompt: Optional[str] = None
+    sanitized_prompt: str | None = None
+    prompt: str | None = None
     scan_duration_ms: float
     dlp_mappings: dict[str, str] = {}
     metadata: dict = {}
@@ -159,17 +160,17 @@ class ScanEventResponse(BaseModel):
     id: UUID
     request_id: str
     scan_type: str
-    model_provider: Optional[str]
-    model_name: Optional[str]
+    model_provider: str | None
+    model_name: str | None
     threat_level: str
     threat_score: float
     action: str
     detections: list
     is_blocked: bool
-    scan_duration_ms: Optional[float]
+    scan_duration_ms: float | None
     created_at: datetime
-    attacker_profile: Optional[AttackerProfile] = None
-    event_metadata: Optional[dict] = None
+    attacker_profile: AttackerProfile | None = None
+    event_metadata: dict | None = None
 
 
 # ============================================================
@@ -178,7 +179,7 @@ class ScanEventResponse(BaseModel):
 
 class PolicyRuleCreate(BaseModel):
     name: str = Field(..., max_length=255)
-    description: Optional[str] = None
+    description: str | None = None
     rule_type: str
     detector: str
     threshold: float = Field(default=0.7, ge=0.0, le=1.0)
@@ -191,7 +192,7 @@ class PolicyRuleCreate(BaseModel):
 
 class PolicyCreate(BaseModel):
     name: str = Field(..., max_length=255)
-    description: Optional[str] = None
+    description: str | None = None
     policy_type: str = "custom"
     applies_to: list[str] = ["all"]
     priority: int = Field(default=100, ge=1, le=1000)
@@ -199,13 +200,13 @@ class PolicyCreate(BaseModel):
 
 
 class PolicyUpdate(BaseModel):
-    name: Optional[str] = Field(None, max_length=255)
-    description: Optional[str] = None
-    policy_type: Optional[str] = None
-    applies_to: Optional[list[str]] = None
-    priority: Optional[int] = Field(None, ge=1, le=1000)
-    is_active: Optional[bool] = None
-    rules: Optional[list[PolicyRuleCreate]] = None
+    name: str | None = Field(None, max_length=255)
+    description: str | None = None
+    policy_type: str | None = None
+    applies_to: list[str] | None = None
+    priority: int | None = Field(None, ge=1, le=1000)
+    is_active: bool | None = None
+    rules: list[PolicyRuleCreate] | None = None
 
 
 class PolicyRuleResponse(BaseModel):
@@ -228,7 +229,7 @@ class PolicyResponse(BaseModel):
 
     id: UUID
     name: str
-    description: Optional[str]
+    description: str | None
     policy_type: str
     applies_to: list
     priority: int
@@ -259,7 +260,7 @@ class APIKeyResponse(BaseModel):
     rate_limit_per_day: int
     total_requests: int
     is_active: bool
-    last_used_at: Optional[datetime]
+    last_used_at: datetime | None
     created_at: datetime
 
 
@@ -300,11 +301,11 @@ class GatewayRequest(BaseModel):
     """Proxied request through the AI Gateway."""
     model: str
     messages: list[dict]
-    provider: Optional[str] = None
-    temperature: Optional[float] = Field(None, ge=0.0, le=2.0)
-    max_tokens: Optional[int] = Field(None, ge=1, le=128000)
+    provider: str | None = None
+    temperature: float | None = Field(None, ge=0.0, le=2.0)
+    max_tokens: int | None = Field(None, ge=1, le=128000)
     stream: bool = False
-    metadata: Optional[dict] = None
+    metadata: dict | None = None
 
 
 class GatewayResponse(BaseModel):
@@ -314,8 +315,8 @@ class GatewayResponse(BaseModel):
     provider: str
     choices: list[dict]
     usage: dict
-    scan_result: Optional[ScanResponse] = None
-    output_scan_result: Optional[ScanResponse] = None
+    scan_result: ScanResponse | None = None
+    output_scan_result: ScanResponse | None = None
 
 
 # ============================================================

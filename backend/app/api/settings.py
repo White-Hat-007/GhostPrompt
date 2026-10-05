@@ -16,21 +16,21 @@ Sections:
 - Danger Zone
 """
 
-import httpx
 import asyncio
 from datetime import datetime, timezone
-from typing import Optional, List
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
+
+import httpx
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
+from sqlalchemy import select, update
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.security import get_current_user, hash_password, verify_password
-from app.core.permissions import require_permission
 from app.core.logging import get_logger
-from app.models.user import User
+from app.core.permissions import require_permission
+from app.core.security import get_current_user, hash_password, verify_password
 from app.models.organization import Organization
+from app.models.user import User
 
 logger = get_logger("api.settings")
 router = APIRouter(
@@ -43,18 +43,18 @@ router = APIRouter(
 # ── Schemas ──
 
 class ProfileUpdate(BaseModel):
-    full_name: Optional[str] = None
-    avatar_url: Optional[str] = None
+    full_name: str | None = None
+    avatar_url: str | None = None
 
 class PasswordChange(BaseModel):
     current_password: str
     new_password: str
 
 class OrgSettingsUpdate(BaseModel):
-    name: Optional[str] = None
-    logo_url: Optional[str] = None
-    domain: Optional[str] = None
-    data_residency: Optional[str] = None  # us, eu, ap, in
+    name: str | None = None
+    logo_url: str | None = None
+    domain: str | None = None
+    data_residency: str | None = None  # us, eu, ap, in
 
 class SecuritySettings(BaseModel):
     threat_score_threshold: float = 0.7
@@ -66,9 +66,9 @@ class SecuritySettings(BaseModel):
 
 class NotificationSettings(BaseModel):
     email_alerts: bool = True
-    slack_webhook_url: Optional[str] = None
-    pagerduty_key: Optional[str] = None
-    webhook_url: Optional[str] = None
+    slack_webhook_url: str | None = None
+    pagerduty_key: str | None = None
+    webhook_url: str | None = None
     alert_threshold: str = "high"  # low, medium, high, critical
 
 class AppearanceSettings(BaseModel):
@@ -85,42 +85,42 @@ class AppearanceSettings(BaseModel):
 class IntegrationConfig(BaseModel):
     provider: str  # splunk, datadog, microsoft_sentinel, ibm_qradar, elastic_security, crowdstrike, google_chronicle, webhook
     enabled: bool = False
-    endpoint: Optional[str] = None
-    api_key: Optional[str] = None
-    api_secret: Optional[str] = None
-    hec_token: Optional[str] = None  # Splunk HEC
-    workspace_id: Optional[str] = None  # Sentinel
-    index_name: Optional[str] = None
+    endpoint: str | None = None
+    api_key: str | None = None
+    api_secret: str | None = None
+    hec_token: str | None = None  # Splunk HEC
+    workspace_id: str | None = None  # Sentinel
+    index_name: str | None = None
     format: str = "json"  # json, ocsf, cef
     verified: bool = False
-    last_test_at: Optional[str] = None
-    last_test_status: Optional[str] = None
+    last_test_at: str | None = None
+    last_test_status: str | None = None
 
 class SSOConfig(BaseModel):
     protocol: str = "none"  # none, saml, oidc
-    idp_url: Optional[str] = None
-    entity_id: Optional[str] = None
-    certificate: Optional[str] = None
-    acs_url: Optional[str] = None  # Assertion Consumer Service
-    attribute_mapping: Optional[dict] = None  # e.g. {"email": "nameID", "role": "groups"}
+    idp_url: str | None = None
+    entity_id: str | None = None
+    certificate: str | None = None
+    acs_url: str | None = None  # Assertion Consumer Service
+    attribute_mapping: dict | None = None  # e.g. {"email": "nameID", "role": "groups"}
     enforce_sso: bool = False
     allow_admin_bypass: bool = True
     jit_provisioning: bool = False  # Just-in-time user creation
 
 class SCIMConfig(BaseModel):
     enabled: bool = False
-    endpoint: Optional[str] = None
-    bearer_token: Optional[str] = None
+    endpoint: str | None = None
+    bearer_token: str | None = None
     sync_interval_minutes: int = 15
     auto_deprovision: bool = False
-    group_mapping: Optional[dict] = None
+    group_mapping: dict | None = None
 
 class BYOKEncryptionConfig(BaseModel):
     enabled: bool = False
     kms_provider: str = "none"  # none, aws_kms, gcp_kms, azure_keyvault, custom
-    key_id: Optional[str] = None
-    key_arn: Optional[str] = None  # AWS KMS ARN
-    region: Optional[str] = None
+    key_id: str | None = None
+    key_arn: str | None = None  # AWS KMS ARN
+    region: str | None = None
     rotation_days: int = 90
     envelope_encryption: bool = True
 
@@ -133,7 +133,7 @@ class MFAConfig(BaseModel):
 
 class IPAllowlistConfig(BaseModel):
     enabled: bool = False
-    cidrs: List[str] = []
+    cidrs: list[str] = []
     enforce: bool = False
 
 class ComplianceSettings(BaseModel):
@@ -605,7 +605,9 @@ async def test_integration(
 
             else:
                 # Delegate to the new connector registry for all other providers
-                from app.services.siem_connectors.registry import get_connector as _get_connector
+                from app.services.siem_connectors.registry import (
+                    get_connector as _get_connector,
+                )
                 connector = _get_connector(provider)
                 if connector:
                     conn_result = await connector.safe_test(config)

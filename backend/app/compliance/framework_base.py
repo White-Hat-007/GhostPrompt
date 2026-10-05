@@ -16,11 +16,9 @@ CRITICAL LEGAL FRAMING:
 
 import uuid
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Optional
-
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # CONTROL STATUS
@@ -46,8 +44,8 @@ class ControlRequirement:
     ghostprompt_evidence_sources: list[str]
     status: ControlStatus
     evidence_type: str = "automated"
-    gap_note: Optional[str] = None
-    remediation: Optional[str] = None
+    gap_note: str | None = None
+    remediation: str | None = None
     requires_external_audit: bool = False  # True for SOC2, PCI DSS controls
     last_verified: str = ""
 

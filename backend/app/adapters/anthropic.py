@@ -1,7 +1,9 @@
-import httpx
 import uuid
-from typing import AsyncGenerator, Optional
+from collections.abc import AsyncGenerator
+
+import httpx
 from fastapi import HTTPException
+
 from app.adapters.base import LLMAdapter, LLMResponse
 from app.core.config import get_settings
 
@@ -14,7 +16,7 @@ class AnthropicAdapter(LLMAdapter):
         self, 
         model: str,
         messages: list[dict], 
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         stream: bool = False,
         **kwargs
     ) -> LLMResponse:
@@ -74,7 +76,7 @@ class AnthropicAdapter(LLMAdapter):
         self,
         model: str,
         messages: list[dict],
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         **kwargs
     ) -> AsyncGenerator[str, None]:
         import json
@@ -103,46 +105,45 @@ class AnthropicAdapter(LLMAdapter):
         stream_id = f"chatcmpl-{uuid.uuid4().hex[:12]}"
         created_time = int(time.time())
 
-        async with httpx.AsyncClient(timeout=120.0) as client:
-            async with client.stream(
-                "POST",
-                self.ENDPOINT,
-                headers={
-                    "x-api-key": key,
-                    "anthropic-version": "2023-06-01",
-                    "Content-Type": "application/json",
-                },
-                json=body,
-            ) as response:
-                response.raise_for_status()
-                current_event = None
-                async for line in response.aiter_lines():
-                    line = line.strip()
-                    if not line:
-                        continue
-                    if line.startswith("event:"):
-                        current_event = line[6:].strip()
-                    elif line.startswith("data:"):
-                        data_str = line[5:].strip()
-                        if current_event == "content_block_delta":
-                            try:
-                                data = json.loads(data_str)
-                                text = data.get("delta", {}).get("text", "")
-                                
-                                openai_chunk = {
-                                    "id": stream_id,
-                                    "object": "chat.completion.chunk",
-                                    "created": created_time,
-                                    "model": model,
-                                    "choices": [
-                                        {
-                                            "index": 0,
-                                            "delta": {"content": text} if text else {},
-                                            "finish_reason": None
-                                        }
-                                    ]
-                                }
-                                yield f"data: {json.dumps(openai_chunk)}"
-                            except Exception:
-                                pass
-                yield "data: [DONE]"
+        async with httpx.AsyncClient(timeout=120.0) as client, client.stream(
+            "POST",
+            self.ENDPOINT,
+            headers={
+                "x-api-key": key,
+                "anthropic-version": "2023-06-01",
+                "Content-Type": "application/json",
+            },
+            json=body,
+        ) as response:
+            response.raise_for_status()
+            current_event = None
+            async for line in response.aiter_lines():
+                line = line.strip()
+                if not line:
+                    continue
+                if line.startswith("event:"):
+                    current_event = line[6:].strip()
+                elif line.startswith("data:"):
+                    data_str = line[5:].strip()
+                    if current_event == "content_block_delta":
+                        try:
+                            data = json.loads(data_str)
+                            text = data.get("delta", {}).get("text", "")
+                            
+                            openai_chunk = {
+                                "id": stream_id,
+                                "object": "chat.completion.chunk",
+                                "created": created_time,
+                                "model": model,
+                                "choices": [
+                                    {
+                                        "index": 0,
+                                        "delta": {"content": text} if text else {},
+                                        "finish_reason": None
+                                    }
+                                ]
+                            }
+                            yield f"data: {json.dumps(openai_chunk)}"
+                        except Exception:
+                            pass
+            yield "data: [DONE]"

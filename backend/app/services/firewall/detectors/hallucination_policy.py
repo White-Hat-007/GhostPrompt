@@ -1,12 +1,12 @@
 """
 Hallucination Detection Policy Engine
 """
-from typing import List, Dict, Any, Optional
 from pydantic import BaseModel
+
 
 class PolicyTier(BaseModel):
     name: str
-    layers: List[str]
+    layers: list[str]
     max_latency_ms: int
     description: str
 
@@ -43,7 +43,7 @@ POLICIES = {
     )
 }
 
-def determine_adaptive_layers(layer_0_score: float, detected_categories: List[str]) -> List[str]:
+def determine_adaptive_layers(layer_0_score: float, detected_categories: list[str]) -> list[str]:
     """
     Decide which layers to run based on the initial fast structural check.
     """

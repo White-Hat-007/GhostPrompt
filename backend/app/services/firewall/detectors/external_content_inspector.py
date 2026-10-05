@@ -16,9 +16,9 @@ Detection signals:
 
 import re
 from collections import defaultdict
-from typing import Optional
-from app.schemas.schemas import DetectionResult
+
 from app.core.logging import get_logger
+from app.schemas.schemas import DetectionResult
 
 logger = get_logger("detector.external_content")
 
@@ -108,7 +108,7 @@ class ExternalContentInspector:
         self,
         content: str,
         *,
-        source_url: Optional[str] = None,
+        source_url: str | None = None,
         content_type: str = "text",  # "html", "email", "document", "text"
     ) -> list[DetectionResult]:
         detections: list[DetectionResult] = []
@@ -204,8 +204,8 @@ class ExternalContentInspector:
                         confidence=0.85,
                         category="external.email_injection",
                         description=(
-                            f"Injection found in email content: instructions embedded "
-                            f"in signature or reply chain"
+                            "Injection found in email content: instructions embedded "
+                            "in signature or reply chain"
                         ),
                         severity="high",
                         matched_content=match.group(0)[:120],
@@ -222,8 +222,8 @@ class ExternalContentInspector:
                         confidence=0.82,
                         category="external.document_metadata_injection",
                         description=(
-                            f"Injection found in document metadata: instructions embedded "
-                            f"in document properties or comments"
+                            "Injection found in document metadata: instructions embedded "
+                            "in document properties or comments"
                         ),
                         severity="high",
                         matched_content=match.group(0)[:120],

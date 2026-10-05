@@ -6,9 +6,9 @@ and structural analysis to identify prompt injection attacks.
 """
 
 import re
-from typing import Optional
-from app.schemas.schemas import DetectionResult
+
 from app.core.logging import get_logger
+from app.schemas.schemas import DetectionResult
 
 logger = get_logger("detector.prompt_injection")
 
@@ -160,6 +160,7 @@ class PromptInjectionDetector:
     async def initialize(self) -> None:
         """Compile all regex patterns for performance, loading from YAML signature file if available."""
         import os
+
         import yaml
         
         # Store metadata for patterns loaded from YAML

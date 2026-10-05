@@ -4,10 +4,12 @@ GhostPrompt Backend Tests
 Comprehensive test suite for the AI Firewall engine and API endpoints.
 """
 
-import pytest
 import asyncio
-from app.services.firewall.engine import FirewallEngine
+
+import pytest
+
 from app.schemas.schemas import ScanRequest
+from app.services.firewall.engine import FirewallEngine
 
 
 @pytest.fixture

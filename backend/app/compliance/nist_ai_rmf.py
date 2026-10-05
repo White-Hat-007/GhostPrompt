@@ -9,7 +9,6 @@ NIST certified. This module maps technical controls to NIST subcategories
 to accelerate your organization's alignment efforts.
 """
 
-from datetime import datetime, timezone
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

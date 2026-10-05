@@ -18,11 +18,11 @@ Detection signals (OUTPUT side):
   - Operator-registered protected strings
 """
 
-import re
 import math
-from typing import Optional
-from app.schemas.schemas import DetectionResult
+import re
+
 from app.core.logging import get_logger
+from app.schemas.schemas import DetectionResult
 
 logger = get_logger("detector.output_inspector")
 
@@ -144,7 +144,7 @@ class OutputInspector:
         self,
         output_text: str,
         *,
-        input_text: Optional[str] = None,
+        input_text: str | None = None,
     ) -> list[DetectionResult]:
         """Scan the OUTPUT for memorization leak signatures."""
         detections: list[DetectionResult] = []

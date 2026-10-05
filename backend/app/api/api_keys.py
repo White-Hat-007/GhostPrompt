@@ -11,21 +11,21 @@ Security:
 - All key operations are audit logged
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status, Request, Depends
-from app.core.permissions import require_permission
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from typing import List
-from datetime import datetime, timezone
-import secrets
 import hashlib
+import secrets
+from datetime import datetime
+
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from pydantic import BaseModel, Field
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.security import get_current_user
+from app.core.permissions import require_permission
 from app.core.rate_limit import limiter
+from app.core.security import get_current_user
 from app.models.api_key import APIKey
-from app.security.audit_log import audit_log, AuditAction
-from pydantic import BaseModel, Field
+from app.security.audit_log import AuditAction, audit_log
 
 router = APIRouter(prefix="/api-keys", tags=["API Keys"], dependencies=[Depends(require_permission("api_keys.manage"))])
 
@@ -36,6 +36,7 @@ class ApiKeyCreate(BaseModel):
 
 
 from uuid import UUID
+
 
 class ApiKeyResponse(BaseModel):
     id: UUID
@@ -50,7 +51,7 @@ class ApiKeyResponse(BaseModel):
         from_attributes = True
 
 
-@router.get("", response_model=List[ApiKeyResponse])
+@router.get("", response_model=list[ApiKeyResponse])
 async def list_api_keys(
     current_user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -151,7 +152,6 @@ async def delete_api_key(
         
     await db.delete(api_key)
     await db.commit()
-    return None
 
 
 @router.post("/rotate-all", status_code=status.HTTP_200_OK)

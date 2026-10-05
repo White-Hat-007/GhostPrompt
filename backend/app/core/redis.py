@@ -5,15 +5,17 @@ Async Redis client with connection pooling for caching,
 rate limiting, and pub/sub messaging.
 """
 
-import redis.asyncio as redis
-from typing import Optional, Any
+from typing import Any
+
 import orjson
+import redis.asyncio as redis
+
 from app.core.config import get_settings
 
 settings = get_settings()
 
 # Redis connection pool
-redis_pool: Optional[redis.Redis] = None
+redis_pool: redis.Redis | None = None
 
 
 async def get_redis() -> redis.Redis:
@@ -43,7 +45,7 @@ class CacheService:
         self.redis = redis_client
         self.default_ttl = settings.REDIS_CACHE_TTL
 
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         """Get a cached value."""
         data = await self.redis.get(f"cache:{key}")
         if data is not None:
@@ -51,7 +53,7 @@ class CacheService:
         return None
 
     async def set(
-        self, key: str, value: Any, ttl: Optional[int] = None
+        self, key: str, value: Any, ttl: int | None = None
     ) -> None:
         """Set a cached value with optional TTL."""
         serialized = orjson.dumps(value)

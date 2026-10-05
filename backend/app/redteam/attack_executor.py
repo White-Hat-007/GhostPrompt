@@ -6,13 +6,12 @@ Runs attack prompts through the firewall engine in sandboxed mode
 """
 
 import time
-import asyncio
 from datetime import datetime, timezone
-from typing import Optional
-from app.core.logging import get_logger
+
 from app.core.database import async_session_factory
-from app.models.scan_event import ScanEvent
 from app.core.events import event_broadcaster
+from app.core.logging import get_logger
+from app.models.scan_event import ScanEvent
 
 logger = get_logger("redteam.executor")
 
@@ -27,8 +26,8 @@ class AttackExecutor:
 
     async def execute_attack(self, attack: dict, org_id: str = "redteam-org", engine=None) -> dict:
         """Execute a single attack against the firewall."""
-        from app.services.firewall.engine import firewall_engine
         from app.schemas.schemas import ScanRequest
+        from app.services.firewall.engine import firewall_engine
 
         eng = engine or firewall_engine
         if not eng._initialized:
@@ -42,8 +41,8 @@ class AttackExecutor:
 
         # If org_id is literally "redteam-org", fall back to deterministic mock UUID
         if org_id == "redteam-org":
-            import uuid
             import hashlib
+            import uuid
             org_uuid = str(uuid.UUID(hashlib.md5(api_key.encode()).hexdigest()))
         else:
             org_uuid = org_id
@@ -61,9 +60,7 @@ class AttackExecutor:
 
             actual = result.action
             # Determine pass/fail
-            if expected == "blocked":
-                passed = actual in ("blocked", "flagged", "sanitized")
-            elif expected == "flagged":
+            if expected == "blocked" or expected == "flagged":
                 passed = actual in ("blocked", "flagged", "sanitized")
             elif expected == "sanitized":
                 # Sanitized means PII/secret was detected — blocked/flagged/sanitized all count as caught

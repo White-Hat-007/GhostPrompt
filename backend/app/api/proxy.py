@@ -18,33 +18,29 @@ Usage:
     # That's it. Zero other changes.
 """
 
-import json
-import time
-import uuid
-from datetime import datetime, timezone
-from typing import Optional
-
-from fastapi import APIRouter, Request, HTTPException, Header, Depends
-from fastapi.responses import StreamingResponse, JSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-import httpx
-
-from app.core.config import get_settings
-from app.core.logging import get_logger
-from app.core.events import event_broadcaster
-from app.core.session import session_manager
-from app.services.firewall.engine import firewall_engine
-from app.services.firewall.dlp_vault import dlp_vault
-from app.services.firewall.detectors.attacker_profiler import attacker_profiler
-from app.services.explainer import explain_scan
-from app.schemas.schemas import ScanRequest
-from app.adapters import get_adapter
-from app.core.database import get_db
-from app.models.scan_event import ScanEvent
-from app.models.organization import Organization
-from app.models.api_key import APIKey
 import hashlib
+import json
+from datetime import datetime, timezone
+
+from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from fastapi.responses import JSONResponse, StreamingResponse
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.adapters import get_adapter
+from app.core.config import get_settings
+from app.core.database import get_db
+from app.core.events import event_broadcaster
+from app.core.logging import get_logger
+from app.core.session import session_manager
+from app.models.api_key import APIKey
+from app.models.organization import Organization
+from app.models.scan_event import ScanEvent
+from app.schemas.schemas import ScanRequest
+from app.services.explainer import explain_scan
+from app.services.firewall.detectors.attacker_profiler import attacker_profiler
+from app.services.firewall.dlp_vault import dlp_vault
+from app.services.firewall.engine import firewall_engine
 
 settings = get_settings()
 logger = get_logger("proxy")
@@ -91,12 +87,13 @@ def _extract_text(messages: list[dict]) -> str:
 
 from app.core.rate_limit import limiter
 
+
 @router.post("/v1/chat/completions")
 @limiter.limit("500/minute")
 async def openai_compatible_proxy(
     request: Request,
-    authorization: Optional[str] = Header(None),
-    x_ghostprompt_session: Optional[str] = Header(None, alias="X-GhostPrompt-Session"),
+    authorization: str | None = Header(None),
+    x_ghostprompt_session: str | None = Header(None, alias="X-GhostPrompt-Session"),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -356,7 +353,7 @@ async def openai_compatible_proxy(
                             pass
             except Exception as e:
                 logger.error("stream_error", error=str(e))
-                yield f'data: {{"error": {{"message": "An error occurred during streaming. Please try again.", "type": "stream_error"}}}}\n\n'
+                yield 'data: {"error": {"message": "An error occurred during streaming. Please try again.", "type": "stream_error"}}\n\n'
                 return
 
             # ── Post-stream Output Scan ──
@@ -456,7 +453,7 @@ async def openai_compatible_proxy(
         except Exception as fallback_e:
             return JSONResponse(
                 status_code=502,
-                content={"error": {"message": f"Failed to reach primary LLM and fallback LLM. Primary: {str(e)}. Fallback: {str(fallback_e)}", "type": "gateway_unreachable"}},
+                content={"error": {"message": f"Failed to reach primary LLM and fallback LLM. Primary: {e!s}. Fallback: {fallback_e!s}", "type": "gateway_unreachable"}},
             )
     
     # ── STEP 5: Scan output ─────────────────────────────────────

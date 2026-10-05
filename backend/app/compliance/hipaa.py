@@ -13,7 +13,9 @@ controls.
 """
 
 from app.compliance.framework_base import (
-    ComplianceFramework, ControlRequirement, ControlStatus
+    ComplianceFramework,
+    ControlRequirement,
+    ControlStatus,
 )
 
 

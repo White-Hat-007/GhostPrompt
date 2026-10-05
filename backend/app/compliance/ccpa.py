@@ -17,7 +17,9 @@ legal review of your organization's entire data handling practices.
 """
 
 from app.compliance.framework_base import (
-    ComplianceFramework, ControlRequirement, ControlStatus
+    ComplianceFramework,
+    ControlRequirement,
+    ControlStatus,
 )
 
 

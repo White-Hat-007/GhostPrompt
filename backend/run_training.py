@@ -11,8 +11,8 @@ Runs the full end-to-end pipeline with REAL datasets and REAL GPU training:
 All models are trained with real GPU acceleration and saved to models/trained/
 """
 
-import sys
 import os
+import sys
 import time
 
 # Ensure the backend directory is on the Python path

@@ -5,21 +5,21 @@ Supports 11 providers with automatic model-to-provider detection.
 Every provider is scanned through the same AI Firewall pipeline.
 """
 
-from app.adapters.base import LLMAdapter, LLMResponse
-from app.adapters.openai import OpenAIAdapter
-from app.adapters.anthropic import AnthropicAdapter
-from app.adapters.gemini import GeminiAdapter
-from app.adapters.mistral import MistralAdapter
-from app.adapters.ollama import OllamaAdapter
-from app.adapters.cohere import CohereAdapter
-from app.adapters.groq import GroqAdapter
-from app.adapters.together import TogetherAdapter
-from app.adapters.deepseek import DeepSeekAdapter
-from app.adapters.perplexity import PerplexityAdapter
-from app.adapters.huggingface import HuggingFaceAdapter
-from app.adapters.xai import XAIAdapter
 from fastapi import HTTPException
 
+from app.adapters.anthropic import AnthropicAdapter
+from app.adapters.base import LLMAdapter, LLMResponse
+from app.adapters.cohere import CohereAdapter
+from app.adapters.deepseek import DeepSeekAdapter
+from app.adapters.gemini import GeminiAdapter
+from app.adapters.groq import GroqAdapter
+from app.adapters.huggingface import HuggingFaceAdapter
+from app.adapters.mistral import MistralAdapter
+from app.adapters.ollama import OllamaAdapter
+from app.adapters.openai import OpenAIAdapter
+from app.adapters.perplexity import PerplexityAdapter
+from app.adapters.together import TogetherAdapter
+from app.adapters.xai import XAIAdapter
 
 # ── Provider Registry ─────────────────────────────────────────
 PROVIDER_REGISTRY = {

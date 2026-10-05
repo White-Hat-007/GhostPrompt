@@ -6,8 +6,8 @@ Run from the backend directory:
     python -m scripts.kickoff_training
 """
 
-import sys
 import os
+import sys
 
 # Force UTF-8 output on Windows
 if sys.platform == "win32":
@@ -17,8 +17,12 @@ if sys.platform == "win32":
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.ml.training.lora_trainer import (
-    TrainingJob, train_threat_classifier, validate_jsonl_dataset, get_device
+    TrainingJob,
+    get_device,
+    train_threat_classifier,
+    validate_jsonl_dataset,
 )
+
 
 def main():
     dataset_path = os.path.join(
@@ -58,7 +62,7 @@ def main():
         total_epochs=3,  # 3 epochs for the initial run
     )
 
-    print(f"\n[TRAINING START]")
+    print("\n[TRAINING START]")
     print(f"   Job ID: {job.id}")
     print(f"   Model: {job.base_model}")
     print(f"   Epochs: {job.total_epochs}")

@@ -17,9 +17,9 @@ import math
 import re
 import time
 from collections import defaultdict
-from typing import Optional
-from app.schemas.schemas import DetectionResult
+
 from app.core.logging import get_logger
+from app.schemas.schemas import DetectionResult
 
 logger = get_logger("detector.sponge")
 
@@ -71,8 +71,8 @@ class SpongeDetector:
         self,
         text: str,
         *,
-        session_id: Optional[str] = None,
-        inference_latency_ms: Optional[float] = None,
+        session_id: str | None = None,
+        inference_latency_ms: float | None = None,
     ) -> list[DetectionResult]:
         detections: list[DetectionResult] = []
         sid = session_id or "global"

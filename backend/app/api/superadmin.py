@@ -10,19 +10,18 @@ Security:
 - Self-deletion guard
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status, Request
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from typing import List, Optional
 
-from app.core.database import get_db
-from app.core.config import get_settings
-from app.core.security import get_current_user
-from app.models.user import User
-from app.models.organization import Organization
-from app.schemas.schemas import UserResponse
-from app.security.audit_log import audit_log, AuditAction
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.config import get_settings
+from app.core.database import get_db
+from app.core.security import get_current_user
+from app.models.organization import Organization
+from app.models.user import User
+from app.security.audit_log import AuditAction, audit_log
 
 settings = get_settings()
 router = APIRouter(prefix="/superadmin", tags=["Super Admin"])
@@ -87,7 +86,6 @@ async def delete_organization(
 
     await db.delete(org)
     await db.commit()
-    return None
 
 
 @router.get("/users")
@@ -122,9 +120,9 @@ async def list_all_users(
 
 class SuperAdminUserUpdate(BaseModel):
     """Explicit whitelist of updatable fields with validation."""
-    role: Optional[str] = Field(None, pattern=r"^(owner|admin|analyst|viewer)$")
-    is_active: Optional[bool] = None
-    is_verified: Optional[bool] = None
+    role: str | None = Field(None, pattern=r"^(owner|admin|analyst|viewer)$")
+    is_active: bool | None = None
+    is_verified: bool | None = None
 
 
 @router.put("/users/{user_id}")
@@ -202,4 +200,3 @@ async def superadmin_delete_user(
 
     await db.delete(user)
     await db.commit()
-    return None

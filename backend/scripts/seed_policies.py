@@ -1,15 +1,16 @@
 import asyncio
-import sys
 import os
+import sys
 
 # Add backend directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sqlalchemy import select
+
 from app.core.database import async_session_factory
+from app.core.logging import get_logger
 from app.models.organization import Organization
 from app.models.policy import Policy, PolicyRule
-from app.core.logging import get_logger
 
 logger = get_logger("seed_policies")
 

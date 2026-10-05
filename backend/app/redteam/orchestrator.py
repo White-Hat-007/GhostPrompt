@@ -9,15 +9,18 @@ false negatives back to the training pipeline.
 Equivalent to 2,000+ human red team hours per week.
 """
 
-import asyncio
-import time
 import random
-from typing import Optional
+import time
+
 from app.core.logging import get_logger
-from app.redteam.attack_generators import ALL_GENERATORS
-from app.redteam.attack_generators.pack_hunt_gen import PackHuntGenerator
 from app.redteam.attack_executor import AttackExecutor
-from app.redteam.results_analyzer import ResultsAnalyzer, WeaknessReporter, TrainingFeeder, DashboardReporter
+from app.redteam.attack_generators import ALL_GENERATORS
+from app.redteam.results_analyzer import (
+    DashboardReporter,
+    ResultsAnalyzer,
+    TrainingFeeder,
+    WeaknessReporter,
+)
 
 logger = get_logger("redteam.orchestrator")
 
@@ -53,7 +56,7 @@ class RedTeamOrchestrator:
 
         self._running = False
         self._total_cycles = 0
-        self._last_run_time: Optional[float] = None
+        self._last_run_time: float | None = None
 
         logger.info(
             "orchestrator_initialized",

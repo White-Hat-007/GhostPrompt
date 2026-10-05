@@ -10,7 +10,6 @@ itself ISO 42001 certified. This module maps technical controls to
 the standard's requirements to accelerate your audit readiness.
 """
 
-from datetime import datetime, timezone
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -11,11 +11,10 @@ Supports:
 - Verification of any uploaded export against stored signature
 """
 
-import hmac
 import hashlib
+import hmac
 import json
 from datetime import datetime, timezone
-from typing import Optional, Union
 
 from app.compliance.framework_base import ComplianceSnapshot
 

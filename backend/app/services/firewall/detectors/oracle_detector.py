@@ -14,14 +14,13 @@ Detection signals:
   - Rolling-window embedding variance analysis
 """
 
-import time
 import hashlib
-import math
 import re
+import time
 from collections import defaultdict
-from typing import Optional
-from app.schemas.schemas import DetectionResult
+
 from app.core.logging import get_logger
+from app.schemas.schemas import DetectionResult
 
 logger = get_logger("detector.oracle")
 
@@ -59,9 +58,9 @@ class OracleDetector:
         self,
         text: str,
         *,
-        api_key_id: Optional[str] = None,
-        source_ip: Optional[str] = None,
-        request_metadata: Optional[dict] = None,
+        api_key_id: str | None = None,
+        source_ip: str | None = None,
+        request_metadata: dict | None = None,
     ) -> list[DetectionResult]:
         detections: list[DetectionResult] = []
         key = api_key_id or source_ip or "anonymous"

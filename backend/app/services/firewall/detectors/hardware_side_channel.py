@@ -10,11 +10,10 @@ characteristics, such as:
 - Power/thermal side-channel triggers
 """
 
-import time
 import re
-from typing import Optional
-from app.schemas.schemas import DetectionResult
+
 from app.core.logging import get_logger
+from app.schemas.schemas import DetectionResult
 
 logger = get_logger("detector.hardware")
 

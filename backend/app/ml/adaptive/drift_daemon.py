@@ -8,16 +8,13 @@ detection thresholds per tenant — within a safety floor.
 Large shifts require human approval.
 """
 
-import time
 import math
-import asyncio
-from datetime import datetime, timezone, timedelta
-from typing import Optional
-from dataclasses import dataclass, field
 from collections import defaultdict
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
 
-from app.core.logging import get_logger
 from app.core.config import get_settings
+from app.core.logging import get_logger
 
 logger = get_logger("ml.adaptive")
 settings = get_settings()
@@ -61,7 +58,7 @@ class ThresholdChange:
     reason: str = ""
     auto_approved: bool = False
     pending_approval: bool = False
-    approved_by: Optional[str] = None
+    approved_by: str | None = None
     created_at: str = ""
 
 
@@ -308,14 +305,14 @@ class DriftDaemon:
             for b in self._baselines.get(org_id, {}).values()
         ]
 
-    def get_changes(self, org_id: Optional[str] = None) -> list[dict]:
+    def get_changes(self, org_id: str | None = None) -> list[dict]:
         """Get threshold change history."""
         changes = self._changes
         if org_id:
             changes = [c for c in changes if c.org_id == org_id]
         return [c.__dict__ for c in changes[-100:]]  # last 100
 
-    def get_pending(self, org_id: Optional[str] = None) -> list[dict]:
+    def get_pending(self, org_id: str | None = None) -> list[dict]:
         """Get pending approval requests."""
         pending = self._pending
         if org_id:

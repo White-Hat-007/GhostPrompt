@@ -1,9 +1,10 @@
-from typing import List, Dict, Any
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from pydantic import BaseModel
 import datetime
+
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.database import get_db
 from app.core.security import require_plan
 from app.models.provider_config import ProviderConfig
@@ -25,7 +26,7 @@ class ProviderConfigResponse(BaseModel):
     is_active: bool
     configured: bool
 
-@router.get("", response_model=Dict[str, List[ProviderConfigResponse]])
+@router.get("", response_model=dict[str, list[ProviderConfigResponse]])
 async def get_providers(
     db: AsyncSession = Depends(get_db),
     current_user=Depends(require_plan("starter"))

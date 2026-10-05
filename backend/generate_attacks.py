@@ -1,7 +1,8 @@
-import requests
-import time
 import random
 import sys
+import time
+
+import requests
 
 API = "http://127.0.0.1:8000"
 
@@ -48,7 +49,7 @@ def generate_attacks(count=500):
                     print(f"  [{i+1}/{count}] Sent attack... (Status: {res.json().get('action')})")
             else:
                 errors += 1
-        except Exception as e:
+        except Exception:
             errors += 1
             
         time.sleep(random.uniform(0.01, 0.05))

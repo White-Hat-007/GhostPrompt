@@ -12,20 +12,19 @@ Endpoints exclusive to the platform founder (super_admin):
 """
 
 from datetime import datetime, timezone
-from typing import Optional, List
+
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, update, delete
 from pydantic import BaseModel
+from sqlalchemy import func, select, update
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.database import get_db
-from app.core.security import get_current_user
 from app.core.config import get_settings
+from app.core.database import get_db
 from app.core.logging import get_logger
-from app.models.user import User
-from app.models.organization import Organization
-
 from app.core.permissions import is_super_admin
+from app.core.security import get_current_user
+from app.models.organization import Organization
+from app.models.user import User
 
 logger = get_logger("api.superadmin_v2")
 settings = get_settings()
@@ -41,15 +40,15 @@ def _require_superadmin(current_user: dict):
 # ── Schemas ──
 
 class OrgOverride(BaseModel):
-    plan: Optional[str] = None
-    scan_limit: Optional[int] = None
-    is_active: Optional[bool] = None
+    plan: str | None = None
+    scan_limit: int | None = None
+    is_active: bool | None = None
 
 
 class FeatureFlagUpdate(BaseModel):
     name: str
     enabled: bool
-    description: Optional[str] = None
+    description: str | None = None
     rollout_pct: float = 100.0
 
 
@@ -330,8 +329,9 @@ async def impersonate_user(
     if not target:
         raise HTTPException(404, "User not found")
 
-    from app.core.security import create_access_token
     from datetime import timedelta
+
+    from app.core.security import create_access_token
 
     # Impersonation tokens are:
     # 1. Short-lived (15 minutes max — non-configurable for safety)

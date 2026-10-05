@@ -7,6 +7,7 @@ https://developer.atlassian.com/cloud/jira/platform/rest/v3/
 """
 
 import base64
+
 from app.services.siem_connectors.base import ConnectorInterface, ConnectorResult
 
 

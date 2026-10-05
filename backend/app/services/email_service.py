@@ -1,10 +1,10 @@
-import os
-import re
-from typing import List, Dict, Any
-from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
-from app.core.config import get_settings
-from pydantic import EmailStr
 import logging
+import re
+
+from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
+from pydantic import EmailStr
+
+from app.core.config import get_settings
 
 logger = logging.getLogger(__name__)
 settings = get_settings()

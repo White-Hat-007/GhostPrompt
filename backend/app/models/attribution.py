@@ -7,11 +7,21 @@ for the Threat Attribution Engine.
 
 import uuid
 from datetime import datetime, timezone
+
 from sqlalchemy import (
-    Column, String, Boolean, Integer, Float, DateTime,
-    ForeignKey, Text, JSON, Index,
+    JSON,
+    Boolean,
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Text,
 )
 from sqlalchemy.dialects.postgresql import UUID
+
 from app.core.database import Base
 
 

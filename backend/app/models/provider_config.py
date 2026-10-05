@@ -7,11 +7,13 @@ API keys are encrypted at rest.
 
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey, Index
+
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Index, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
+
 from app.core.database import Base
-from app.core.encryption import encrypt_data, decrypt_data
+from app.core.encryption import decrypt_data, encrypt_data
 
 
 class ProviderConfig(Base):

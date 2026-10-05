@@ -5,8 +5,6 @@ Fills remaining gaps in detector coverage.
 """
 
 import random
-import base64
-from typing import List
 
 
 class MultimodalAttackGenerator:

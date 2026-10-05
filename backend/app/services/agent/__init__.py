@@ -12,8 +12,9 @@ Monitors and validates AI agent behavior:
 
 import re
 from typing import Any
-from app.schemas.schemas import DetectionResult
+
 from app.core.logging import get_logger
+from app.schemas.schemas import DetectionResult
 
 logger = get_logger("service.agent_security")
 

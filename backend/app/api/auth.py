@@ -11,33 +11,40 @@ Security:
 - Timing-safe password comparison via bcrypt
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status, Request
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, or_
-from datetime import datetime, timezone
-
-from app.core.database import get_db
-from app.core.config import get_settings
-from app.core.security import (
-    hash_password, verify_password,
-    create_access_token, create_refresh_token,
-    decode_token, get_current_user,
-)
-from app.models.user import User
-from app.models.organization import Organization
-from app.models.api_key import APIKey
-from app.schemas.schemas import (
-    LoginRequest, RegisterRequest, TokenResponse,
-    RefreshRequest, UserResponse,
-)
-from app.security.account_lockout import lockout_tracker
-from app.security.audit_log import audit_log, AuditAction
-from app.core.rate_limit import limiter
-from pydantic import BaseModel, EmailStr, Field
-from app.services.email_service import email_service
+import hashlib
 import re
 import secrets
-import hashlib
+from datetime import datetime, timezone
+
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from pydantic import BaseModel, EmailStr, Field
+from sqlalchemy import or_, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.config import get_settings
+from app.core.database import get_db
+from app.core.rate_limit import limiter
+from app.core.security import (
+    create_access_token,
+    create_refresh_token,
+    decode_token,
+    get_current_user,
+    hash_password,
+    verify_password,
+)
+from app.models.api_key import APIKey
+from app.models.organization import Organization
+from app.models.user import User
+from app.schemas.schemas import (
+    LoginRequest,
+    RefreshRequest,
+    RegisterRequest,
+    TokenResponse,
+    UserResponse,
+)
+from app.security.account_lockout import lockout_tracker
+from app.security.audit_log import AuditAction, audit_log
+from app.services.email_service import email_service
 
 settings = get_settings()
 router = APIRouter(prefix="/auth", tags=["Authentication"])

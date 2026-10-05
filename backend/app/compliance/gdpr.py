@@ -17,7 +17,9 @@ data via PII detection, it generates a starter DPIA based on observed PII catego
 """
 
 from app.compliance.framework_base import (
-    ComplianceFramework, ControlRequirement, ControlStatus
+    ComplianceFramework,
+    ControlRequirement,
+    ControlStatus,
 )
 
 

@@ -6,14 +6,13 @@ Load Balancing (round-robin, weighted, least-connections),
 and Automatic Failover with Circuit Breaker.
 """
 
-import time
 import hashlib
 import random
-import asyncio
-from enum import Enum
-from typing import Optional
-from dataclasses import dataclass, field
+import time
 from collections import defaultdict
+from dataclasses import dataclass, field
+from enum import Enum
+
 from app.core.config import get_settings
 
 settings = get_settings()
@@ -276,14 +275,14 @@ class RoutingEngine:
         return healthy[0].model
 
     # ── Canary Routing ──
-    def _canary_route(self, tenant_id: str) -> Optional[str]:
+    def _canary_route(self, tenant_id: str) -> str | None:
         for exp in self._canary_experiments.values():
             if exp.is_active:
                 return exp.route()
         return None
 
     # ── Load Balancing ──
-    def get_api_key(self, provider: str, tenant_config: TenantRoutingConfig, strategy: str = "round_robin") -> Optional[str]:
+    def get_api_key(self, provider: str, tenant_config: TenantRoutingConfig, strategy: str = "round_robin") -> str | None:
         keys = tenant_config.api_keys.get(provider, [])
         if not keys:
             return None
@@ -331,8 +330,8 @@ class RoutingEngine:
         return self._provider_health[provider]
 
     # ── Main Route Decision ──
-    def route(self, prompt: str, tenant_id: str, requested_model: Optional[str] = None,
-              requested_provider: Optional[str] = None) -> dict:
+    def route(self, prompt: str, tenant_id: str, requested_model: str | None = None,
+              requested_provider: str | None = None) -> dict:
         tenant_config = self.get_tenant_config(tenant_id)
 
         # If explicit model requested, respect it (but still apply failover)
@@ -386,7 +385,7 @@ class RoutingEngine:
         self._canary_experiments[experiment_id] = exp
         return exp
 
-    def get_canary_status(self, experiment_id: str) -> Optional[dict]:
+    def get_canary_status(self, experiment_id: str) -> dict | None:
         exp = self._canary_experiments.get(experiment_id)
         return exp.get_status() if exp else None
 

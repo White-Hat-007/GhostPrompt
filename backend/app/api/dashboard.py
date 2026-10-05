@@ -4,19 +4,19 @@ Dashboard Analytics Routes
 Aggregated analytics, threat timeline, and dashboard statistics.
 """
 
-from datetime import datetime, timezone, timedelta
-from fastapi import APIRouter, Depends, Query, Depends
-from app.core.permissions import require_permission
+from datetime import datetime, timedelta, timezone
+
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, case, and_
 
 from app.core.database import get_db
-from app.core.security import get_current_user, require_plan
-from app.models.scan_event import ScanEvent
-from app.models.policy import Policy
-from app.models.threat import ThreatEvent
-from app.schemas.schemas import DashboardStats
 from app.core.geo import resolve_geo
+from app.core.permissions import require_permission
+from app.core.security import get_current_user, require_plan
+from app.models.policy import Policy
+from app.models.scan_event import ScanEvent
+from app.schemas.schemas import DashboardStats
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"], dependencies=[Depends(require_permission("analytics.view"))])
 
@@ -300,9 +300,10 @@ async def export_incident_report(
     format: str = Query(default="json", regex="^(json|csv)$"),
 ):
     """Export detailed incident reports for compliance."""
-    from fastapi.responses import JSONResponse, Response
     import csv
     import io
+
+    from fastapi.responses import JSONResponse, Response
     
     org_id = current_user["org_id"]
     cutoff = datetime.now(timezone.utc) - timedelta(days=days)

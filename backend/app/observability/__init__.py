@@ -5,12 +5,12 @@ Complete request tracing, token/cost tracking, log export,
 metrics aggregation, and analytics engine.
 """
 
-import uuid
 import time
-from typing import Optional
-from dataclasses import dataclass, field
+import uuid
 from collections import defaultdict
+from dataclasses import dataclass, field
 from enum import Enum
+from typing import Optional
 
 
 class SpanKind(str, Enum):
@@ -27,7 +27,7 @@ class SpanKind(str, Enum):
 class Span:
     span_id: str
     trace_id: str
-    parent_span_id: Optional[str]
+    parent_span_id: str | None
     name: str
     kind: SpanKind
     start_time: float
@@ -130,7 +130,7 @@ class Tracer:
             self._traces = self._traces[-self._max_traces // 2:]
         return trace
 
-    def get_trace(self, trace_id: str) -> Optional[dict]:
+    def get_trace(self, trace_id: str) -> dict | None:
         for t in reversed(self._traces):
             if t.trace_id == trace_id:
                 return t.to_dict()

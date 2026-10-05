@@ -5,7 +5,6 @@ Sends alerts via PagerDuty Events API v2 and supports trigger/acknowledge/resolv
 https://developer.pagerduty.com/docs/events-api-v2/overview/
 """
 
-import json
 from app.services.siem_connectors.base import ConnectorInterface, ConnectorResult
 
 

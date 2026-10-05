@@ -6,9 +6,8 @@ blocked or flagged request. CISOs cannot justify black-box blocking.
 Every decision must be explainable.
 """
 
-from typing import Optional
-from app.schemas.schemas import ScanResponse
 
+from app.schemas.schemas import ScanResponse
 
 # Attack vector taxonomy
 ATTACK_VECTORS = {
@@ -148,7 +147,7 @@ def _get_confidence_label(score: float) -> str:
 
 def explain_scan(
     scan: ScanResponse,
-    session_risk: Optional[float] = None,
+    session_risk: float | None = None,
 ) -> dict:
     """
     Generate a human-readable, board-presentable explanation for a scan result.

@@ -11,10 +11,8 @@ Real Stripe integration for:
 """
 
 import os
-import time
-from datetime import datetime, timezone
-from typing import Optional
 from dataclasses import dataclass
+from datetime import datetime, timezone
 
 from app.core.config import get_settings
 from app.core.logging import get_logger
@@ -61,11 +59,11 @@ class SubscriptionInfo:
     """Current subscription state for an org."""
     org_id: str
     plan: str = "free"
-    stripe_customer_id: Optional[str] = None
-    stripe_subscription_id: Optional[str] = None
+    stripe_customer_id: str | None = None
+    stripe_subscription_id: str | None = None
     status: str = "active"  # active, past_due, canceled, trialing
-    current_period_start: Optional[str] = None
-    current_period_end: Optional[str] = None
+    current_period_start: str | None = None
+    current_period_end: str | None = None
     scan_usage: int = 0
     scan_limit: int = 1000
     seats_used: int = 1
@@ -119,9 +117,9 @@ class StripeService:
         plan: str,
         success_url: str,
         cancel_url: str,
-        email: Optional[str] = None,
+        email: str | None = None,
         bypass_mode: bool = False,
-    ) -> Optional[dict]:
+    ) -> dict | None:
         """Create a Stripe Checkout session for subscription."""
         
         plan_config = PLANS.get(plan)
@@ -206,7 +204,7 @@ class StripeService:
         self,
         org_id: str,
         return_url: str,
-    ) -> Optional[dict]:
+    ) -> dict | None:
         """Create a Stripe Customer Portal session."""
         stripe = self._get_stripe()
         if not stripe or not self._initialized:

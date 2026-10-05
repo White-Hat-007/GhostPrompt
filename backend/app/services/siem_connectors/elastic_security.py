@@ -5,8 +5,8 @@ Sends events to Elastic Security / Elasticsearch via the Bulk/Index API.
 https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html
 """
 
-import json
 from datetime import datetime, timezone
+
 from app.services.siem_connectors.base import ConnectorInterface, ConnectorResult
 
 

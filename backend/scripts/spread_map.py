@@ -1,13 +1,17 @@
 import asyncio
-import sys
 import os
+import sys
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from types import SimpleNamespace
+
+from sqlalchemy import select
 
 from app.core.database import async_session_factory
 from app.models.scan_event import ScanEvent
-from sqlalchemy import select
 from app.services.firewall.detectors.attacker_profiler import attacker_profiler
-from types import SimpleNamespace
+
 
 async def main():
     async with async_session_factory() as session:

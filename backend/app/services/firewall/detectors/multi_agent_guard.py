@@ -17,13 +17,12 @@ Agent Trust Model:
   - Trust < 0.2: quarantined — outputs blocked from other agents
 """
 
-import time
-import re
 import hashlib
 import math
-from typing import Optional
-from collections import defaultdict
+import re
+import time
 from dataclasses import dataclass, field
+
 from app.core.logging import get_logger
 from app.schemas.schemas import DetectionResult
 

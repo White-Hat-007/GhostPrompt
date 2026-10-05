@@ -3,12 +3,11 @@ Groq Adapter — Llama, Mixtral, Gemma on Groq's ultra-fast inference.
 OpenAI-compatible API, so we can subclass OpenAIAdapter pattern.
 """
 
+from collections.abc import AsyncGenerator
+
 import httpx
-import uuid
-import json
-import time
-from typing import AsyncGenerator, Optional
 from fastapi import HTTPException
+
 from app.adapters.base import LLMAdapter, LLMResponse
 from app.core.config import get_settings
 
@@ -22,7 +21,7 @@ class GroqAdapter(LLMAdapter):
         self,
         model: str,
         messages: list[dict],
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         stream: bool = False,
         **kwargs
     ) -> LLMResponse:
@@ -51,7 +50,7 @@ class GroqAdapter(LLMAdapter):
         self,
         model: str,
         messages: list[dict],
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         **kwargs
     ) -> AsyncGenerator[str, None]:
         key = api_key or getattr(settings, "GROQ_API_KEY", None)

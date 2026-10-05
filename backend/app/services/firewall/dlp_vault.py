@@ -4,10 +4,10 @@ DLP Vault
 Securely stores original PII values mapped to placeholders (e.g., [CREDIT_CARD_1] -> 4111-...)
 Backed by Redis with automatic expiration to ensure sensitive data is never persisted.
 """
-import uuid
 import json
-from app.core.redis import get_redis
+
 from app.core.logging import get_logger
+from app.core.redis import get_redis
 
 logger = get_logger("dlp.vault")
 

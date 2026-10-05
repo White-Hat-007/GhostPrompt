@@ -5,9 +5,8 @@ Generates attacks modeled on Pliny the Liberator's documented techniques:
 L1B3RT4S, G0DM0D3, OBLITERATUS, nested fiction, authority chains.
 """
 
-import random
 import hashlib
-import time
+import random
 
 PLINY_TEMPLATES = [
     # L1B3RT4S style

@@ -13,15 +13,13 @@ This is infrastructure-level enforcement LAYERED ON TOP of GhostPrompt's
 existing application-layer blocking — not replacing it.
 """
 
-import os
-import time
-import subprocess
-import platform
 import asyncio
-from datetime import datetime, timezone, timedelta
-from typing import Optional
-from dataclasses import dataclass, field
+import platform
+import subprocess
+import time
 from collections import defaultdict
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 
 from app.core.logging import get_logger
 
@@ -43,7 +41,7 @@ class BanRecord:
     ban_id: str = ""
     reason: str = ""
     severity: str = "high"
-    actor_cluster_id: Optional[str] = None
+    actor_cluster_id: str | None = None
     offense_count: int = 1
     ban_duration_seconds: int = BASE_BAN_DURATION_SECONDS
     banned_at: str = ""
@@ -113,7 +111,7 @@ class FirewallBanBridge:
         ip: str,
         severity: str,
         *,
-        actor_cluster_id: Optional[str] = None,
+        actor_cluster_id: str | None = None,
         threshold: int = DEFAULT_TRIGGER_THRESHOLD,
     ) -> bool:
         """
@@ -157,7 +155,7 @@ class FirewallBanBridge:
         *,
         reason: str = "Automated ban — repeated critical detections",
         severity: str = "high",
-        actor_cluster_id: Optional[str] = None,
+        actor_cluster_id: str | None = None,
     ) -> BanRecord:
         """
         Ban an IP at the infrastructure firewall level.
@@ -209,7 +207,7 @@ class FirewallBanBridge:
         )
         return ban_record
 
-    async def unban_ip(self, ip: str, *, manual: bool = False) -> Optional[BanRecord]:
+    async def unban_ip(self, ip: str, *, manual: bool = False) -> BanRecord | None:
         """
         Unban an IP — either manually by an analyst or on expiry.
         """

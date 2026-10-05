@@ -11,14 +11,13 @@ Implements:
 - Byzantine-robust aggregation
 """
 
-import uuid
-import math
 import hashlib
+import math
 import random
-from datetime import datetime, timezone, timedelta
-from typing import Optional
-from dataclasses import dataclass, field
+import uuid
 from collections import defaultdict
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
 
 from app.core.logging import get_logger
 
@@ -152,7 +151,7 @@ class FederatedAggregator:
         attack_category: str,
         confidence: float,
         severity: str = "medium",
-    ) -> Optional[ThreatSignature]:
+    ) -> ThreatSignature | None:
         """
         Contribute a threat signature from a deployment.
         
@@ -307,7 +306,7 @@ class FederatedAggregator:
             "total_contributions": sum(n.signatures_contributed for n in self._nodes.values()),
         }
 
-    def get_node_info(self, org_id: str) -> Optional[dict]:
+    def get_node_info(self, org_id: str) -> dict | None:
         """Get info for a specific node."""
         node = self._nodes.get(org_id)
         budget = self._budgets.get(org_id)

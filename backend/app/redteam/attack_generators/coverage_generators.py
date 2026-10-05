@@ -16,8 +16,6 @@ Generators for detectors that previously had no matching attack generators:
 """
 
 import random
-import base64
-import string
 
 
 class HallucinationElicitationGenerator:

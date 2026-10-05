@@ -17,13 +17,13 @@ hidden master intent even though each fragment appears innocent in isolation.
 No single request is malicious. The malice is in the aggregate.
 """
 
-import time
 import hashlib
 import math
 import re
-from typing import Optional
+import time
 from collections import defaultdict
 from dataclasses import dataclass, field
+
 from app.core.logging import get_logger
 from app.schemas.schemas import DetectionResult
 

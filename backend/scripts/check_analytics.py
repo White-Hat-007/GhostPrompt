@@ -1,7 +1,10 @@
 """Quick test: hit the analytics endpoint directly."""
 import asyncio
-from app.core.database import async_session_factory
+
 from sqlalchemy import text
+
+from app.core.database import async_session_factory
+
 
 async def check():
     async with async_session_factory() as s:

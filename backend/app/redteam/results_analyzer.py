@@ -5,9 +5,8 @@ Combined module for post-execution analysis, reporting, and feedback loops.
 """
 
 import time
-import json
-from typing import Optional
 from collections import defaultdict
+
 from app.core.logging import get_logger
 
 logger = get_logger("redteam.analyzer")
@@ -156,7 +155,7 @@ class DashboardReporter:
     """Collects and formats red team metrics for the frontend dashboard."""
 
     def __init__(self):
-        self._latest_run: Optional[dict] = None
+        self._latest_run: dict | None = None
         self._run_history: list[dict] = []
         self._weekly_stats: dict = {
             "total_attacks": 0,

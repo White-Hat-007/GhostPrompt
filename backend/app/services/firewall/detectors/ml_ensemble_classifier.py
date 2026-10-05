@@ -13,14 +13,14 @@ Model C: Embedding Similarity Engine — Sentence-Transformers
 Falls back to heuristic scoring when ML models are not trained/available.
 """
 
-import os
 import json
-import numpy as np
 from pathlib import Path
-from typing import Optional
-from app.schemas.schemas import DetectionResult
+
+import numpy as np
+
 from app.core.config import get_settings
 from app.core.logging import get_logger
+from app.schemas.schemas import DetectionResult
 
 logger = get_logger("detector.ml_ensemble")
 settings = get_settings()
@@ -101,8 +101,10 @@ class MLEnsembleClassifier:
         # Try loading trained Model A (Binary Gate)
         if self._model_a_path.exists() and (self._model_a_path / "config.json").exists():
             try:
-                import torch
-                from transformers import AutoTokenizer, AutoModelForSequenceClassification
+                from transformers import (
+                    AutoModelForSequenceClassification,
+                    AutoTokenizer,
+                )
 
                 self._tokenizer_a = AutoTokenizer.from_pretrained(str(self._model_a_path))
                 self._model_a = AutoModelForSequenceClassification.from_pretrained(str(self._model_a_path))
@@ -116,8 +118,10 @@ class MLEnsembleClassifier:
         # Try loading trained Model B (Multi-class)
         if self._model_b_path.exists() and (self._model_b_path / "config.json").exists():
             try:
-                import torch
-                from transformers import AutoTokenizer, AutoModelForSequenceClassification
+                from transformers import (
+                    AutoModelForSequenceClassification,
+                    AutoTokenizer,
+                )
 
                 self._tokenizer_b = AutoTokenizer.from_pretrained(str(self._model_b_path))
                 self._model_b = AutoModelForSequenceClassification.from_pretrained(str(self._model_b_path))

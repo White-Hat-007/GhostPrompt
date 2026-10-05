@@ -9,10 +9,10 @@ Cache Analytics: Hit rates, cost savings, popular queries
 import hashlib
 import json
 import time
-import numpy as np
-from typing import Optional
-from dataclasses import dataclass, field
 from collections import defaultdict
+from dataclasses import dataclass, field
+
+import numpy as np
 
 
 @dataclass
@@ -98,7 +98,7 @@ class CacheEngine:
         self._semantic_threshold = max(0.5, min(1.0, threshold))
 
     # ── Exact Cache ──
-    def exact_get(self, model: str, messages: list, temperature: float = 1.0, top_p: float = 1.0, tenant_id: str = "default") -> Optional[dict]:
+    def exact_get(self, model: str, messages: list, temperature: float = 1.0, top_p: float = 1.0, tenant_id: str = "default") -> dict | None:
         key = self._hash_request(model, messages, temperature, top_p)
         entry = self._exact_cache.get(key)
         analytics = self._analytics[tenant_id]
@@ -124,7 +124,7 @@ class CacheEngine:
         )
 
     # ── Semantic Cache ──
-    def semantic_get(self, messages: list, tenant_id: str = "default") -> Optional[dict]:
+    def semantic_get(self, messages: list, tenant_id: str = "default") -> dict | None:
         analytics = self._analytics[tenant_id]
         query = messages[-1].get("content", "") if messages else ""
         if not query or len(query) < 10:

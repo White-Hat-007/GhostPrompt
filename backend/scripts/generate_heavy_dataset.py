@@ -6,8 +6,8 @@ Generates a large, balanced, diverse JSONL dataset for maximum accuracy training
 """
 
 import json
-import random
 import os
+import random
 import sys
 
 if sys.platform == "win32":

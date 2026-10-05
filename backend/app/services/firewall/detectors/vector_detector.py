@@ -7,11 +7,9 @@ This catches zero-day attacks that bypass regex and pattern matching.
 """
 
 import numpy as np
-from sqlalchemy import select, text
-from app.core.database import get_db
-from app.models.threat import ThreatSignature
-from app.schemas.schemas import DetectionResult
+
 from app.core.logging import get_logger
+from app.schemas.schemas import DetectionResult
 
 logger = get_logger("detector.vector")
 

@@ -15,7 +15,7 @@ from alembic import context
 
 # Import all models so Alembic sees them
 from app.core.database import Base
-from app.models import *  # noqa: F401, F403
+from app.models import *
 
 config = context.config
 if config.config_file_name is not None:

@@ -5,10 +5,11 @@ Routing Engine, Cache, Key Vault, Observability, Prompt Studio,
 MCP Gateway, Compliance, Budget, Network Guardrails, Integrations
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Depends
+
+from fastapi import APIRouter, Depends, HTTPException, Request
+from pydantic import BaseModel
+
 from app.core.permissions import require_permission
-from pydantic import BaseModel, Field
-from typing import Optional
 from app.core.security import get_current_user
 
 router = APIRouter(prefix="/platform", tags=["Platform"], dependencies=[Depends(require_permission("platform.view"))])
@@ -16,23 +17,23 @@ router = APIRouter(prefix="/platform", tags=["Platform"], dependencies=[Depends(
 
 # ── Pydantic Schemas ──
 class RoutingConfigUpdate(BaseModel):
-    strategy: Optional[str] = None
-    failover_chain: Optional[list[str]] = None
-    monthly_budget_usd: Optional[float] = None
-    topic_model_map: Optional[dict] = None
+    strategy: str | None = None
+    failover_chain: list[str] | None = None
+    monthly_budget_usd: float | None = None
+    topic_model_map: dict | None = None
 
 class CacheConfigUpdate(BaseModel):
-    ttl_seconds: Optional[int] = None
-    semantic_threshold: Optional[float] = None
+    ttl_seconds: int | None = None
+    semantic_threshold: float | None = None
 
 class VirtualKeyCreate(BaseModel):
     provider: str
     real_api_key: str
     name: str = ""
-    allowed_models: Optional[list[str]] = None
+    allowed_models: list[str] | None = None
     scope: str = "write"
     monthly_cap: float = 0
-    ip_allowlist: Optional[list[str]] = None
+    ip_allowlist: list[str] | None = None
 
 class PromptCreate(BaseModel):
     name: str
@@ -47,9 +48,9 @@ class MCPServerRegister(BaseModel):
     name: str
     url: str
     auth_method: str = "api_key"
-    auth_credentials: Optional[dict] = None
-    tools: Optional[list[dict]] = None
-    allowed_teams: Optional[list[str]] = None
+    auth_credentials: dict | None = None
+    tools: list[dict] | None = None
+    allowed_teams: list[str] | None = None
 
 class BudgetSet(BaseModel):
     entity_id: str
@@ -59,21 +60,21 @@ class BudgetSet(BaseModel):
     rpm_limit: int = 0
 
 class ComplianceUpdate(BaseModel):
-    data_region: Optional[str] = None
-    log_retention_days: Optional[int] = None
-    baa_enabled: Optional[bool] = None
-    byok_enabled: Optional[bool] = None
-    gdpr_enabled: Optional[bool] = None
+    data_region: str | None = None
+    log_retention_days: int | None = None
+    baa_enabled: bool | None = None
+    byok_enabled: bool | None = None
+    gdpr_enabled: bool | None = None
 
 class NetworkConfigUpdate(BaseModel):
-    ip_allowlist: Optional[list[str]] = None
-    ip_denylist: Optional[list[str]] = None
-    country_allowlist: Optional[list[str]] = None
-    country_denylist: Optional[list[str]] = None
-    block_tor: Optional[bool] = None
-    profanity_filter: Optional[bool] = None
-    block_malicious_urls: Optional[bool] = None
-    max_request_size_bytes: Optional[int] = None
+    ip_allowlist: list[str] | None = None
+    ip_denylist: list[str] | None = None
+    country_allowlist: list[str] | None = None
+    country_denylist: list[str] | None = None
+    block_tor: bool | None = None
+    profanity_filter: bool | None = None
+    block_malicious_urls: bool | None = None
+    max_request_size_bytes: int | None = None
 
 class CanaryCreate(BaseModel):
     experiment_id: str
@@ -194,7 +195,7 @@ async def update_cache_config(body: CacheConfigUpdate, user=Depends(get_current_
 
 @router.post("/vault/keys")
 async def create_virtual_key(body: VirtualKeyCreate, user=Depends(get_current_user)):
-    from app.core.key_vault import key_vault, KeyScope
+    from app.core.key_vault import KeyScope, key_vault
     return key_vault.create_key(
         str(user.get("org_id")), body.provider, body.real_api_key,
         name=body.name, scope=KeyScope(body.scope), monthly_cap=body.monthly_cap,
@@ -569,7 +570,7 @@ async def manual_ban_ip(ip: str, user=Depends(get_current_user)):
 # ═══════════════════════════════════════════
 
 @router.get("/osint/{ip}")
-async def osint_enrich(ip: str, domain: Optional[str] = None, user=Depends(get_current_user)):
+async def osint_enrich(ip: str, domain: str | None = None, user=Depends(get_current_user)):
     from app.services.firewall.detectors.osint_enrichment import osint_engine
     return await osint_engine.enrich_incident(ip, domain=domain)
 
@@ -634,6 +635,7 @@ async def resolve_sync_conflict(incident_id: str, external_system: str, winner: 
 
 import asyncio
 import json
+
 from starlette.responses import StreamingResponse
 
 # Global event bus — all real-time events published here
@@ -667,7 +669,7 @@ async def sse_stream(user=Depends(get_current_user)):
                     payload = await asyncio.wait_for(queue.get(), timeout=30.0)
                     yield f"data: {payload}\n\n"
                 except asyncio.TimeoutError:
-                    yield f": heartbeat\n\n"
+                    yield ": heartbeat\n\n"
         except asyncio.CancelledError:
             pass
         finally:
@@ -699,7 +701,7 @@ class ExternalTicketLink(BaseModel):
     incident_id: str
     external_system: str  # jira, servicenow, pagerduty
     external_ticket_id: str
-    external_url: Optional[str] = None
+    external_url: str | None = None
 
 # In-memory ticket store (keyed by incident_id)
 _ticket_links: dict[str, list[dict]] = {}
@@ -733,7 +735,6 @@ class WebhookPayload(BaseModel):
 @router.post("/siem-sync/webhook")
 async def receive_siem_webhook(body: WebhookPayload, request: Request):
     """Receive status updates from external SIEM/ITSM systems."""
-    import hmac, hashlib
     # Verify HMAC signature if present
     sig = request.headers.get("X-Webhook-Signature", "")
     # Log the inbound event
@@ -785,9 +786,9 @@ _federation_reputation: dict[str, float] = {}
 class FederationRegistration(BaseModel):
     node_name: str
     endpoint_url: str
-    api_key: Optional[str] = None
+    api_key: str | None = None
     capabilities: list[str] = []
-    organization: Optional[str] = None
+    organization: str | None = None
 
 @router.post("/federation/register")
 async def register_federation_node(body: FederationRegistration, user=Depends(get_current_user)):
@@ -925,8 +926,9 @@ _shared_links: dict[str, dict] = {}
 @router.post("/share/create")
 async def create_shareable_link(body: ShareableLink, user=Depends(get_current_user)):
     """Create a shareable deep-link for a view state."""
-    import uuid, hashlib
-    from datetime import datetime, timezone, timedelta
+    import hashlib
+    import uuid
+    from datetime import datetime, timedelta, timezone
     link_id = hashlib.sha256(f"{uuid.uuid4().hex}{body.view}".encode()).hexdigest()[:16]
     link = {
         "id": link_id,
@@ -973,22 +975,19 @@ async def get_provider_models_catalog(user=Depends(get_current_user)):
 # ═══════════════════════════════════════════
 
 class OwnershipUpdate(BaseModel):
-    service_owner_email: Optional[str] = None
-    service_owner_team: Optional[str] = None
-    escalation_contacts: Optional[list[str]] = None
-    oncall_integration: Optional[str] = None
+    service_owner_email: str | None = None
+    service_owner_team: str | None = None
+    escalation_contacts: list[str] | None = None
+    oncall_integration: str | None = None
 
 @router.put("/ownership")
 async def update_ownership(body: OwnershipUpdate, user=Depends(get_current_user)):
     """Update service ownership mapping for the organization."""
-    from sqlalchemy.ext.asyncio import AsyncSession
-    from app.core.database import get_db
     from app.core.logging import get_logger
     logger = get_logger("ownership")
     org_id = str(user.get("org_id"))
     # Persist to org settings
-    from app.api.settings import _save_org_settings
-    from fastapi import Depends as Dep
+
     # We'll store ownership in the org settings JSON
     ownership_data = body.model_dump(exclude_none=True)
     logger.info("ownership_updated", org=org_id, updates=list(ownership_data.keys()))

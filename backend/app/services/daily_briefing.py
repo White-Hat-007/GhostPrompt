@@ -6,9 +6,8 @@ of telemetry data. Delivered to dashboard + optionally email/Slack.
 """
 
 import uuid
-from datetime import datetime, timezone, timedelta
-from typing import Optional
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta, timezone
 
 from app.core.logging import get_logger
 
@@ -87,7 +86,7 @@ class DailyBriefingService:
         logger.info("briefing_generated", org=org_id, total_scans=stats["total_scans"])
         return briefing
 
-    async def get_latest_briefing(self, org_id: str) -> Optional[dict]:
+    async def get_latest_briefing(self, org_id: str) -> dict | None:
         """Get the most recent briefing for an org."""
         briefs = _briefings.get(org_id, [])
         if not briefs:

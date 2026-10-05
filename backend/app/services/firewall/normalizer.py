@@ -1,8 +1,9 @@
-import re
 import base64
 import codecs
-import urllib.parse
+import re
 import unicodedata
+import urllib.parse
+
 from app.core.logging import get_logger
 
 logger = get_logger("firewall.normalizer")

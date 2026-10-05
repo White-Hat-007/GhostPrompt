@@ -8,8 +8,9 @@ Retrieval-Augmented Generation pipelines.
 
 import re
 from typing import Optional
-from app.schemas.schemas import DetectionResult
+
 from app.core.logging import get_logger
+from app.schemas.schemas import DetectionResult
 
 logger = get_logger("service.rag_security")
 
@@ -78,7 +79,7 @@ class RAGSecurityService:
         self,
         text: str,
         doc_index: int = 0,
-        source: Optional[str] = None,
+        source: str | None = None,
     ) -> list[DetectionResult]:
         """Scan a single document for RAG-specific threats."""
         detections = []

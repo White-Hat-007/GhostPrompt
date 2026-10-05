@@ -22,11 +22,8 @@ All data cached with sane TTLs.
 import re
 import socket
 import time
-import hashlib
-import json
-from datetime import datetime, timezone, timedelta
-from typing import Optional
 from collections import defaultdict
+from datetime import datetime, timezone
 
 import httpx
 
@@ -56,7 +53,7 @@ _cache: dict[str, tuple[float, dict]] = {}
 CACHE_TTL_SECONDS = 3600  # 1 hour — OSINT data changes slowly
 
 
-def _cache_get(key: str) -> Optional[dict]:
+def _cache_get(key: str) -> dict | None:
     if key in _cache:
         ts, data = _cache[key]
         if time.time() - ts < CACHE_TTL_SECONDS:
@@ -79,11 +76,11 @@ class OSINTEnrichmentEngine:
         self,
         source_ip: str,
         *,
-        domain: Optional[str] = None,
-        email: Optional[str] = None,
-        mac_address: Optional[str] = None,
-        cve_ids: Optional[list[str]] = None,
-        user_agent: Optional[str] = None,
+        domain: str | None = None,
+        email: str | None = None,
+        mac_address: str | None = None,
+        cve_ids: list[str] | None = None,
+        user_agent: str | None = None,
     ) -> dict:
         """
         Run full OSINT enrichment on an incident's attacker indicators.
@@ -100,7 +97,7 @@ class OSINTEnrichmentEngine:
             "rate_limited": False,
         }
 
-        if not _rate_check(f"global_enrichment"):
+        if not _rate_check("global_enrichment"):
             dossier["rate_limited"] = True
             dossier["sections"]["error"] = {"status": "rate_limited", "detail": "Global enrichment rate limit exceeded. Try again in 60s."}
             return dossier
@@ -216,7 +213,7 @@ class OSINTEnrichmentEngine:
         return dossier
 
     # ── DNS Lookup ──
-    async def _dns_lookup(self, target: str, source_ip: Optional[str] = None) -> dict:
+    async def _dns_lookup(self, target: str, source_ip: str | None = None) -> dict:
         self._lookup_count += 1
         result = {"source": "system_dns", "records": {}, "reverse_dns": None}
         try:
@@ -388,7 +385,7 @@ class OSINTEnrichmentEngine:
                     # Check if domain portion appears in known breaches
                     domain_part = target.split("@")[1]
                     resp = await client.get(
-                        f"https://haveibeenpwned.com/api/v3/breaches",
+                        "https://haveibeenpwned.com/api/v3/breaches",
                         headers={"User-Agent": "GhostPrompt-OSINT/1.0"},
                     )
                     if resp.status_code == 200:
@@ -403,7 +400,7 @@ class OSINTEnrichmentEngine:
                 else:
                     # Domain-level check
                     resp = await client.get(
-                        f"https://haveibeenpwned.com/api/v3/breaches",
+                        "https://haveibeenpwned.com/api/v3/breaches",
                         headers={"User-Agent": "GhostPrompt-OSINT/1.0"},
                     )
                     if resp.status_code == 200:

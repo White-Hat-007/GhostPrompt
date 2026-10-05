@@ -6,20 +6,21 @@ and model security analytics.
 """
 
 import os
-import uuid
 import time
+import uuid
 from datetime import datetime, timezone
-from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File, Form
+
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 from pydantic import BaseModel, Field
 
 from app.core.config import get_settings
-from app.core.rate_limit import limiter
 from app.core.logging import get_logger
-from app.services.firewall.detectors.hallucination_detector import hallucination_engine
-from app.services.firewall.detectors.model_weight_scanner import ModelWeightScanner, ModelScanResult
-
+from app.core.rate_limit import limiter
 from app.core.security import require_plan
+from app.services.firewall.detectors.hallucination_detector import hallucination_engine
+from app.services.firewall.detectors.model_weight_scanner import (
+    ModelWeightScanner,
+)
 
 settings = get_settings()
 logger = get_logger("api.model_security")
@@ -57,11 +58,11 @@ async def _ensure_initialized():
 class HallucinationScanRequest(BaseModel):
     """Request to scan LLM output for hallucinations."""
     output_text: str = Field(..., max_length=50000, description="The LLM-generated output text to analyze")
-    input_text: Optional[str] = Field(None, max_length=50000, description="The original input prompt (for context)")
-    context_documents: Optional[list[str]] = Field(None, description="Optional RAG context documents for grounding verification")
-    policy_tier: Optional[str] = Field(None, description="FAST, STANDARD, THOROUGH, MAXIMUM, or ADAPTIVE")
-    model: Optional[str] = Field(None, description="The model that generated the output")
-    provider: Optional[str] = Field(None, description="The model provider")
+    input_text: str | None = Field(None, max_length=50000, description="The original input prompt (for context)")
+    context_documents: list[str] | None = Field(None, description="Optional RAG context documents for grounding verification")
+    policy_tier: str | None = Field(None, description="FAST, STANDARD, THOROUGH, MAXIMUM, or ADAPTIVE")
+    model: str | None = Field(None, description="The model that generated the output")
+    provider: str | None = Field(None, description="The model provider")
 
 
 class HallucinationScanResponse(BaseModel):
@@ -76,10 +77,10 @@ class HallucinationScanResponse(BaseModel):
     scan_duration_ms: float
     policy_tier_used: str = ""
     layer_results: dict = {}
-    model: Optional[str] = None
+    model: str | None = None
     recommendations: list[str] = []
     # Forensic Intelligence fields
-    forensic_report: Optional[dict] = None
+    forensic_report: dict | None = None
     issues: list[dict] = []
     verification_checklist: dict = {}
     category_distribution: dict = {}
@@ -264,7 +265,7 @@ async def scan_model_upload(
     if len(content) > max_size:
         raise HTTPException(
             status_code=413,
-            detail=f"File too large. Maximum upload size is 500MB."
+            detail="File too large. Maximum upload size is 500MB."
         )
 
     result = await weight_scanner.scan_bytes(content, filename=file.filename or "uploaded_model")

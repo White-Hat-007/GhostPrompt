@@ -3,8 +3,8 @@ Synthetic Hallucination Data Generator
 Generates synthetic cases covering confident factual errors, fabricated citations, etc.
 """
 import json
-import random
 from pathlib import Path
+
 
 def generate_synthetic_data(output_path: Path):
     print("Generating synthetic hallucination cases (CUDA accelerated)...")

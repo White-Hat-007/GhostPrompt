@@ -11,20 +11,20 @@ Security:
 - All admin actions are audit logged
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status, Request
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from typing import List, Optional
 import re
+import uuid
+
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from pydantic import BaseModel
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.security import get_current_user
+from app.models.role import Action, Resource, Role
 from app.models.user import User
-from app.models.role import Role, Resource, Action
-from app.schemas.schemas import UserResponse, RoleResponse, RoleCreate, RoleUpdate
-from app.security.audit_log import audit_log, AuditAction
-from pydantic import BaseModel, Field
-import uuid
+from app.schemas.schemas import RoleCreate, RoleResponse, RoleUpdate, UserResponse
+from app.security.audit_log import AuditAction, audit_log
 
 # Allowed permission key pattern: resource.action (e.g. "dashboard.view")
 _PERM_KEY_RE = re.compile(r'^[a-z_]+\.[a-z_]+$')
@@ -87,12 +87,12 @@ class UserUpdate(BaseModel):
     Explicit whitelist of updatable fields.
     Security: Prevents mass assignment attacks.
     """
-    role: Optional[str] = None
-    is_active: Optional[bool] = None
-    is_verified: Optional[bool] = None
+    role: str | None = None
+    is_active: bool | None = None
+    is_verified: bool | None = None
 
 
-@router.get("/users", response_model=List[UserResponse])
+@router.get("/users", response_model=list[UserResponse])
 async def list_users(
     current_user: dict = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
@@ -240,10 +240,9 @@ async def delete_user(
 
     await db.delete(user)
     await db.commit()
-    return None
 
 
-@router.get("/roles", response_model=List[RoleResponse])
+@router.get("/roles", response_model=list[RoleResponse])
 async def list_roles(
     current_user: dict = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
@@ -415,4 +414,3 @@ async def delete_role(
         },
     )
 
-    return None

@@ -7,8 +7,8 @@ Workflows-based incoming webhook with Adaptive Card payloads).
 https://learn.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/
 """
 
-import json
 from datetime import datetime, timezone
+
 from app.services.siem_connectors.base import ConnectorInterface, ConnectorResult
 
 

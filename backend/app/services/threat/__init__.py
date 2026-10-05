@@ -8,6 +8,7 @@ and adaptive learning for the GhostPrompt threat intelligence engine.
 import hashlib
 from datetime import datetime, timezone
 from typing import Optional
+
 from app.core.logging import get_logger
 
 logger = get_logger("service.threat_intelligence")

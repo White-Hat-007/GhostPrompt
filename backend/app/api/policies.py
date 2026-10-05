@@ -5,16 +5,17 @@ CRUD operations for security policies and rules.
 """
 
 from uuid import UUID
-from fastapi import APIRouter, Depends, HTTPException, status, Depends
-from app.core.permissions import require_permission
-from sqlalchemy.ext.asyncio import AsyncSession
+
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.core.database import get_db
+from app.core.permissions import require_permission
 from app.core.security import get_current_user
 from app.models.policy import Policy, PolicyRule
-from app.schemas.schemas import PolicyCreate, PolicyUpdate, PolicyResponse
+from app.schemas.schemas import PolicyCreate, PolicyResponse, PolicyUpdate
 
 router = APIRouter(prefix="/policies", tags=["Policies"], dependencies=[Depends(require_permission("policies.manage"))])
 

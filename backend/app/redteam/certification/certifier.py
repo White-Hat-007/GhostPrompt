@@ -15,11 +15,9 @@ Badge System:
 """
 
 import time
-import asyncio
-from typing import Optional
+
 from app.core.logging import get_logger
 from app.redteam.attack_executor import AttackExecutor
-from app.redteam.attack_generators.pliny_gen import PlinyGenerator
 from app.redteam.attack_generators.pack_hunt_gen import PackHuntGenerator
 from app.redteam.attack_generators.zero_day_gen import ZeroDayGenerator
 
@@ -80,9 +78,9 @@ class Certifier:
 
     def __init__(self):
         self.executor = AttackExecutor()
-        self._last_result: Optional[dict] = None
-        self._last_sim_score: Optional[float] = None  # latest Attack Simulator score
-        self._last_ops_detection_rate: Optional[float] = None  # latest Advanced Ops detection rate
+        self._last_result: dict | None = None
+        self._last_sim_score: float | None = None  # latest Attack Simulator score
+        self._last_ops_detection_rate: float | None = None  # latest Advanced Ops detection rate
 
     def record_simulator_result(self, overall_score: float):
         """Called after Attack Simulator runs to store its score."""
@@ -260,7 +258,7 @@ class Certifier:
         logger.info("certification_complete", badge=badge, duration=round(duration, 1))
         return results
 
-    def get_last_result(self) -> Optional[dict]:
+    def get_last_result(self) -> dict | None:
         return self._last_result
 
 

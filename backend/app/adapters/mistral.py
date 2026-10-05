@@ -1,7 +1,8 @@
+from collections.abc import AsyncGenerator
+
 import httpx
-import uuid
-from typing import AsyncGenerator, Optional
 from fastapi import HTTPException
+
 from app.adapters.base import LLMAdapter, LLMResponse
 from app.core.config import get_settings
 
@@ -14,7 +15,7 @@ class MistralAdapter(LLMAdapter):
         self, 
         model: str,
         messages: list[dict], 
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         stream: bool = False,
         **kwargs
     ) -> LLMResponse:
@@ -38,7 +39,7 @@ class MistralAdapter(LLMAdapter):
         self,
         model: str,
         messages: list[dict],
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         **kwargs
     ) -> AsyncGenerator[str, None]:
         key = api_key or getattr(settings, "MISTRAL_API_KEY", None)

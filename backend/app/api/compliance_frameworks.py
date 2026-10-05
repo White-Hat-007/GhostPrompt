@@ -12,20 +12,21 @@ certified under any framework. These endpoints produce evidence to support
 your organization's own certification or alignment efforts.
 """
 
-import json
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse, PlainTextResponse
 
-from app.core.config import get_settings
-from app.core.security import get_current_user, require_plan
-from app.core.permissions import require_permission
-from app.core.logging import get_logger
-from app.compliance.unified_engine import (
-    unified_compliance_engine, ALL_FRAMEWORK_IDS, FRAMEWORK_REGISTRY
-)
 from app.compliance.signing_engine import signing_engine
+from app.compliance.unified_engine import (
+    ALL_FRAMEWORK_IDS,
+    FRAMEWORK_REGISTRY,
+    unified_compliance_engine,
+)
+from app.core.config import get_settings
+from app.core.logging import get_logger
+from app.core.permissions import require_permission
+from app.core.security import get_current_user, require_plan
 
 settings = get_settings()
 logger = get_logger("compliance_frameworks")
@@ -327,15 +328,22 @@ def _generate_pdf_report(report: dict, title: str, framework: str, org_name: str
     import os
 
     try:
-        from reportlab.lib.pagesizes import A4
-        from reportlab.lib.units import inch, mm
-        from reportlab.lib.colors import HexColor, Color
-        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-        from reportlab.platypus import (
-            SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle,
-            PageBreak, HRFlowable, KeepTogether, Image,
-        )
+        from reportlab.lib.colors import Color, HexColor
         from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+        from reportlab.lib.pagesizes import A4
+        from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+        from reportlab.lib.units import inch, mm
+        from reportlab.platypus import (
+            HRFlowable,
+            Image,
+            KeepTogether,
+            PageBreak,
+            Paragraph,
+            SimpleDocTemplate,
+            Spacer,
+            Table,
+            TableStyle,
+        )
     except ImportError:
         return _generate_fallback_pdf(report, title, framework, org_name)
 
@@ -689,7 +697,6 @@ def _generate_pdf_report(report: dict, title: str, framework: str, org_name: str
 
 def _generate_fallback_pdf(report: dict, title: str, framework: str, org_name: str) -> bytes:
     """Fallback text report when reportlab is not installed."""
-    import io
 
     lines = []
     lines.append(f"{'='*70}")

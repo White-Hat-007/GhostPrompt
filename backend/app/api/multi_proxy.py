@@ -18,32 +18,29 @@ Supported native endpoints:
 - POST /perplexity/chat/completions  → Perplexity AI
 """
 
-import json
-import time
-import uuid
 import hashlib
+import json
 from datetime import datetime, timezone
-from typing import Optional
 
-from fastapi import APIRouter, Request, HTTPException, Header, Depends
-from fastapi.responses import StreamingResponse, JSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from fastapi.responses import JSONResponse, StreamingResponse
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.adapters import PROVIDER_MODELS, detect_provider, get_adapter
 from app.core.config import get_settings
-from app.core.logging import get_logger
-from app.core.events import event_broadcaster
-from app.core.session import session_manager
-from app.services.firewall.engine import firewall_engine
-from app.services.firewall.dlp_vault import dlp_vault
-from app.services.firewall.detectors.attacker_profiler import attacker_profiler
-from app.services.explainer import explain_scan
-from app.schemas.schemas import ScanRequest
-from app.adapters import get_adapter, detect_provider, PROVIDER_MODELS
 from app.core.database import get_db
-from app.models.scan_event import ScanEvent
-from app.models.organization import Organization
+from app.core.events import event_broadcaster
+from app.core.logging import get_logger
+from app.core.session import session_manager
 from app.models.api_key import APIKey
+from app.models.organization import Organization
+from app.models.scan_event import ScanEvent
+from app.schemas.schemas import ScanRequest
+from app.services.explainer import explain_scan
+from app.services.firewall.detectors.attacker_profiler import attacker_profiler
+from app.services.firewall.dlp_vault import dlp_vault
+from app.services.firewall.engine import firewall_engine
 
 settings = get_settings()
 logger = get_logger("multi_proxy")
@@ -63,7 +60,7 @@ def _extract_text(messages: list[dict]) -> str:
     return "\n".join(parts)
 
 
-async def _resolve_org(db: AsyncSession, authorization: Optional[str], request: Request):
+async def _resolve_org(db: AsyncSession, authorization: str | None, request: Request):
     """Resolve organization from API key or default."""
     key_obj = None
     api_key = None
@@ -98,8 +95,8 @@ async def _scan_and_proxy(
     messages: list[dict],
     stream: bool,
     body: dict,
-    authorization: Optional[str],
-    session_id: Optional[str] = None,
+    authorization: str | None,
+    session_id: str | None = None,
 ):
     """Universal scan-and-proxy pipeline used by ALL provider endpoints."""
     key_obj, api_key, org_id = await _resolve_org(db, authorization, request)
@@ -212,7 +209,7 @@ async def _scan_and_proxy(
                             pass
             except Exception as e:
                 logger.error("stream_error", error=str(e), provider=provider)
-                yield f'data: {{"error": {{"message": "Stream error: {str(e)}"}}}}\n\n'
+                yield f'data: {{"error": {{"message": "Stream error: {e!s}"}}}}\n\n'
                 return
 
             # Post-stream output scan
@@ -238,7 +235,7 @@ async def _scan_and_proxy(
         provider_response = resp.raw_response
     except Exception as e:
         logger.warning("provider_failed", provider=provider, error=str(e))
-        return JSONResponse(status_code=502, content={"error": {"message": f"Provider error: {str(e)}", "type": "provider_error"}})
+        return JSONResponse(status_code=502, content={"error": {"message": f"Provider error: {e!s}", "type": "provider_error"}})
 
     # ── OUTPUT SCAN ──
     output_text = ""
@@ -288,9 +285,9 @@ async def _scan_and_proxy(
 @router.post("/v1/messages")
 async def anthropic_native_proxy(
     request: Request,
-    authorization: Optional[str] = Header(None),
-    x_api_key: Optional[str] = Header(None, alias="x-api-key"),
-    x_ghostprompt_session: Optional[str] = Header(None, alias="X-GhostPrompt-Session"),
+    authorization: str | None = Header(None),
+    x_api_key: str | None = Header(None, alias="x-api-key"),
+    x_ghostprompt_session: str | None = Header(None, alias="X-GhostPrompt-Session"),
     db: AsyncSession = Depends(get_db),
 ):
     """Anthropic-native proxy — drop-in for Anthropic SDK."""
@@ -318,8 +315,8 @@ async def anthropic_native_proxy(
 async def gemini_native_proxy(
     model: str,
     request: Request,
-    authorization: Optional[str] = Header(None),
-    x_ghostprompt_session: Optional[str] = Header(None, alias="X-GhostPrompt-Session"),
+    authorization: str | None = Header(None),
+    x_ghostprompt_session: str | None = Header(None, alias="X-GhostPrompt-Session"),
     db: AsyncSession = Depends(get_db),
 ):
     """Gemini-native proxy — drop-in for Google AI SDK."""
@@ -353,7 +350,7 @@ async def gemini_native_proxy(
 @router.post("/api/chat")
 async def ollama_native_proxy(
     request: Request,
-    x_ghostprompt_session: Optional[str] = Header(None, alias="X-GhostPrompt-Session"),
+    x_ghostprompt_session: str | None = Header(None, alias="X-GhostPrompt-Session"),
     db: AsyncSession = Depends(get_db),
 ):
     """Ollama-native proxy — drop-in for Ollama SDK."""
@@ -372,8 +369,8 @@ async def ollama_native_proxy(
 @router.post("/hf/v1/chat/completions")
 async def huggingface_proxy(
     request: Request,
-    authorization: Optional[str] = Header(None),
-    x_ghostprompt_session: Optional[str] = Header(None, alias="X-GhostPrompt-Session"),
+    authorization: str | None = Header(None),
+    x_ghostprompt_session: str | None = Header(None, alias="X-GhostPrompt-Session"),
     db: AsyncSession = Depends(get_db),
 ):
     """HuggingFace Inference proxy — drop-in for HF Inference API."""
@@ -391,8 +388,8 @@ async def huggingface_proxy(
 @router.post("/cohere/v2/chat")
 async def cohere_proxy(
     request: Request,
-    authorization: Optional[str] = Header(None),
-    x_ghostprompt_session: Optional[str] = Header(None, alias="X-GhostPrompt-Session"),
+    authorization: str | None = Header(None),
+    x_ghostprompt_session: str | None = Header(None, alias="X-GhostPrompt-Session"),
     db: AsyncSession = Depends(get_db),
 ):
     """Cohere-native proxy — drop-in for Cohere SDK."""
@@ -410,8 +407,8 @@ async def cohere_proxy(
 @router.post("/groq/v1/chat/completions")
 async def groq_proxy(
     request: Request,
-    authorization: Optional[str] = Header(None),
-    x_ghostprompt_session: Optional[str] = Header(None, alias="X-GhostPrompt-Session"),
+    authorization: str | None = Header(None),
+    x_ghostprompt_session: str | None = Header(None, alias="X-GhostPrompt-Session"),
     db: AsyncSession = Depends(get_db),
 ):
     """Groq proxy — ultra-fast inference with firewall scanning."""
@@ -429,8 +426,8 @@ async def groq_proxy(
 @router.post("/together/v1/chat/completions")
 async def together_proxy(
     request: Request,
-    authorization: Optional[str] = Header(None),
-    x_ghostprompt_session: Optional[str] = Header(None, alias="X-GhostPrompt-Session"),
+    authorization: str | None = Header(None),
+    x_ghostprompt_session: str | None = Header(None, alias="X-GhostPrompt-Session"),
     db: AsyncSession = Depends(get_db),
 ):
     """Together AI proxy — open-source models with firewall scanning."""
@@ -448,8 +445,8 @@ async def together_proxy(
 @router.post("/deepseek/chat/completions")
 async def deepseek_proxy(
     request: Request,
-    authorization: Optional[str] = Header(None),
-    x_ghostprompt_session: Optional[str] = Header(None, alias="X-GhostPrompt-Session"),
+    authorization: str | None = Header(None),
+    x_ghostprompt_session: str | None = Header(None, alias="X-GhostPrompt-Session"),
     db: AsyncSession = Depends(get_db),
 ):
     """DeepSeek proxy — reasoning models with firewall scanning."""
@@ -467,8 +464,8 @@ async def deepseek_proxy(
 @router.post("/perplexity/chat/completions")
 async def perplexity_proxy(
     request: Request,
-    authorization: Optional[str] = Header(None),
-    x_ghostprompt_session: Optional[str] = Header(None, alias="X-GhostPrompt-Session"),
+    authorization: str | None = Header(None),
+    x_ghostprompt_session: str | None = Header(None, alias="X-GhostPrompt-Session"),
     db: AsyncSession = Depends(get_db),
 ):
     """Perplexity AI proxy — search-grounded inference with firewall."""
@@ -486,8 +483,8 @@ async def perplexity_proxy(
 @router.post("/v1/universal/chat")
 async def universal_chat(
     request: Request,
-    authorization: Optional[str] = Header(None),
-    x_ghostprompt_session: Optional[str] = Header(None, alias="X-GhostPrompt-Session"),
+    authorization: str | None = Header(None),
+    x_ghostprompt_session: str | None = Header(None, alias="X-GhostPrompt-Session"),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -511,8 +508,8 @@ async def universal_chat(
 @router.post("/xai/v1/chat/completions")
 async def xai_proxy(
     request: Request,
-    authorization: Optional[str] = Header(None),
-    x_ghostprompt_session: Optional[str] = Header(None, alias="X-GhostPrompt-Session"),
+    authorization: str | None = Header(None),
+    x_ghostprompt_session: str | None = Header(None, alias="X-GhostPrompt-Session"),
     db: AsyncSession = Depends(get_db),
 ):
     """xAI (Grok) proxy — Grok models with firewall scanning."""
@@ -530,8 +527,8 @@ async def xai_proxy(
 @router.post("/mistral/v1/chat/completions")
 async def mistral_proxy(
     request: Request,
-    authorization: Optional[str] = Header(None),
-    x_ghostprompt_session: Optional[str] = Header(None, alias="X-GhostPrompt-Session"),
+    authorization: str | None = Header(None),
+    x_ghostprompt_session: str | None = Header(None, alias="X-GhostPrompt-Session"),
     db: AsyncSession = Depends(get_db),
 ):
     """Mistral AI proxy — Mistral models with firewall scanning."""

@@ -5,7 +5,8 @@ import asyncio
 import json
 import re
 import time
-from typing import List, Dict, Any, Optional
+from typing import Any
+
 import httpx
 from pydantic import BaseModel
 
@@ -19,12 +20,12 @@ class HallucinationScore(BaseModel):
     score: float
     method: str
     is_hallucination: bool
-    details: Dict[str, Any] = {}
+    details: dict[str, Any] = {}
     skipped: bool = False
-    reason: Optional[str] = None
+    reason: str | None = None
     duration_ms: float = 0.0
 
-def _extract_sentences(text: str) -> List[str]:
+def _extract_sentences(text: str) -> list[str]:
     """Fallback simple sentence extraction."""
     sentences = re.split(r'(?<=[.!?])\s+', text.replace('\n', ' '))
     return [s.strip() for s in sentences if len(s.split()) >= 4]
@@ -48,7 +49,7 @@ class NLIEntailmentLayer:
                 logger.warning("sentence-transformers not installed, NLI skipped")
                 self._model = "missing"
                 
-    async def check(self, response: str, context_documents: List[str]) -> HallucinationScore:
+    async def check(self, response: str, context_documents: list[str]) -> HallucinationScore:
         t0 = time.perf_counter()
         if not context_documents:
             return HallucinationScore(score=0.0, method="nli_entailment", is_hallucination=False, skipped=True, reason="no_context")
@@ -304,11 +305,11 @@ Respond ONLY in this JSON format:
                 elif provider == "google":
                     content = await self._try_google(prompt)
                     
-                logger.info(f"llm_judge_provider_used", provider=provider)
+                logger.info("llm_judge_provider_used", provider=provider)
                 break  # Success — stop trying other providers
             except Exception as e:
-                errors.append(f"{provider}: {str(e)}")
-                logger.warning(f"llm_judge_fallback", provider=provider, error=str(e))
+                errors.append(f"{provider}: {e!s}")
+                logger.warning("llm_judge_fallback", provider=provider, error=str(e))
                 continue  # Try next provider
         
         if content is None:
@@ -333,7 +334,7 @@ Respond ONLY in this JSON format:
             )
         except Exception as e:
             logger.error(f"LLM Judge JSON parse failed: {e}", raw_content=content[:500])
-            return HallucinationScore(score=0.0, method="llm_judge", is_hallucination=False, skipped=True, reason=f"json_parse_error: {str(e)}")
+            return HallucinationScore(score=0.0, method="llm_judge", is_hallucination=False, skipped=True, reason=f"json_parse_error: {e!s}")
 
 # ── LAYER 5: RAG Grounding ─────────────────────────────────────────────────
 # Integrates NLI directly for RAG claims
@@ -341,7 +342,7 @@ class RAGGroundingLayer:
     def __init__(self):
         self.nli_layer = NLIEntailmentLayer()
         
-    async def check(self, response: str, retrieved_chunks: List[str]) -> HallucinationScore:
+    async def check(self, response: str, retrieved_chunks: list[str]) -> HallucinationScore:
         t0 = time.perf_counter()
         if not retrieved_chunks:
             return HallucinationScore(score=0.0, method="rag_grounding", is_hallucination=False, skipped=True, reason="no_rag_chunks")
@@ -362,8 +363,7 @@ class RAGGroundingLayer:
                     if c_res["entailment"] > best_entailment:
                         best_entailment = c_res["entailment"]
                         best_chunk = chunk
-                    if c_res["contradiction"] > max_contradiction:
-                        max_contradiction = c_res["contradiction"]
+                    max_contradiction = max(max_contradiction, c_res["contradiction"])
             
             if best_entailment > 0.7:
                 verdict = "GROUNDED"

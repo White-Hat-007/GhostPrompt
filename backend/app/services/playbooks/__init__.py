@@ -1,1 +1,1 @@
-from app.services.playbooks.playbook_engine import playbook_engine, PlaybookEngine
+from app.services.playbooks.playbook_engine import PlaybookEngine, playbook_engine

@@ -1,16 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Request
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
-from app.core.database import get_db
-from app.core.security import get_current_user
-from app.core.permissions import require_permission
-from app.models.user import User
-from app.models.api_key import APIKey
-from app.core.logging import get_logger
-from app.security.audit_log import audit_log, AuditAction
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
+from sqlalchemy import update
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import get_settings
+from app.core.database import get_db
+from app.core.logging import get_logger
+from app.core.permissions import require_permission
+from app.core.security import get_current_user
+from app.models.api_key import APIKey
+from app.security.audit_log import AuditAction, audit_log
 
 settings = get_settings()
 logger = get_logger("killswitch")

@@ -12,12 +12,10 @@ HONEST: Never claims to "unmask" VPN IPs. Labels estimates vs. facts.
 """
 
 import hashlib
-import time
 import re
-from datetime import datetime, timezone
-from typing import Optional
-from dataclasses import dataclass, field
 from collections import defaultdict
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
 
 from app.core.logging import get_logger
 
@@ -63,7 +61,7 @@ class ConnectionProfile:
     # Anonymizer detection
     connection_type: str = "direct"  # direct, vpn, proxy, tor, datacenter, residential
     anonymity_score: float = 0.0     # 0.0 = definitely direct, 1.0 = definitely anonymized
-    anonymizer_provider: Optional[str] = None
+    anonymizer_provider: str | None = None
     asn: str = ""
     asn_org: str = ""
     is_datacenter: bool = False
@@ -77,7 +75,7 @@ class ConnectionProfile:
     os_from_ua: str = ""
     browser_from_ua: str = ""
     locale_from_accept_lang: str = ""
-    timezone_offset: Optional[int] = None
+    timezone_offset: int | None = None
     
     # Geo mismatch
     geo_ip_country: str = ""
@@ -86,12 +84,12 @@ class ConnectionProfile:
     geo_locale_mismatch: bool = False
     
     # Actor clustering
-    actor_cluster_id: Optional[str] = None
+    actor_cluster_id: str | None = None
     linked_ips: list[str] = field(default_factory=list)
     linked_sessions: int = 0
     
     # Estimated real origin (best-effort)
-    estimated_region: Optional[str] = None
+    estimated_region: str | None = None
     estimate_confidence: float = 0.0
     estimate_method: str = ""
     
@@ -108,7 +106,7 @@ class ActorCluster:
     ips_seen: set = field(default_factory=set)
     sessions: int = 0
     attack_styles: set = field(default_factory=set)
-    estimated_region: Optional[str] = None
+    estimated_region: str | None = None
     first_seen: str = ""
     last_seen: str = ""
 
@@ -137,7 +135,7 @@ class IPIntelligenceEngine:
         asn_org: str = "",
         geo_country: str = "",
         geo_city: str = "",
-        timezone_offset: Optional[int] = None,
+        timezone_offset: int | None = None,
     ) -> ConnectionProfile:
         """
         Perform full attribution analysis on a connection.
@@ -347,7 +345,7 @@ class IPIntelligenceEngine:
             p.estimate_confidence = 0.0
             p.estimate_method = "No attribution signals available"
 
-    def _tz_to_region(self, offset_minutes: int) -> Optional[str]:
+    def _tz_to_region(self, offset_minutes: int) -> str | None:
         """Map timezone offset to approximate region."""
         offset_hours = offset_minutes / 60
         tz_map = {

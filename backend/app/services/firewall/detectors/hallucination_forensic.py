@@ -2,8 +2,9 @@
 Forensic Hallucination Analyzer — Self-Contained Intelligence Engine
 Zero external API dependency. Uses pattern analysis, knowledge bases, and local NLI.
 """
-import re, time, math
-from typing import Optional
+import re
+import time
+
 from app.core.logging import get_logger
 
 logger = get_logger("detector.hallucination_forensic")
@@ -126,7 +127,7 @@ def _check_patterns(text: str, patterns: list[str], category: str, title: str, s
                 "severity": severity,
                 "confidence": base_confidence,
                 "title": title,
-                "description": f"Pattern match indicates potential fabrication.",
+                "description": "Pattern match indicates potential fabrication.",
                 "affected_text": m.group(0)[:200],
                 "start_index": m.start(),
                 "end_index": m.end(),
@@ -139,7 +140,7 @@ def _check_patterns(text: str, patterns: list[str], category: str, title: str, s
 class ForensicHallucinationAnalyzer:
     """Self-contained forensic hallucination analysis engine. Zero external API calls."""
 
-    async def analyze(self, output_text: str, input_text: Optional[str] = None) -> dict:
+    async def analyze(self, output_text: str, input_text: str | None = None) -> dict:
         t0 = time.perf_counter()
         issues = []
         sentences = _extract_sentences(output_text)
@@ -233,7 +234,7 @@ class ForensicHallucinationAnalyzer:
                     for ib, tb in sb:
                         if ia != ib:
                             start_a = output_text.find(ta[:40])
-                            issues.append({"category":"contradictory_statements","severity":"high","confidence":0.85,"title":"Contradictory Statements","description":f"Conflicting claims detected between sentences","affected_text":f"{ta[:80]}... vs {tb[:80]}...","start_index":max(start_a,0),"end_index":max(start_a,0)+len(ta),"recommendation":"Resolve the internal contradiction."})
+                            issues.append({"category":"contradictory_statements","severity":"high","confidence":0.85,"title":"Contradictory Statements","description":"Conflicting claims detected between sentences","affected_text":f"{ta[:80]}... vs {tb[:80]}...","start_index":max(start_a,0),"end_index":max(start_a,0)+len(ta),"recommendation":"Resolve the internal contradiction."})
                             break
                     break
 

@@ -6,16 +6,15 @@ Real keys stored encrypted (AES-256). Virtual keys resolve at request time.
 Per-key: scopes, spend caps, IP allowlisting, usage tracking.
 """
 
-import os
-import uuid
-import time
-import hashlib
 import ipaddress
-from typing import Optional
-from dataclasses import dataclass, field
+import time
+import uuid
 from collections import defaultdict
+from dataclasses import dataclass, field
 from enum import Enum
-from app.core.encryption import encrypt_data as encrypt_value, decrypt_data as decrypt_value
+
+from app.core.encryption import decrypt_data as decrypt_value
+from app.core.encryption import encrypt_data as encrypt_value
 
 
 class KeyScope(str, Enum):
@@ -61,7 +60,7 @@ class VirtualKeyUsage:
 class VirtualKey:
     virtual_key: str  # gp_vk_...
     tenant_id: str
-    user_id: Optional[str] = None
+    user_id: str | None = None
     name: str = ""
     provider: str = "openai"
     encrypted_real_key: str = ""
@@ -73,7 +72,7 @@ class VirtualKey:
     is_active: bool = True
     created_at: float = field(default_factory=time.time)
     expires_at: float = 0  # 0 = never
-    grace_period_key: Optional[str] = None  # Old key during rotation
+    grace_period_key: str | None = None  # Old key during rotation
     grace_expires_at: float = 0
     usage: VirtualKeyUsage = field(default_factory=VirtualKeyUsage)
 
@@ -204,7 +203,7 @@ class KeyVault:
                 })
         return result
 
-    def get_key_usage(self, virtual_key: str) -> Optional[dict]:
+    def get_key_usage(self, virtual_key: str) -> dict | None:
         key = self._keys.get(virtual_key)
         return key.usage.to_dict() if key else None
 

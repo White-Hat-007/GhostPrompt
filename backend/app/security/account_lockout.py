@@ -16,9 +16,9 @@ Implementation:
 - All lockout events are logged for SIEM integration
 """
 
-from datetime import datetime, timezone, timedelta
 from collections import defaultdict
-from typing import Optional
+from datetime import datetime, timedelta, timezone
+
 import structlog
 
 logger = structlog.get_logger("security.lockout")
@@ -64,7 +64,7 @@ class AccountLockoutTracker:
             return max(0, int(remaining))
         return 0
 
-    def record_failure(self, ip: str, email: str, user_agent: Optional[str] = None) -> bool:
+    def record_failure(self, ip: str, email: str, user_agent: str | None = None) -> bool:
         """
         Record a failed login attempt. Returns True if account is now locked out.
         """

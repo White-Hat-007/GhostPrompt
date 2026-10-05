@@ -7,27 +7,22 @@ Enterprise Compliance & Red Teaming API
 - Provider Health Monitoring
 """
 
-import json
 import uuid
-import random
-import asyncio
-from datetime import datetime, timezone, timedelta
-from typing import Optional
+from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, Query, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import and_, case, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, and_, case
 
-from app.core.database import get_db
 from app.core.config import get_settings
-from app.core.security import get_current_user, require_plan
-from app.core.permissions import require_permission
+from app.core.database import get_db
 from app.core.logging import get_logger
-from app.models.scan_event import ScanEvent
+from app.core.permissions import require_permission
+from app.core.security import get_current_user, require_plan
 from app.models.policy import Policy
-from app.services.firewall.engine import firewall_engine
+from app.models.scan_event import ScanEvent
 from app.schemas.schemas import ScanRequest
+from app.services.firewall.engine import firewall_engine
 from app.services.siem import siem_integration
 
 settings = get_settings()
@@ -314,7 +309,7 @@ RED_TEAM_ATTACKS = [
 @router.post("/red-team/run", dependencies=[Depends(require_plan("enterprise"))])
 async def run_red_team(
     current_user: dict = Depends(get_current_user),
-    categories: Optional[str] = Query(None, description="Comma-separated categories to test"),
+    categories: str | None = Query(None, description="Comma-separated categories to test"),
 ):
     """
     Run the automated Red Teaming Simulator.
@@ -339,8 +334,8 @@ async def run_red_team(
 
     # Import DB and broadcaster for real-time recording
     from app.core.database import async_session_factory
-    from app.models.scan_event import ScanEvent as ScanEventModel
     from app.core.events import event_broadcaster
+    from app.models.scan_event import ScanEvent as ScanEventModel
 
     # Split attacks into attack prompts and safe control prompts.
     # Safe prompts MUST be scanned in a clean detector state, otherwise

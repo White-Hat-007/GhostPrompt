@@ -4,14 +4,14 @@ GhostPrompt Prompt Engineering Studio
 Prompt Registry, versioning, A/B testing, security scanning, variable injection.
 """
 
-import uuid
-import time
-import re
 import hashlib
-from typing import Optional
-from dataclasses import dataclass, field
+import re
+import time
+import uuid
 from collections import defaultdict
+from dataclasses import dataclass, field
 from enum import Enum
+from typing import Optional
 
 
 class PromptStatus(str, Enum):
@@ -59,7 +59,7 @@ class PromptTemplate:
     usage_count: int = 0
     created_at: float = field(default_factory=time.time)
 
-    def get_active_version(self) -> Optional[PromptVersion]:
+    def get_active_version(self) -> PromptVersion | None:
         for v in self.versions:
             if v.version_number == self.active_version:
                 return v
@@ -224,7 +224,7 @@ class PromptStudio:
                 return {"status": "deployed", "version": version_number}
         return {"error": "Version not found"}
 
-    def resolve_prompt(self, prompt_id: str, variables: dict = None) -> Optional[str]:
+    def resolve_prompt(self, prompt_id: str, variables: dict = None) -> str | None:
         template = self._prompts.get(prompt_id)
         if not template:
             return None
@@ -249,7 +249,7 @@ class PromptStudio:
         ids = self._tenant_prompts.get(tenant_id, [])
         return [self._prompts[pid].to_dict() for pid in ids if pid in self._prompts]
 
-    def get_prompt(self, prompt_id: str) -> Optional[dict]:
+    def get_prompt(self, prompt_id: str) -> dict | None:
         t = self._prompts.get(prompt_id)
         if not t:
             return None
@@ -276,7 +276,7 @@ class PromptStudio:
         self._experiments[exp_id] = exp
         return exp.get_status()
 
-    def get_experiment(self, experiment_id: str) -> Optional[dict]:
+    def get_experiment(self, experiment_id: str) -> dict | None:
         exp = self._experiments.get(experiment_id)
         return exp.get_status() if exp else None
 

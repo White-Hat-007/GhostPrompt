@@ -8,7 +8,7 @@ and flagged patterns per session. Risk score decays over time for legit users.
 
 import json
 import time
-from typing import Optional
+
 from app.core.logging import get_logger
 
 logger = get_logger("session")

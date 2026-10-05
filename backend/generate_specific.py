@@ -1,6 +1,7 @@
-import requests
-import time
 import random
+import time
+
+import requests
 
 API = "http://127.0.0.1:8000"
 
@@ -54,7 +55,7 @@ def generate_specific(medium_count=7, safe_count=5):
             print(f"  [Error] {e}")
         time.sleep(0.5)
         
-    print(f"\n✅ Finished generation.")
+    print("\n✅ Finished generation.")
 
 if __name__ == "__main__":
     generate_specific()

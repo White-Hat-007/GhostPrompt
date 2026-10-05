@@ -7,10 +7,9 @@ Handles:
 3. Conflict resolution — last-writer-wins with audit trail
 """
 
-from datetime import datetime, timezone
-from typing import Optional
-from dataclasses import dataclass, field
 from collections import defaultdict
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
 
 from app.core.logging import get_logger
 
@@ -172,7 +171,7 @@ class BiDirectionalSyncEngine:
         incident_id: str,
         external_system: str,
         winner: str = "external",  # "external" or "ghostprompt"
-    ) -> Optional[dict]:
+    ) -> dict | None:
         """
         Resolve a sync conflict using last-writer-wins strategy.
         Winner determines which system's status takes precedence.
@@ -206,8 +205,8 @@ class BiDirectionalSyncEngine:
 
     def verify_webhook_signature(self, system: str, signature: str, body: bytes) -> bool:
         """Verify webhook signature using HMAC-SHA256."""
-        import hmac
         import hashlib
+        import hmac
         secret = self._webhook_secrets.get(system)
         if not secret:
             return False

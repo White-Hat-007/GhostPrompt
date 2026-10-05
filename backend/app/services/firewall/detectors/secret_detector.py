@@ -6,8 +6,9 @@ Prevents secret exfiltration through model responses.
 """
 
 import re
-from app.schemas.schemas import DetectionResult
+
 from app.core.logging import get_logger
+from app.schemas.schemas import DetectionResult
 
 logger = get_logger("detector.secret")
 

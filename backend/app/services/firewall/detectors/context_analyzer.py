@@ -12,10 +12,10 @@ No competitor tracks multi-turn context.
 """
 
 import re
-from typing import Optional
-from app.schemas.schemas import DetectionResult
-from app.core.session import session_manager
+
 from app.core.logging import get_logger
+from app.core.session import session_manager
+from app.schemas.schemas import DetectionResult
 
 logger = get_logger("detector.context_analyzer")
 
@@ -49,7 +49,7 @@ class ContextAnalyzer:
         logger.info("context_analyzer_initialized")
 
     async def analyze(
-        self, text: str, session_id: Optional[str] = None
+        self, text: str, session_id: str | None = None
     ) -> list[DetectionResult]:
         """
         Analyze the current message in the context of the conversation history.
@@ -88,7 +88,7 @@ class ContextAnalyzer:
 
     def _detect_escalation(
         self, history: list[dict], current_text: str
-    ) -> Optional[DetectionResult]:
+    ) -> DetectionResult | None:
         """Detect slow-build escalation across turns."""
         scores = [t.get("threat_score", 0) for t in history[-10:]]
 
@@ -127,7 +127,7 @@ class ContextAnalyzer:
 
     def _detect_boundary_testing(
         self, history: list[dict]
-    ) -> Optional[DetectionResult]:
+    ) -> DetectionResult | None:
         """Detect repeated low-level probing (boundary testing)."""
         recent = history[-10:]
         low_threat_count = sum(
@@ -157,7 +157,7 @@ class ContextAnalyzer:
 
     def _detect_persona_locking(
         self, history: list[dict], current_text: str
-    ) -> Optional[DetectionResult]:
+    ) -> DetectionResult | None:
         """Detect repeated persona manipulation attempts."""
         persona_attempts = 0
         for turn in history[-8:]:
@@ -190,7 +190,7 @@ class ContextAnalyzer:
 
     def _detect_trajectory_anomaly(
         self, history: list[dict]
-    ) -> Optional[DetectionResult]:
+    ) -> DetectionResult | None:
         """Detect suspicious conversation trajectory patterns."""
         if len(history) < 5:
             return None

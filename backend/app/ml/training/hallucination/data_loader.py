@@ -2,11 +2,11 @@
 Real Dataset Loader for Hallucination Fine-Tuning
 Downloads Kaggle and HuggingFace datasets and prepares them for PyTorch Trainer.
 """
-import os
-import json
 import logging
+import os
 from pathlib import Path
-from datasets import load_dataset, Dataset
+
+from datasets import Dataset, load_dataset
 
 logger = logging.getLogger(__name__)
 

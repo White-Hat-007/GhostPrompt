@@ -11,18 +11,18 @@ REST endpoints for the adaptive ML drift daemon:
 - Settings persisted to Organization.settings DB column
 """
 
-from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
 from pydantic import BaseModel
+from sqlalchemy import select, update
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.security import get_current_user
-from app.core.permissions import require_permission
 from app.core.logging import get_logger
-from app.models.organization import Organization
+from app.core.permissions import require_permission
+from app.core.security import get_current_user
 from app.ml.adaptive.drift_daemon import drift_daemon
+from app.models.organization import Organization
 
 logger = get_logger("api.adaptive_ml")
 router = APIRouter(
@@ -46,16 +46,16 @@ class AutoTuneToggle(BaseModel):
 
 
 class SensitivityUpdate(BaseModel):
-    detection_sensitivity: Optional[float] = None
-    auto_tune_aggressiveness: Optional[float] = None
-    min_confidence: Optional[float] = None
+    detection_sensitivity: float | None = None
+    auto_tune_aggressiveness: float | None = None
+    min_confidence: float | None = None
 
 
 class FeedbackRequest(BaseModel):
     scan_id: str
     detector_name: str
     verdict: str  # "correct", "false_positive", "false_negative"
-    notes: Optional[str] = None
+    notes: str | None = None
 
 
 # ── DB-persisted settings helpers ──

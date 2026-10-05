@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import AsyncGenerator, Optional, Dict, Any
+from collections.abc import AsyncGenerator
+from typing import Any
+
 
 class LLMResponse:
-    def __init__(self, content: str, raw_response: Dict[str, Any]):
+    def __init__(self, content: str, raw_response: dict[str, Any]):
         self.content = content
         self.raw_response = raw_response
 
@@ -14,20 +16,18 @@ class LLMAdapter(ABC):
         self, 
         model: str,
         messages: list[dict], 
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         stream: bool = False,
         **kwargs
     ) -> LLMResponse:
         """Execute a completion request."""
-        pass
 
     @abstractmethod
     async def stream_complete(
         self,
         model: str,
         messages: list[dict],
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         **kwargs
     ) -> AsyncGenerator[str, None]:
         """Stream a completion response."""
-        pass

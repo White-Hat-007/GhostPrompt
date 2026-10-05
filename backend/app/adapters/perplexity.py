@@ -3,10 +3,11 @@ Perplexity AI Adapter — pplx-7b-online, sonar, etc.
 Perplexity uses OpenAI-compatible API with citations.
 """
 
+from collections.abc import AsyncGenerator
+
 import httpx
-import json
-from typing import AsyncGenerator, Optional
 from fastapi import HTTPException
+
 from app.adapters.base import LLMAdapter, LLMResponse
 from app.core.config import get_settings
 
@@ -20,7 +21,7 @@ class PerplexityAdapter(LLMAdapter):
         self,
         model: str,
         messages: list[dict],
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         stream: bool = False,
         **kwargs
     ) -> LLMResponse:
@@ -49,7 +50,7 @@ class PerplexityAdapter(LLMAdapter):
         self,
         model: str,
         messages: list[dict],
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         **kwargs
     ) -> AsyncGenerator[str, None]:
         key = api_key or getattr(settings, "PERPLEXITY_API_KEY", None)

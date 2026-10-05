@@ -3,10 +3,11 @@ Together AI Adapter — Llama, Mixtral, Qwen, etc. on Together's inference platf
 Together uses OpenAI-compatible API.
 """
 
+from collections.abc import AsyncGenerator
+
 import httpx
-import json
-from typing import AsyncGenerator, Optional
 from fastapi import HTTPException
+
 from app.adapters.base import LLMAdapter, LLMResponse
 from app.core.config import get_settings
 
@@ -20,7 +21,7 @@ class TogetherAdapter(LLMAdapter):
         self,
         model: str,
         messages: list[dict],
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         stream: bool = False,
         **kwargs
     ) -> LLMResponse:
@@ -49,7 +50,7 @@ class TogetherAdapter(LLMAdapter):
         self,
         model: str,
         messages: list[dict],
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         **kwargs
     ) -> AsyncGenerator[str, None]:
         key = api_key or getattr(settings, "TOGETHER_API_KEY", None)

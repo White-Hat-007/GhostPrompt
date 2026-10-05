@@ -3,12 +3,14 @@ Cohere Adapter — Command R+ / Command R family
 Drop-in proxy support for Cohere's chat API.
 """
 
-import httpx
-import uuid
-import time
 import json
-from typing import AsyncGenerator, Optional
+import time
+import uuid
+from collections.abc import AsyncGenerator
+
+import httpx
 from fastapi import HTTPException
+
 from app.adapters.base import LLMAdapter, LLMResponse
 from app.core.config import get_settings
 
@@ -22,7 +24,7 @@ class CohereAdapter(LLMAdapter):
         self,
         model: str,
         messages: list[dict],
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         stream: bool = False,
         **kwargs
     ) -> LLMResponse:
@@ -80,7 +82,7 @@ class CohereAdapter(LLMAdapter):
         self,
         model: str,
         messages: list[dict],
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         **kwargs
     ) -> AsyncGenerator[str, None]:
         key = api_key or getattr(settings, "COHERE_API_KEY", None)

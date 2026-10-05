@@ -1,7 +1,9 @@
-import httpx
 import uuid
-from typing import AsyncGenerator, Optional
+from collections.abc import AsyncGenerator
+
+import httpx
 from fastapi import HTTPException
+
 from app.adapters.base import LLMAdapter, LLMResponse
 from app.core.config import get_settings
 
@@ -14,7 +16,7 @@ class GeminiAdapter(LLMAdapter):
         self, 
         model: str,
         messages: list[dict], 
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         stream: bool = False,
         **kwargs
     ) -> LLMResponse:
@@ -63,7 +65,7 @@ class GeminiAdapter(LLMAdapter):
         self,
         model: str,
         messages: list[dict],
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         **kwargs
     ) -> AsyncGenerator[str, None]:
         import json
@@ -85,80 +87,79 @@ class GeminiAdapter(LLMAdapter):
         stream_id = f"chatcmpl-{uuid.uuid4().hex[:12]}"
         created_time = int(time.time())
 
-        async with httpx.AsyncClient(timeout=120.0) as client:
-            async with client.stream(
-                "POST",
-                endpoint,
-                headers={"Content-Type": "application/json"},
-                json={"contents": contents},
-            ) as response:
-                response.raise_for_status()
-                buffer = ""
-                async for text_chunk in response.aiter_text():
-                    buffer += text_chunk
-                    while True:
-                        buffer = buffer.strip()
-                        if buffer.startswith("["):
-                            buffer = buffer[1:].strip()
-                        if buffer.startswith(","):
-                            buffer = buffer[1:].strip()
-                            
-                        if not buffer.startswith("{"):
-                            break
-                            
-                        bracket_count = 0
-                        in_string = False
-                        escape = False
-                        end_idx = -1
+        async with httpx.AsyncClient(timeout=120.0) as client, client.stream(
+            "POST",
+            endpoint,
+            headers={"Content-Type": "application/json"},
+            json={"contents": contents},
+        ) as response:
+            response.raise_for_status()
+            buffer = ""
+            async for text_chunk in response.aiter_text():
+                buffer += text_chunk
+                while True:
+                    buffer = buffer.strip()
+                    if buffer.startswith("["):
+                        buffer = buffer[1:].strip()
+                    if buffer.startswith(","):
+                        buffer = buffer[1:].strip()
                         
-                        for i, char in enumerate(buffer):
-                            if escape:
-                                escape = False
-                                continue
-                            if char == "\\":
-                                escape = True
-                                continue
-                            if char == '"':
-                                in_string = not in_string
-                                continue
-                            if not in_string:
-                                if char == "{":
-                                    bracket_count += 1
-                                elif char == "}":
-                                    bracket_count -= 1
-                                    if bracket_count == 0:
-                                        end_idx = i
-                                        break
-                                        
-                        if end_idx == -1:
-                            break
-                            
-                        obj_str = buffer[:end_idx+1]
-                        buffer = buffer[end_idx+1:].strip()
+                    if not buffer.startswith("{"):
+                        break
                         
-                        try:
-                            data = json.loads(obj_str)
-                            candidates = data.get("candidates", [])
-                            content = ""
-                            if candidates:
-                                parts = candidates[0].get("content", {}).get("parts", [])
-                                if parts:
-                                    content = parts[0].get("text", "")
+                    bracket_count = 0
+                    in_string = False
+                    escape = False
+                    end_idx = -1
+                    
+                    for i, char in enumerate(buffer):
+                        if escape:
+                            escape = False
+                            continue
+                        if char == "\\":
+                            escape = True
+                            continue
+                        if char == '"':
+                            in_string = not in_string
+                            continue
+                        if not in_string:
+                            if char == "{":
+                                bracket_count += 1
+                            elif char == "}":
+                                bracket_count -= 1
+                                if bracket_count == 0:
+                                    end_idx = i
+                                    break
                                     
-                            openai_chunk = {
-                                "id": stream_id,
-                                "object": "chat.completion.chunk",
-                                "created": created_time,
-                                "model": model,
-                                "choices": [
-                                    {
-                                        "index": 0,
-                                        "delta": {"content": content} if content else {},
-                                        "finish_reason": None
-                                    }
-                                ]
-                            }
-                            yield f"data: {json.dumps(openai_chunk)}"
-                        except Exception:
-                            pass
-                yield "data: [DONE]"
+                    if end_idx == -1:
+                        break
+                        
+                    obj_str = buffer[:end_idx+1]
+                    buffer = buffer[end_idx+1:].strip()
+                    
+                    try:
+                        data = json.loads(obj_str)
+                        candidates = data.get("candidates", [])
+                        content = ""
+                        if candidates:
+                            parts = candidates[0].get("content", {}).get("parts", [])
+                            if parts:
+                                content = parts[0].get("text", "")
+                                
+                        openai_chunk = {
+                            "id": stream_id,
+                            "object": "chat.completion.chunk",
+                            "created": created_time,
+                            "model": model,
+                            "choices": [
+                                {
+                                    "index": 0,
+                                    "delta": {"content": content} if content else {},
+                                    "finish_reason": None
+                                }
+                            ]
+                        }
+                        yield f"data: {json.dumps(openai_chunk)}"
+                    except Exception:
+                        pass
+            yield "data: [DONE]"

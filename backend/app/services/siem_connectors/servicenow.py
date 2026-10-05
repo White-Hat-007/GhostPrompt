@@ -7,6 +7,7 @@ https://developer.servicenow.com/dev.do#!/reference/api/tokyo/rest/c_TableAPI
 """
 
 import base64
+
 from app.services.siem_connectors.base import ConnectorInterface, ConnectorResult
 
 

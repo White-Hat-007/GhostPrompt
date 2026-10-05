@@ -25,9 +25,8 @@ Usage:
 """
 
 import time
-from typing import Optional
-from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
 import httpx
@@ -44,7 +43,7 @@ class ConnectorResult:
     status: str = "unknown"       # connected, error, auth_failed, unreachable, timeout
     latency_ms: float = 0.0
     details: str = ""
-    event_id: Optional[str] = None  # External event/ticket ID if created
+    event_id: str | None = None  # External event/ticket ID if created
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 

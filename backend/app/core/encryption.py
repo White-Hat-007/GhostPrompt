@@ -1,6 +1,8 @@
 import base64
 import hashlib
+
 from cryptography.fernet import Fernet
+
 from app.core.config import get_settings
 
 settings = get_settings()
@@ -26,4 +28,4 @@ def decrypt_data(token: str) -> str:
     except Exception as e:
         # Security: Never silently return the raw token — it could be ciphertext
         # that the caller treats as a valid key/secret.
-        raise ValueError(f"Decryption failed: data may be corrupted or the encryption key has changed") from e
+        raise ValueError("Decryption failed: data may be corrupted or the encryption key has changed") from e

@@ -16,11 +16,10 @@ Detection signals:
   - Language plane anomaly (mixing 3+ planes without justification)
 """
 
-import re
 import unicodedata
-from typing import Optional
-from app.schemas.schemas import DetectionResult
+
 from app.core.logging import get_logger
+from app.schemas.schemas import DetectionResult
 
 logger = get_logger("detector.tokenizer_shield")
 

@@ -9,10 +9,11 @@ Security:
 - No passwords, tokens, or raw keys are ever logged
 """
 
-import structlog
 import logging
 import sys
-import re
+
+import structlog
+
 from app.core.config import get_settings
 
 settings = get_settings()

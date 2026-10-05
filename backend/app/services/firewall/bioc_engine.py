@@ -9,11 +9,8 @@ Inspired by Palo Alto Cortex XSIAM's proactive correlation-rule push.
 """
 
 import uuid
-import time
-from datetime import datetime, timezone, timedelta
-from typing import Optional
 from dataclasses import dataclass, field
-from collections import defaultdict
+from datetime import datetime, timedelta, timezone
 
 from app.core.logging import get_logger
 
@@ -26,7 +23,7 @@ class BIOCRule:
     id: str = field(default_factory=lambda: f"bioc-{uuid.uuid4().hex[:12]}")
     name: str = ""
     description: str = ""
-    source_campaign_id: Optional[str] = None
+    source_campaign_id: str | None = None
     attack_categories: list[str] = field(default_factory=list)
     pattern_signatures: list[str] = field(default_factory=list)
     
@@ -62,7 +59,7 @@ class BIOCEngine:
         attack_categories: list[str],
         pattern_signatures: list[str],
         severity: str = "high",
-        affected_org_ids: Optional[list[str]] = None,
+        affected_org_ids: list[str] | None = None,
     ) -> BIOCRule:
         """
         Called by campaign_detector when a coordinated attack pattern is identified.
@@ -109,7 +106,7 @@ class BIOCEngine:
         org_id: str,
         threat_categories: list[str],
         threat_score: float,
-    ) -> Optional[dict]:
+    ) -> dict | None:
         """
         Check if any active BIOC rules apply to this scan event.
         Returns modified policy overrides if a rule matches, else None.

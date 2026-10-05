@@ -14,8 +14,8 @@ from app.services.siem_connectors.base import ConnectorInterface, ConnectorResul
 from app.services.siem_connectors.registry import CONNECTOR_REGISTRY, get_connector
 
 __all__ = [
+    "CONNECTOR_REGISTRY",
     "ConnectorInterface",
     "ConnectorResult",
-    "CONNECTOR_REGISTRY",
     "get_connector",
 ]

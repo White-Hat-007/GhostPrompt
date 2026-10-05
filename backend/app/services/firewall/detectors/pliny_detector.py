@@ -17,9 +17,9 @@ Pliny Signature Techniques Detected:
 """
 
 import re
-from typing import Optional
-from app.schemas.schemas import DetectionResult
+
 from app.core.logging import get_logger
+from app.schemas.schemas import DetectionResult
 
 logger = get_logger("detector.pliny")
 
@@ -166,7 +166,7 @@ class PlinyDetector:
         )
         self._initialized = True
 
-    async def detect(self, text: str, session_history: Optional[list[str]] = None) -> list[DetectionResult]:
+    async def detect(self, text: str, session_history: list[str] | None = None) -> list[DetectionResult]:
         """
         Run Pliny-specific detection against input text.
 

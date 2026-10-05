@@ -9,9 +9,8 @@ Discovers all LLM-integrated endpoints from:
 Flags any endpoint NOT routed through GhostPrompt's firewall.
 """
 
-from datetime import datetime, timezone
-from typing import Optional
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 
 from app.core.logging import get_logger
 
@@ -32,7 +31,7 @@ class AIEndpoint:
     last_seen: str = ""
     risk_level: str = "unknown"    # safe, low, medium, high, critical
     risk_reasons: list[str] = field(default_factory=list)
-    owner: Optional[str] = None
+    owner: str | None = None
     metadata: dict = field(default_factory=dict)
 
 

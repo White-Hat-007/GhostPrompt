@@ -1,14 +1,14 @@
 """Starts a GPU training job via the API."""
 import asyncio
 import json
-import requests
-import uuid
-import os
 from datetime import timedelta
-from app.core.database import async_session_factory
+
+import requests
 from sqlalchemy import text
-from app.core.security import create_access_token
+
 from app.core.config import get_settings
+from app.core.database import async_session_factory
+from app.core.security import create_access_token
 
 settings = get_settings()
 
@@ -30,8 +30,7 @@ SAMPLES = [
 
 dataset_path = "dummy_embeddings.jsonl"
 with open(dataset_path, "w") as f:
-    for s in SAMPLES:
-        f.write(json.dumps(s) + "\n")
+    f.writelines(json.dumps(s) + "\n" for s in SAMPLES)
 
 async def main():
     async with async_session_factory() as s:

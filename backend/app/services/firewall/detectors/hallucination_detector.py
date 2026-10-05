@@ -16,10 +16,9 @@ Detection Signals:
 """
 
 import re
-import math
-from typing import Optional
-from app.schemas.schemas import DetectionResult
+
 from app.core.logging import get_logger
+from app.schemas.schemas import DetectionResult
 
 logger = get_logger("detector.hallucination")
 
@@ -197,7 +196,7 @@ class StructuralHallucinationDetector:
         self,
         output_text: str,
         *,
-        input_text: Optional[str] = None,
+        input_text: str | None = None,
     ) -> list[DetectionResult]:
         """Scan OUTPUT response for hallucination indicators."""
         detections: list[DetectionResult] = []
@@ -323,7 +322,7 @@ class StructuralHallucinationDetector:
         # ── 6. Repetition Drift / Generation Collapse ─────────────────
         if len(output_text) > 200:
             for length in [50, 30, MIN_REPEAT_LENGTH]:
-                for i in range(0, min(len(output_text) - length, 500)):
+                for i in range(min(len(output_text) - length, 500)):
                     substring = output_text[i:i + length]
                     if substring.strip() and output_text.count(substring) > MAX_REPEAT_COUNT:
                         detections.append(DetectionResult(
@@ -369,17 +368,24 @@ class StructuralHallucinationDetector:
         return min(max(scores) + sum(scores) / len(scores) * 0.15, 1.0)
 
 
-from app.services.firewall.detectors.hallucination_layers import (
-    NLIEntailmentLayer,
-    CitationVerificationLayer,
-    WikipediaEntityLayer,
-    LLMJudgeLayer,
-    RAGGroundingLayer
-)
-from app.services.firewall.detectors.hallucination_policy import POLICIES, determine_adaptive_layers
-from app.services.firewall.detectors.hallucination_forensic import ForensicHallucinationAnalyzer
-from app.core.config import get_settings
 import time
+
+from app.core.config import get_settings
+from app.services.firewall.detectors.hallucination_forensic import (
+    ForensicHallucinationAnalyzer,
+)
+from app.services.firewall.detectors.hallucination_layers import (
+    CitationVerificationLayer,
+    LLMJudgeLayer,
+    NLIEntailmentLayer,
+    RAGGroundingLayer,
+    WikipediaEntityLayer,
+)
+from app.services.firewall.detectors.hallucination_policy import (
+    POLICIES,
+    determine_adaptive_layers,
+)
+
 
 class HallucinationEngine:
     """Orchestrates the multi-layer hallucination detection pipeline."""
@@ -411,7 +417,7 @@ class HallucinationEngine:
             
         return self._layers.get(name)
 
-    async def detect_multi_layer(self, output_text: str, input_text: Optional[str] = None, context_documents: Optional[list[str]] = None, policy_tier: Optional[str] = None) -> dict:
+    async def detect_multi_layer(self, output_text: str, input_text: str | None = None, context_documents: list[str] | None = None, policy_tier: str | None = None) -> dict:
         settings = get_settings()
         tier = policy_tier or settings.HALLUCINATION_POLICY
         
@@ -466,9 +472,7 @@ class HallucinationEngine:
             if layer_name == "layer_1_nli":
                 if context_documents:
                     res = await layer.check(output_text, context_documents)
-            elif layer_name == "layer_2_citation":
-                res = await layer.check(output_text)
-            elif layer_name == "layer_3_wikipedia":
+            elif layer_name == "layer_2_citation" or layer_name == "layer_3_wikipedia":
                 res = await layer.check(output_text)
             elif layer_name == "layer_4_llm_judge":
                 res = await layer.check(output_text, input_text or "")
@@ -488,7 +492,7 @@ class HallucinationEngine:
         
         return results
 
-    async def detect_output(self, output_text: str, input_text: Optional[str] = None, context_documents: Optional[list[str]] = None) -> list[DetectionResult]:
+    async def detect_output(self, output_text: str, input_text: str | None = None, context_documents: list[str] | None = None) -> list[DetectionResult]:
         """Adapter for FirewallEngine output scanning pipeline."""
         # Run the full multi-layer detection using the organization's policy (or STANDARD by default)
         results = await self.detect_multi_layer(output_text, input_text=input_text, context_documents=context_documents)

@@ -1,13 +1,15 @@
-import json
-import itertools
-import random
-from datasets import load_dataset
-from datetime import timedelta
-import requests
-from app.core.database import async_session_factory
-from sqlalchemy import text
-from app.core.security import create_access_token
 import asyncio
+import json
+import random
+from datetime import timedelta
+
+import requests
+from datasets import load_dataset
+from sqlalchemy import text
+
+from app.core.database import async_session_factory
+from app.core.security import create_access_token
+
 
 async def main():
     print("1. Downloading real-world prompt injections from HuggingFace...")
@@ -60,8 +62,7 @@ async def main():
     
     dataset_path = "huge_zero_day_dataset.jsonl"
     with open(dataset_path, "w", encoding="utf-8") as f:
-        for record in dataset:
-            f.write(json.dumps(record) + "\n")
+        f.writelines(json.dumps(record) + "\n" for record in dataset)
             
     print(f"Successfully generated {len(dataset)} training samples at {dataset_path}!")
     

@@ -4,16 +4,13 @@ Revision ID: 2b554a531094
 Revises: 5ba7096f2bf8
 Create Date: 2026-05-29 04:53:30.243333
 """
-from typing import Sequence, Union
-from alembic import op
-import sqlalchemy as sa
-
+from collections.abc import Sequence
 
 # revision identifiers
 revision: str = '2b554a531094'
-down_revision: Union[str, None] = '5ba7096f2bf8'
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = '5ba7096f2bf8'
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:

@@ -6,8 +6,9 @@ unsafe code patterns, regulated content, and policy violations.
 """
 
 import re
-from app.schemas.schemas import DetectionResult
+
 from app.core.logging import get_logger
+from app.schemas.schemas import DetectionResult
 
 logger = get_logger("detector.content_policy")
 

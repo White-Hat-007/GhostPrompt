@@ -6,15 +6,15 @@ Hardened against: timing attacks, JWT algorithm confusion, brute force,
 credential stuffing, token replay.
 """
 
-from datetime import datetime, timedelta, timezone
-from typing import Optional
-from jose import JWTError, jwt
-import hmac
 import hashlib
+import hmac
 import secrets
+from datetime import datetime, timedelta, timezone
 
-from fastapi import HTTPException, status, Depends, Request
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from jose import JWTError, jwt
+
 from app.core.config import get_settings
 
 settings = get_settings()
@@ -57,7 +57,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def create_access_token(
     data: dict,
-    expires_delta: Optional[timedelta] = None,
+    expires_delta: timedelta | None = None,
 ) -> str:
     """
     Create a JWT access token with explicit algorithm and short expiry.
@@ -156,8 +156,9 @@ def verify_api_key(raw_key: str, stored_hash: str) -> bool:
     return hmac.compare_digest(computed_hash, stored_hash)
 
 
-from app.core.database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.database import get_db
 
 
 async def get_current_user(
@@ -175,6 +176,7 @@ async def get_current_user(
     # Demo mode: only enabled explicitly via environment variable
     if settings.SECURITY_DEMO_MODE and credentials.credentials == "demo_token":
         from sqlalchemy import select
+
         from app.models.organization import Organization
         result = await db.execute(
             select(Organization).where(Organization.slug == "demo-org")
@@ -266,6 +268,7 @@ def require_plan(required_plan: str):
         db: AsyncSession = Depends(get_db)
     ) -> dict:
         from sqlalchemy import select
+
         from app.models.organization import Organization
         result = await db.execute(
             select(Organization).where(Organization.id == current_user["org_id"])

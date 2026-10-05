@@ -12,10 +12,12 @@ All detections flow into the standard DetectionResult schema.
 import asyncio
 import base64
 import io
+import os
 import re
 import tempfile
-import os
+
 from PIL import Image
+
 from app.core.logging import get_logger
 from app.schemas.schemas import DetectionResult
 

@@ -1,6 +1,7 @@
 import asyncio
-import httpx
 import random
+
+import httpx
 
 API_URL = "http://localhost:8000/api/v1"
 

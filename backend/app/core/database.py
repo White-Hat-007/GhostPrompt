@@ -5,13 +5,14 @@ Async SQLAlchemy database configuration with connection pooling,
 pgvector support, and session management.
 """
 
+from sqlalchemy import MetaData
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
 )
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import MetaData
+
 from app.core.config import get_settings
 
 settings = get_settings()

@@ -6,10 +6,11 @@ prompt injection and jailbreak detection, and exports
 optimized ONNX models for inference.
 """
 
-import os
 import json
+import os
 from pathlib import Path
 from typing import Optional
+
 from app.core.config import get_settings
 from app.core.logging import get_logger
 
@@ -122,7 +123,7 @@ class TrainingPipeline:
         self,
         model_type: str,
         training_data: list[dict],
-        validation_data: Optional[list[dict]] = None,
+        validation_data: list[dict] | None = None,
     ) -> dict:
         """
         Train a binary classifier for threat detection.
@@ -135,8 +136,10 @@ class TrainingPipeline:
         try:
             import torch
             from transformers import (
-                AutoTokenizer, AutoModelForSequenceClassification,
-                TrainingArguments, Trainer,
+                AutoModelForSequenceClassification,
+                AutoTokenizer,
+                Trainer,
+                TrainingArguments,
             )
 
             # Load model and tokenizer
@@ -222,7 +225,7 @@ class TrainingPipeline:
             return result
 
         except ImportError as e:
-            error_msg = f"Missing dependency: {str(e)}. Install with: pip install torch transformers"
+            error_msg = f"Missing dependency: {e!s}. Install with: pip install torch transformers"
             logger.error("training_failed", error=error_msg)
             return {"status": "error", "error": error_msg}
         except Exception as e:
@@ -231,7 +234,7 @@ class TrainingPipeline:
 
     async def _export_onnx(
         self, model, tokenizer, output_dir: str, config: dict
-    ) -> Optional[str]:
+    ) -> str | None:
         """Export model to ONNX for optimized inference."""
         try:
             import torch

@@ -4,16 +4,17 @@ Revision ID: 5ba7096f2bf8
 Revises: 79417bd8e7a9
 Create Date: 2026-05-28 20:20:23.832570
 """
-from typing import Sequence, Union
-from alembic import op
+from collections.abc import Sequence
+
 import sqlalchemy as sa
 
+from alembic import op
 
 # revision identifiers
 revision: str = '5ba7096f2bf8'
-down_revision: Union[str, None] = '79417bd8e7a9'
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = '79417bd8e7a9'
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:

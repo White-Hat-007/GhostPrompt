@@ -9,17 +9,18 @@ Professional datewise analytics endpoints supporting:
 - CSV/JSON export
 """
 
-from datetime import datetime, timedelta, timezone, date
-from typing import Optional, Literal
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, Depends
-from app.core.permissions import require_permission
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, text, case, and_, extract
+from datetime import datetime, timedelta, timezone
+from typing import Literal
+
+from fastapi import APIRouter, Depends, Query, Request
 from pydantic import BaseModel
+from sqlalchemy import and_, case, func, select, text
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.security import get_current_user
 from app.core.logging import get_logger
+from app.core.permissions import require_permission
+from app.core.security import get_current_user
 from app.models.scan_event import ScanEvent
 
 logger = get_logger("analytics")
@@ -66,8 +67,8 @@ class AnalyticsSummary(BaseModel):
     avg_threat_score: float
     avg_latency_ms: float
     block_rate: float
-    scans_delta: Optional[PeriodComparison] = None
-    blocked_delta: Optional[PeriodComparison] = None
+    scans_delta: PeriodComparison | None = None
+    blocked_delta: PeriodComparison | None = None
 
 
 class AnalyticsResponse(BaseModel):
@@ -81,9 +82,9 @@ class AnalyticsResponse(BaseModel):
 # ── Helpers ──────────────────────────────────────────────────────────────
 
 def parse_date_range(
-    preset: Optional[str],
-    start: Optional[str],
-    end: Optional[str],
+    preset: str | None,
+    start: str | None,
+    end: str | None,
 ) -> tuple[datetime, datetime]:
     """Parse a date range from preset or custom start/end."""
     now = datetime.now(timezone.utc)
@@ -154,9 +155,9 @@ def get_bucket_interval(
 @router.get("", response_model=AnalyticsResponse)
 async def get_analytics(
     request: Request,
-    preset: Optional[str] = Query(None, description="Date preset: today|yesterday|7d|30d|mtd|qtd|ytd|1y"),
-    start: Optional[str] = Query(None, description="Custom start date (ISO 8601)"),
-    end: Optional[str] = Query(None, description="Custom end date (ISO 8601)"),
+    preset: str | None = Query(None, description="Date preset: today|yesterday|7d|30d|mtd|qtd|ytd|1y"),
+    start: str | None = Query(None, description="Custom start date (ISO 8601)"),
+    end: str | None = Query(None, description="Custom end date (ISO 8601)"),
     granularity: str = Query("auto", description="Bucket size: hour|day|week|month|auto"),
     current_user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -309,16 +310,17 @@ async def get_analytics(
 async def export_analytics(
     request: Request,
     format: Literal["csv", "json"] = Query("json"),
-    preset: Optional[str] = Query("7d"),
-    start: Optional[str] = Query(None),
-    end: Optional[str] = Query(None),
+    preset: str | None = Query("7d"),
+    start: str | None = Query(None),
+    end: str | None = Query(None),
     current_user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Export scan events as CSV or JSON for the given date range."""
-    from fastapi.responses import StreamingResponse
     import csv
     import io
+
+    from fastapi.responses import StreamingResponse
 
     org_id = current_user.get("org_id")
     range_start, range_end = parse_date_range(preset, start, end)
@@ -449,15 +451,16 @@ async def analytics_drilldown(
 @router.get("/export/pdf")
 async def export_analytics_pdf(
     request: Request,
-    preset: Optional[str] = Query("7d"),
-    start: Optional[str] = Query(None),
-    end: Optional[str] = Query(None),
+    preset: str | None = Query("7d"),
+    start: str | None = Query(None),
+    end: str | None = Query(None),
     current_user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Export analytics as an elite dark-themed PDF report."""
-    from fastapi.responses import Response
     import os
+
+    from fastapi.responses import Response
 
     org_id = current_user.get("org_id")
     range_start, range_end = parse_date_range(preset, start, end)
@@ -506,12 +509,20 @@ async def export_analytics_pdf(
 
     # Generate PDF
     try:
-        from reportlab.lib.pagesizes import A4
-        from reportlab.lib.units import inch
-        from reportlab.lib.colors import HexColor, Color
-        from reportlab.lib.styles import ParagraphStyle
-        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, HRFlowable
+        from reportlab.lib.colors import Color, HexColor
         from reportlab.lib.enums import TA_CENTER, TA_LEFT
+        from reportlab.lib.pagesizes import A4
+        from reportlab.lib.styles import ParagraphStyle
+        from reportlab.lib.units import inch
+        from reportlab.platypus import (
+            HRFlowable,
+            PageBreak,
+            Paragraph,
+            SimpleDocTemplate,
+            Spacer,
+            Table,
+            TableStyle,
+        )
     except ImportError:
         return Response(content=b"reportlab not installed", status_code=500)
 

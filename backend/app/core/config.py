@@ -5,10 +5,10 @@ Centralized configuration using Pydantic Settings with environment variable supp
 All configuration is validated at startup to prevent runtime failures.
 """
 
-from typing import Optional
-from pydantic_settings import BaseSettings
-from pydantic import field_validator
 from functools import lru_cache
+
+from pydantic import field_validator
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -38,22 +38,22 @@ class Settings(BaseSettings):
     JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     # AI Providers
-    OPENAI_API_KEY: Optional[str] = None
-    ANTHROPIC_API_KEY: Optional[str] = None
-    GOOGLE_AI_API_KEY: Optional[str] = None
-    MISTRAL_API_KEY: Optional[str] = None
-    COHERE_API_KEY: Optional[str] = None
-    GROQ_API_KEY: Optional[str] = None
-    TOGETHER_API_KEY: Optional[str] = None
-    DEEPSEEK_API_KEY: Optional[str] = None
-    PERPLEXITY_API_KEY: Optional[str] = None
-    HUGGINGFACE_API_KEY: Optional[str] = None
-    XAI_API_KEY: Optional[str] = None
+    OPENAI_API_KEY: str | None = None
+    ANTHROPIC_API_KEY: str | None = None
+    GOOGLE_AI_API_KEY: str | None = None
+    MISTRAL_API_KEY: str | None = None
+    COHERE_API_KEY: str | None = None
+    GROQ_API_KEY: str | None = None
+    TOGETHER_API_KEY: str | None = None
+    DEEPSEEK_API_KEY: str | None = None
+    PERPLEXITY_API_KEY: str | None = None
+    HUGGINGFACE_API_KEY: str | None = None
+    XAI_API_KEY: str | None = None
     OLLAMA_BASE_URL: str = "http://localhost:11434"
 
     # SIEM Integration
-    SIEM_WEBHOOK_URL: Optional[str] = None
-    SIEM_WEBHOOK_SECRET: Optional[str] = None
+    SIEM_WEBHOOK_URL: str | None = None
+    SIEM_WEBHOOK_SECRET: str | None = None
     SIEM_PROVIDER: str = "generic"  # splunk, datadog, qradar, generic
 
     # Firewall
@@ -91,14 +91,14 @@ class Settings(BaseSettings):
     HALLUCINATION_SELFCHECK_SAMPLES: int = 3  # SelfCheckGPT sample count
     HALLUCINATION_NLI_MODEL: str = "d:/PROJECTS/GhostPrompt/backend/models/hallucination/nli_finetuned"
     HALLUCINATION_FAITHFULNESS_THRESHOLD: float = 0.5
-    GOOGLE_FACTCHECK_API_KEY: Optional[str] = None
+    GOOGLE_FACTCHECK_API_KEY: str | None = None
     
     # Kaggle
-    KAGGLE_USERNAME: Optional[str] = None
-    KAGGLE_KEY: Optional[str] = None
+    KAGGLE_USERNAME: str | None = None
+    KAGGLE_KEY: str | None = None
 
     # IP Intelligence (IPinfo.io)
-    IPINFO_TOKEN: Optional[str] = None
+    IPINFO_TOKEN: str | None = None
 
     # CORS
     CORS_ORIGINS: str = "http://localhost:3000,http://localhost:8000,http://127.0.0.1:3000,http://127.0.0.1:8000"
@@ -159,7 +159,7 @@ class Settings(BaseSettings):
     }
 
 
-@lru_cache()
+@lru_cache
 def get_settings() -> Settings:
     """Get cached settings instance."""
     return Settings()

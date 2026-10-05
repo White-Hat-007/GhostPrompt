@@ -5,12 +5,12 @@ Centralized control plane for Model Context Protocol servers.
 Server registry, traffic inspection, access control, observability.
 """
 
-import uuid
 import time
-from typing import Optional
-from dataclasses import dataclass, field
+import uuid
 from collections import defaultdict
+from dataclasses import dataclass, field
 from enum import Enum
+from typing import Optional
 
 
 class MCPAuthMethod(str, Enum):
@@ -191,7 +191,7 @@ class MCPGateway:
         ids = self._tenant_servers.get(tenant_id, [])
         return [self._servers[sid].to_dict() for sid in ids if sid in self._servers]
 
-    def get_server(self, server_id: str) -> Optional[dict]:
+    def get_server(self, server_id: str) -> dict | None:
         s = self._servers.get(server_id)
         return s.to_dict() if s else None
 

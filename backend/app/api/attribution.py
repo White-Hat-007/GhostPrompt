@@ -13,20 +13,26 @@ Endpoints for the Threat Attribution Engine:
 - Tokenizer threats
 """
 
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import and_, case, desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, and_, desc, case
 
 from app.core.database import get_db
+from app.core.permissions import require_permission
 from app.core.security import get_current_user
 from app.models.attribution import (
-    ThreatActor, ThreatCampaign, AttackCluster, AttributionProfile,
-    ModelIntegrityEvent, GroomingTimeline, ExfiltrationEvent,
-    AdversarialMediaEvent, TokenizerThreat,
+    AdversarialMediaEvent,
+    AttackCluster,
+    ExfiltrationEvent,
+    GroomingTimeline,
+    ModelIntegrityEvent,
+    ThreatActor,
+    ThreatCampaign,
+    TokenizerThreat,
 )
 from app.models.scan_event import ScanEvent
-from app.core.permissions import require_permission
 
 router = APIRouter(
     prefix="/attribution",

@@ -12,9 +12,7 @@ Attack vectors prevented:
 """
 
 import re
-from typing import Optional
 from urllib.parse import urlparse
-
 
 # ─── CRLF Injection Prevention ───
 
@@ -58,7 +56,7 @@ def sanitize_filename(filename: str) -> str:
 _ALLOWED_REDIRECT_HOSTS: set[str] = set()
 
 
-def is_safe_redirect(url: str, allowed_hosts: Optional[set[str]] = None) -> bool:
+def is_safe_redirect(url: str, allowed_hosts: set[str] | None = None) -> bool:
     """
     Validate redirect URLs to prevent open redirect attacks.
     Only relative paths or whitelisted hosts are allowed.

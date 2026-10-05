@@ -5,9 +5,9 @@ Sends events to Microsoft Sentinel via the HTTP Data Collector API.
 https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-collector-api
 """
 
+import base64
 import hashlib
 import hmac
-import base64
 from datetime import datetime, timezone
 
 from app.services.siem_connectors.base import ConnectorInterface, ConnectorResult

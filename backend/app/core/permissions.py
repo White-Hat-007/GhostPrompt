@@ -9,16 +9,15 @@ Usage:
     async def list_policies(...): ...
 """
 
-from typing import Optional
 from fastapi import Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.database import get_db
-from app.core.security import get_current_user
 from app.core.config import get_settings
+from app.core.database import get_db
 from app.core.logging import get_logger
-from app.models.role import Role, UserRole, BUILTIN_ROLES
+from app.core.security import get_current_user
+from app.models.role import BUILTIN_ROLES, Role, UserRole
 
 logger = get_logger("rbac")
 settings = get_settings()

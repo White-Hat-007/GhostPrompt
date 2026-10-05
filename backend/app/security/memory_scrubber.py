@@ -1,6 +1,6 @@
-import ctypes
-import sys
 import gc
+import sys
+
 
 def secure_scrub_string(s: str):
     """

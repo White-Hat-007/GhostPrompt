@@ -7,11 +7,19 @@ Every significant action is logged immutably.
 
 import uuid
 from datetime import datetime, timezone
+
 from sqlalchemy import (
-    Column, String, DateTime, ForeignKey, Text, JSON, Index,
+    JSON,
+    Column,
+    DateTime,
+    ForeignKey,
+    Index,
+    String,
+    Text,
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
+
 from app.core.database import Base
 
 

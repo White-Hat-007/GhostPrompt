@@ -1,20 +1,26 @@
 import asyncio
-import sys
 import os
+import sys
 import uuid
-import random
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from sqlalchemy import select, delete
+from sqlalchemy import delete, select
+
 from app.core.database import async_session_factory
-from app.models.organization import Organization
 from app.models.attribution import (
-    ThreatActor, ThreatCampaign, AttackCluster, AttributionProfile,
-    ModelIntegrityEvent, GroomingTimeline, ExfiltrationEvent,
-    AdversarialMediaEvent, TokenizerThreat
+    AdversarialMediaEvent,
+    AttackCluster,
+    ExfiltrationEvent,
+    GroomingTimeline,
+    ModelIntegrityEvent,
+    ThreatActor,
+    ThreatCampaign,
+    TokenizerThreat,
 )
+from app.models.organization import Organization
+
 
 async def seed():
     async with async_session_factory() as db:

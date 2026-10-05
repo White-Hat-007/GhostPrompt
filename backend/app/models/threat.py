@@ -7,12 +7,21 @@ for the threat intelligence engine.
 
 import uuid
 from datetime import datetime, timezone
+
+from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
-    Column, String, Boolean, Integer, Float, DateTime,
-    Text, JSON, Index,
+    JSON,
+    Boolean,
+    Column,
+    DateTime,
+    Float,
+    Index,
+    Integer,
+    String,
+    Text,
 )
 from sqlalchemy.dialects.postgresql import UUID
-from pgvector.sqlalchemy import Vector
+
 from app.core.database import Base
 
 

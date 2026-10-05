@@ -11,12 +11,11 @@ This module provides:
   4. Red team metrics collection
 """
 
-import time
 import hashlib
-import math
-from typing import Optional
+import time
 from collections import defaultdict
 from dataclasses import dataclass, field
+
 from app.core.logging import get_logger
 
 logger = get_logger("orchestration_monitor")

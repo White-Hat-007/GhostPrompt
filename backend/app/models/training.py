@@ -1,7 +1,9 @@
-from sqlalchemy import Column, String, Float, Integer, JSON, DateTime
 from datetime import datetime, timezone
 
+from sqlalchemy import JSON, Column, DateTime, Float, Integer, String
+
 from app.core.database import Base
+
 
 class TrainingJobModel(Base):
     __tablename__ = "training_jobs"

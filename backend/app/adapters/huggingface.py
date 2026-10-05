@@ -4,12 +4,12 @@ Supports HuggingFace's Inference API (free) and Inference Endpoints (dedicated).
 Uses the Messages API format (OpenAI-compatible via HF).
 """
 
-import httpx
-import json
 import uuid
-import time
-from typing import AsyncGenerator, Optional
+from collections.abc import AsyncGenerator
+
+import httpx
 from fastapi import HTTPException
+
 from app.adapters.base import LLMAdapter, LLMResponse
 from app.core.config import get_settings
 
@@ -24,7 +24,7 @@ class HuggingFaceAdapter(LLMAdapter):
         self,
         model: str,
         messages: list[dict],
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         stream: bool = False,
         **kwargs
     ) -> LLMResponse:
@@ -74,7 +74,7 @@ class HuggingFaceAdapter(LLMAdapter):
         self,
         model: str,
         messages: list[dict],
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         **kwargs
     ) -> AsyncGenerator[str, None]:
         key = api_key or getattr(settings, "HUGGINGFACE_API_KEY", None)

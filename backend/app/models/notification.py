@@ -8,12 +8,19 @@ These are NOT audit log entries (admin-only). These are user-facing
 alerts that appear in the notification bell on the dashboard.
 """
 
+import uuid
 from datetime import datetime, timezone
+
 from sqlalchemy import (
-    Column, String, Boolean, DateTime, ForeignKey, Text, Index,
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    Index,
+    String,
+    Text,
 )
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-import uuid
 
 from app.core.database import Base
 

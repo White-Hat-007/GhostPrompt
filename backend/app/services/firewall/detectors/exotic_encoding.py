@@ -1,5 +1,6 @@
 import codecs
 import re
+
 from app.core.logging import get_logger
 from app.schemas.schemas import DetectionResult
 

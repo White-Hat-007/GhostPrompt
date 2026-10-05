@@ -9,6 +9,7 @@ https://docs.aws.amazon.com/security-lake/latest/userguide/custom-sources.html
 
 import json
 from datetime import datetime, timezone
+
 from app.services.siem_connectors.base import ConnectorInterface, ConnectorResult
 
 

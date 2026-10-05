@@ -5,18 +5,19 @@ Unified AI gateway proxy that routes requests to multiple model providers
 while applying firewall scanning on both input and output.
 """
 
+import time
+import uuid
+
+import httpx
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-import httpx
-import uuid
-import time
 
-from app.core.database import get_db
-from app.core.security import get_current_user
 from app.core.config import get_settings
+from app.core.database import get_db
 from app.core.permissions import require_permission
-from app.services.firewall.engine import firewall_engine
+from app.core.security import get_current_user
 from app.schemas.schemas import GatewayRequest, GatewayResponse, ScanRequest
+from app.services.firewall.engine import firewall_engine
 
 settings = get_settings()
 router = APIRouter(
@@ -83,7 +84,7 @@ async def gateway_chat(
     except Exception as e:
         raise HTTPException(
             status_code=502,
-            detail=f"Error communicating with AI provider: {str(e)}",
+            detail=f"Error communicating with AI provider: {e!s}",
         )
     latency_ms = (time.perf_counter() - start_time) * 1000
 

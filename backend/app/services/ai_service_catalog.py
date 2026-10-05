@@ -11,9 +11,8 @@ Generates an AI Readiness Scorecard for each service:
 """
 
 import uuid
-from datetime import datetime, timezone
-from typing import Optional
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 
 from app.core.logging import get_logger
 
@@ -46,7 +45,7 @@ class AIService:
     # Metadata
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     updated_at: str = ""
-    last_activity: Optional[str] = None
+    last_activity: str | None = None
     request_count_24h: int = 0
     org_id: str = ""
     tags: list[str] = field(default_factory=list)
@@ -114,7 +113,7 @@ class AIServiceCatalog:
                         service_type="llm_proxy",
                         provider=provider,
                         model=models.split(",")[0].strip(),
-                        endpoint=f"/v1/chat/completions",
+                        endpoint="/v1/chat/completions",
                         is_routed_through_gp=True,
                         has_output_scanning=True,
                         has_hallucination_detection=True,
@@ -161,11 +160,11 @@ class AIServiceCatalog:
             if svc.org_id == org_id
         ]
 
-    async def get_service(self, service_id: str) -> Optional[dict]:
+    async def get_service(self, service_id: str) -> dict | None:
         svc = _catalog.get(service_id)
         return self._serialize(service_id) if svc else None
 
-    async def update_service(self, service_id: str, data: dict) -> Optional[dict]:
+    async def update_service(self, service_id: str, data: dict) -> dict | None:
         svc = _catalog.get(service_id)
         if not svc:
             return None

@@ -4,13 +4,12 @@ GhostPrompt Network-Level Guardrails
 IP controls, request validation, outbound content controls.
 """
 
+import ipaddress
 import re
 import time
-import ipaddress
-from typing import Optional
-from dataclasses import dataclass, field
 from collections import defaultdict
-
+from dataclasses import dataclass, field
+from typing import Optional
 
 # Known Tor exit nodes (sample — in production, load from a feed)
 TOR_EXIT_NODES = {"185.220.101.1", "185.220.101.2", "185.220.101.3"}

@@ -7,9 +7,9 @@ Device Fingerprint, and Timing Intelligence.
 """
 
 import time
-import httpx
 from datetime import datetime, timezone
-from typing import Optional, Dict, Any
+
+import httpx
 from fastapi import Request
 from pydantic import BaseModel, Field
 
@@ -19,63 +19,63 @@ logger = get_logger("detector.profiler")
 
 class AttackerProfile(BaseModel):
     # Network Layer
-    source_ip: Optional[str] = None
+    source_ip: str | None = None
     proxy_chain: list[str] = Field(default_factory=list)
-    ip_reputation_score: Optional[int] = None
-    asn_number: Optional[str] = None
-    asn_org: Optional[str] = None
-    isp_name: Optional[str] = None
-    is_tor_exit_node: Optional[bool] = None
-    is_vpn: Optional[bool] = None
-    is_datacenter: Optional[bool] = None
-    ip_first_seen: Optional[str] = None
+    ip_reputation_score: int | None = None
+    asn_number: str | None = None
+    asn_org: str | None = None
+    isp_name: str | None = None
+    is_tor_exit_node: bool | None = None
+    is_vpn: bool | None = None
+    is_datacenter: bool | None = None
+    ip_first_seen: str | None = None
     
     # Geolocation (Approximate)
-    country: Optional[str] = None
-    region: Optional[str] = None
-    city: Optional[str] = None
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
-    timezone: Optional[str] = None
-    postal_code: Optional[str] = None
-    continent: Optional[str] = None
+    country: str | None = None
+    region: str | None = None
+    city: str | None = None
+    latitude: float | None = None
+    longitude: float | None = None
+    timezone: str | None = None
+    postal_code: str | None = None
+    continent: str | None = None
     
     # Device & Client Fingerprint
-    user_agent: Optional[str] = None
-    browser_name: Optional[str] = None
-    browser_version: Optional[str] = None
-    os_name: Optional[str] = None
-    os_version: Optional[str] = None
-    device_type: Optional[str] = None
-    accept_language: Optional[str] = None
-    accept_encoding: Optional[str] = None
-    headers_dump: Dict[str, str] = Field(default_factory=dict)
-    tls_ja3_hash: Optional[str] = None
-    http_version: Optional[str] = None
+    user_agent: str | None = None
+    browser_name: str | None = None
+    browser_version: str | None = None
+    os_name: str | None = None
+    os_version: str | None = None
+    device_type: str | None = None
+    accept_language: str | None = None
+    accept_encoding: str | None = None
+    headers_dump: dict[str, str] = Field(default_factory=dict)
+    tls_ja3_hash: str | None = None
+    http_version: str | None = None
     
     # Timing Intelligence
-    timestamp_utc: Optional[str] = None
-    timestamp_epoch: Optional[float] = None
-    local_time: Optional[str] = None
-    day_of_week: Optional[str] = None
-    hour_of_day: Optional[int] = None
-    time_since_session_start_ms: Optional[int] = None
-    time_since_last_request_ms: Optional[int] = None
-    request_rate_rpm: Optional[float] = None
+    timestamp_utc: str | None = None
+    timestamp_epoch: float | None = None
+    local_time: str | None = None
+    day_of_week: str | None = None
+    hour_of_day: int | None = None
+    time_since_session_start_ms: int | None = None
+    time_since_last_request_ms: int | None = None
+    request_rate_rpm: float | None = None
     
     # Behavioral Signals
-    is_human_timing: Optional[bool] = None
-    session_attack_count: Optional[int] = None
-    attack_classification: Optional[str] = None
+    is_human_timing: bool | None = None
+    session_attack_count: int | None = None
+    attack_classification: str | None = None
 
     # Network Forensics (VPN/Proxy Unmasking)
-    rtt_ms: Optional[float] = None  # Round-trip time to geo-lookup service
-    estimated_hops: Optional[int] = None  # Estimated network hop count
-    connection_type: Optional[str] = None  # direct, vpn, tor, proxy, relay, datacenter
+    rtt_ms: float | None = None  # Round-trip time to geo-lookup service
+    estimated_hops: int | None = None  # Estimated network hop count
+    connection_type: str | None = None  # direct, vpn, tor, proxy, relay, datacenter
     traceback_evidence_chain: list[dict] = Field(default_factory=list)  # Ordered evidence steps
 
     # Threat Narrative
-    threat_narrative: Optional[str] = None
+    threat_narrative: str | None = None
 
 
 class AttackerProfiler:

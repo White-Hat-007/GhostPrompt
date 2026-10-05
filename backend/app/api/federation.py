@@ -10,16 +10,15 @@ REST endpoints for the federated threat intelligence system:
 - Auto-contribute from detection pipeline
 """
 
-from typing import Optional
 from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
 from pydantic import BaseModel
+from sqlalchemy import select, update
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.security import get_current_user
-from app.core.permissions import require_permission
 from app.core.logging import get_logger
+from app.core.permissions import require_permission
+from app.core.security import get_current_user
 from app.models.organization import Organization
 from app.services.federated.aggregator import federated_aggregator
 

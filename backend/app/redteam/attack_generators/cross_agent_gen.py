@@ -5,9 +5,8 @@ Generates scenarios where a compromised agent sends poisoned
 context to other agents, attempting inter-agent injection.
 """
 
-import random
 import hashlib
-import time
+import random
 
 POISONING_SCENARIOS = [
     {

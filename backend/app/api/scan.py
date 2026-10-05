@@ -5,23 +5,32 @@ Core AI Firewall scanning endpoints — the primary API for prompt/output inspec
 Includes both authenticated production endpoints and a public test endpoint.
 """
 
+import asyncio
+import random
 import time
 import uuid
 from datetime import datetime, timezone
-from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File, BackgroundTasks, Depends
-from app.core.permissions import require_permission
-from sqlalchemy.ext.asyncio import AsyncSession
-import random
-import asyncio
 
-from app.core.database import get_db
-from app.core.security import get_current_user
-from app.core.rate_limit import limiter
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    File,
+    HTTPException,
+    Request,
+    UploadFile,
+)
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.config import get_settings
+from app.core.database import get_db
 from app.core.events import event_broadcaster
-from app.services.firewall.engine import firewall_engine
+from app.core.permissions import require_permission
+from app.core.rate_limit import limiter
+from app.core.security import get_current_user
 from app.models.scan_event import ScanEvent
 from app.schemas.schemas import ScanRequest, ScanResponse
+from app.services.firewall.engine import firewall_engine
 
 settings = get_settings()
 router = APIRouter(prefix="/scan", tags=["AI Firewall"], dependencies=[Depends(require_permission("scans.view"))])
@@ -157,8 +166,9 @@ async def scan_test(
 
     # Store ONE scan event for ALL orgs (so any logged-in user can see it)
     # but only create a SINGLE record + broadcast to prevent duplicates
-    from app.models.organization import Organization
     from sqlalchemy import select
+
+    from app.models.organization import Organization
     org_result = await db.execute(select(Organization))
     orgs = org_result.scalars().all()
 
@@ -287,8 +297,9 @@ async def start_live_fire(background_tasks: BackgroundTasks, db: AsyncSession = 
         ]
         
         # Get first org
-        from app.models.organization import Organization
         from sqlalchemy import select
+
+        from app.models.organization import Organization
         async with app.core.database.async_session_factory() as session:
             org = await session.execute(select(Organization).limit(1))
             org = org.scalar_one_or_none()
@@ -362,8 +373,9 @@ async def global_scan_stats(
     across ALL organizations. Used by the landing page HUD overlay.
     Cached in-memory for 10 seconds to avoid hammering the DB on every poll.
     """
-    from sqlalchemy import func, select
     import time as _time
+
+    from sqlalchemy import func, select
 
     cache_key = "_global_stats_cache"
     cache_ttl = 10  # seconds
@@ -409,9 +421,10 @@ async def scan_multimodal(
     - Audio: Speech-to-text transcription analysis
     - Video: Frame-by-frame OCR + audio track analysis
     """
-    from app.services.firewall.detectors.multimodal_inspector import MultimodalInspector
-    from app.models.organization import Organization
     from sqlalchemy import select
+
+    from app.models.organization import Organization
+    from app.services.firewall.detectors.multimodal_inspector import MultimodalInspector
 
     MAX_SIZE = 50 * 1024 * 1024  # 50 MB
     file_bytes = await file.read()

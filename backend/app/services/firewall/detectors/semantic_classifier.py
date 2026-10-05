@@ -7,10 +7,9 @@ This catches zero-day attacks and rewording bypasses where traditional
 regex/pattern matching fails.
 """
 
-from typing import Optional
-from app.schemas.schemas import DetectionResult
-from app.core.logging import get_logger
 from app.core.config import get_settings
+from app.core.logging import get_logger
+from app.schemas.schemas import DetectionResult
 
 logger = get_logger("detector.semantic_classifier")
 settings = get_settings()
@@ -59,7 +58,7 @@ class SemanticClassifier:
 
         try:
             import torch
-            from transformers import AutoTokenizer, AutoModelForSequenceClassification
+            from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
             if trained_model_path.exists() and (trained_model_path / "config.json").exists():
                 logger.info("loading_trained_semantic_classifier", path=str(trained_model_path))

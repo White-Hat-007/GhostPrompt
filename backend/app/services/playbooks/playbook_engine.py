@@ -7,12 +7,11 @@ Playbooks are defined as JSON configurations and executed asynchronously.
 Inspired by Cortex XSOAR's playbook automation model.
 """
 
-import uuid
-import time
 import asyncio
-from datetime import datetime, timezone
-from typing import Optional, Any
+import time
+import uuid
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from enum import Enum
 
 from app.core.logging import get_logger
@@ -57,8 +56,8 @@ class PlaybookNode:
     config: dict = field(default_factory=dict)
     position: dict = field(default_factory=lambda: {"x": 0, "y": 0})  # React Flow position
     next_nodes: list[str] = field(default_factory=list)       # IDs of downstream nodes
-    condition_true_node: Optional[str] = None    # For condition nodes
-    condition_false_node: Optional[str] = None   # For condition nodes
+    condition_true_node: str | None = None    # For condition nodes
+    condition_false_node: str | None = None   # For condition nodes
 
 
 @dataclass
@@ -83,7 +82,7 @@ class PlaybookDefinition:
     
     # Execution stats
     total_runs: int = 0
-    last_run_at: Optional[str] = None
+    last_run_at: str | None = None
     avg_duration_ms: float = 0
 
 
@@ -95,10 +94,10 @@ class PlaybookExecution:
     triggered_by: str = ""  # incident ID or manual
     status: str = ExecutionStatus.PENDING
     started_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    completed_at: Optional[str] = None
+    completed_at: str | None = None
     duration_ms: float = 0
     node_results: list[dict] = field(default_factory=list)
-    error: Optional[str] = None
+    error: str | None = None
     context: dict = field(default_factory=dict)  # Shared context passed between nodes
 
 
@@ -127,7 +126,7 @@ class PlaybookEngine:
         logger.info("playbook_created", id=pb.id, name=pb.name, org=org_id)
         return pb
 
-    async def update_playbook(self, playbook_id: str, data: dict) -> Optional[PlaybookDefinition]:
+    async def update_playbook(self, playbook_id: str, data: dict) -> PlaybookDefinition | None:
         """Update an existing playbook."""
         pb = _playbooks.get(playbook_id)
         if not pb:
@@ -147,7 +146,7 @@ class PlaybookEngine:
             return True
         return False
 
-    async def get_playbook(self, playbook_id: str) -> Optional[dict]:
+    async def get_playbook(self, playbook_id: str) -> dict | None:
         pb = _playbooks.get(playbook_id)
         if not pb:
             return None
@@ -238,7 +237,9 @@ class PlaybookEngine:
                 node_result["output"] = {"triggered": True, "event": execution.context.get("trigger_event", {}).get("request_id", "")}
 
             elif node_type == NodeType.OSINT_ENRICH:
-                from app.services.firewall.detectors.osint_enrichment import osint_engine
+                from app.services.firewall.detectors.osint_enrichment import (
+                    osint_engine,
+                )
                 source_ip = execution.context.get("trigger_event", {}).get("source_ip", "")
                 if source_ip:
                     dossier = await osint_engine.enrich_incident(source_ip)
@@ -398,7 +399,7 @@ class PlaybookEngine:
             "avg_duration_ms": pb.avg_duration_ms,
         }
 
-    async def get_execution(self, execution_id: str) -> Optional[dict]:
+    async def get_execution(self, execution_id: str) -> dict | None:
         ex = _executions.get(execution_id)
         if not ex:
             return None

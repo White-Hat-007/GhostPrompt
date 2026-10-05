@@ -7,9 +7,7 @@ Routing engine reads from this catalog, never calls providers live.
 """
 
 import time
-import asyncio
 from datetime import datetime, timezone
-from typing import Optional
 
 import httpx
 
@@ -22,7 +20,7 @@ logger = get_logger("model_catalog")
 
 # ── In-memory model catalog (production: PostgreSQL table) ──
 _model_catalog: dict[str, list[dict]] = {}
-_last_sync: Optional[str] = None
+_last_sync: str | None = None
 
 
 PROVIDER_ENDPOINTS = {

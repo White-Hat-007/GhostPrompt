@@ -4,17 +4,18 @@ Revision ID: 79417bd8e7a9
 Revises: 001_initial
 Create Date: 2026-05-28 15:20:51.041203
 """
-from typing import Sequence, Union
-from alembic import op
-import sqlalchemy as sa
-import pgvector.sqlalchemy
+from collections.abc import Sequence
 
+import pgvector.sqlalchemy
+import sqlalchemy as sa
+
+from alembic import op
 
 # revision identifiers
 revision: str = '79417bd8e7a9'
-down_revision: Union[str, None] = '001_initial'
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = '001_initial'
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:

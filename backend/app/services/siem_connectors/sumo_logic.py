@@ -7,6 +7,7 @@ https://help.sumologic.com/docs/send-data/hosted-collectors/http-source/
 
 import json
 from datetime import datetime, timezone
+
 from app.services.siem_connectors.base import ConnectorInterface, ConnectorResult
 
 

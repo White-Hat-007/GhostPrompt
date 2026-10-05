@@ -5,13 +5,12 @@ Manages WebSocket connections and broadcasts scan events
 to all connected dashboard clients in real-time.
 """
 
-import json
-import asyncio
 import time as _time
-from typing import Any
+
 from fastapi import WebSocket
-from app.core.logging import get_logger
+
 from app.core.geo import resolve_geo
+from app.core.logging import get_logger
 
 logger = get_logger("events")
 
@@ -56,9 +55,10 @@ class EventBroadcaster:
         last_load = self._last_db_load.get(load_key, 0)
 
         if org_id and (now - last_load > 2):
+            from sqlalchemy import and_, func, select
+
             from app.core.database import async_session_factory
             from app.models.scan_event import ScanEvent
-            from sqlalchemy import select, func, and_
 
             try:
                 async with async_session_factory() as session:
@@ -248,11 +248,13 @@ class EventBroadcaster:
 
     async def _forward_to_siem(self, org_id: str, scan_data: dict):
         """Forward real-time scan events to all configured SIEMs for this org."""
+        from datetime import datetime, timezone
+
+        import httpx
+        from sqlalchemy import select
+
         from app.core.database import async_session_factory
         from app.models.organization import Organization
-        from sqlalchemy import select
-        import httpx
-        from datetime import datetime, timezone
         
         try:
             async with async_session_factory() as session:

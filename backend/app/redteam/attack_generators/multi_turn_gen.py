@@ -5,10 +5,8 @@ Generates conversation sequences that gradually escalate from
 innocent to harmful over multiple turns.
 """
 
-import random
 import hashlib
-import time
-
+import random
 
 ESCALATION_CHAINS = [
     {

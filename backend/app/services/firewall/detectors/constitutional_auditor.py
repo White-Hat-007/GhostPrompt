@@ -17,9 +17,9 @@ Methods:
 """
 
 import re
-from typing import Optional
-from app.schemas.schemas import DetectionResult
+
 from app.core.logging import get_logger
+from app.schemas.schemas import DetectionResult
 
 logger = get_logger("detector.constitutional")
 
@@ -107,7 +107,7 @@ class ConstitutionalAuditor:
     async def audit_response(
         self,
         response_text: str,
-        input_text: Optional[str] = None,
+        input_text: str | None = None,
     ) -> list[DetectionResult]:
         """
         Audit an LLM response against constitutional principles.

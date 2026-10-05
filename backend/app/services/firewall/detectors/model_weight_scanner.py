@@ -15,17 +15,17 @@ Detection Capabilities:
   8. Network Callback Detection — embedded URLs/IPs for data exfiltration
 """
 
-import re
-import os
 import hashlib
-import struct
 import json
-from pathlib import Path
-from typing import Optional
+import re
+import struct
 from datetime import datetime
+from pathlib import Path
+
 from pydantic import BaseModel, Field
-from app.schemas.schemas import DetectionResult
+
 from app.core.logging import get_logger
+from app.schemas.schemas import DetectionResult
 
 logger = get_logger("detector.model_weight_scanner")
 

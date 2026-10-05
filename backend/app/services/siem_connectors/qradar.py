@@ -6,6 +6,7 @@ https://www.ibm.com/docs/en/qsip/7.5?topic=api-siem
 """
 
 import json
+
 from app.services.siem_connectors.base import ConnectorInterface, ConnectorResult
 
 

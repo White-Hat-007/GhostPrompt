@@ -14,7 +14,9 @@ through high-risk use case categories to self-classify their AI deployment.
 """
 
 from app.compliance.framework_base import (
-    ComplianceFramework, ControlRequirement, ControlStatus
+    ComplianceFramework,
+    ControlRequirement,
+    ControlStatus,
 )
 
 

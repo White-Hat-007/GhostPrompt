@@ -7,17 +7,15 @@ Also supports fine-tuning sentence-transformers for zero-day embedding detection
 Uses HuggingFace PEFT + Trainer with RTX 5060 CUDA acceleration.
 """
 
-import os
 import json
+import os
 import uuid
-import time
-import shutil
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
-from dataclasses import dataclass, field
 
 import torch
+
 from app.core.config import get_settings
 from app.core.logging import get_logger
 
@@ -46,9 +44,9 @@ class TrainingJob:
     metrics: dict = field(default_factory=dict)
     output_dir: str = ""
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    started_at: Optional[str] = None
-    completed_at: Optional[str] = None
-    error: Optional[str] = None
+    started_at: str | None = None
+    completed_at: str | None = None
+    error: str | None = None
 
 
 # ── In-memory job registry (production would use Redis/DB) ──
@@ -109,14 +107,17 @@ def train_threat_classifier(
         logger.info("training_started", job_id=job.id, model=job.base_model, org=job.org_id)
 
         # Lazy imports to avoid loading heavy libs at module level
-        from transformers import (
-            AutoTokenizer, AutoModelForSequenceClassification,
-            TrainingArguments, Trainer, EarlyStoppingCallback,
-        )
-        from peft import LoraConfig, get_peft_model, TaskType
-        from datasets import Dataset
         import numpy as np
+        from datasets import Dataset
+        from peft import LoraConfig, TaskType, get_peft_model
         from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+        from transformers import (
+            AutoModelForSequenceClassification,
+            AutoTokenizer,
+            EarlyStoppingCallback,
+            Trainer,
+            TrainingArguments,
+        )
 
         device = get_device()
 
@@ -331,7 +332,7 @@ def train_zero_day_embeddings(
 
         logger.info("embedding_training_started", job_id=job.id)
 
-        from sentence_transformers import SentenceTransformer, InputExample, losses
+        from sentence_transformers import InputExample, SentenceTransformer, losses
         from torch.utils.data import DataLoader
 
         device = get_device()
@@ -408,11 +409,11 @@ def train_zero_day_embeddings(
 
 # ── Job management ──
 
-def get_job(job_id: str) -> Optional[TrainingJob]:
+def get_job(job_id: str) -> TrainingJob | None:
     return _active_jobs.get(job_id)
 
 
-def list_jobs(org_id: Optional[str] = None) -> list[TrainingJob]:
+def list_jobs(org_id: str | None = None) -> list[TrainingJob]:
     jobs = list(_active_jobs.values())
     if org_id and org_id != "None":
         jobs = [j for j in jobs if j.org_id == org_id]

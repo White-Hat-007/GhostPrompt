@@ -6,10 +6,9 @@ Uses genetic algorithm crossover and mutation to create offspring
 techniques that have never existed before.
 """
 
-import random
-import hashlib
-import time
 import base64
+import hashlib
+import random
 
 # Technique atoms — smallest combinable attack units
 TECHNIQUE_ATOMS = {

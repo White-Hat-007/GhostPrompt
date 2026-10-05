@@ -6,7 +6,6 @@ Full Slack App with Bot OAuth token for two-way (acknowledge/dismiss buttons).
 https://api.slack.com/messaging/webhooks
 """
 
-import json
 from app.services.siem_connectors.base import ConnectorInterface, ConnectorResult
 
 

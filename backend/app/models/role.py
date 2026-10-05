@@ -7,16 +7,22 @@ Hierarchy: Platform (Super-Admin) → Organization → Workspace → Team → Us
 Built-in roles + custom role support.
 """
 
-from enum import Enum
-from typing import Optional
-from datetime import datetime, timezone
-from sqlalchemy import (
-    Column, String, Boolean, DateTime, ForeignKey, JSON, Text, Integer,
-    UniqueConstraint, Index,
-)
-from sqlalchemy.dialects.postgresql import UUID as PG_UUID, ARRAY
-from sqlalchemy.orm import relationship
 import uuid
+from datetime import datetime, timezone
+from enum import Enum
+
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    Index,
+    String,
+    Text,
+    UniqueConstraint,
+)
+from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 
 from app.core.database import Base
 

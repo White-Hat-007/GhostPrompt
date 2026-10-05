@@ -8,24 +8,35 @@ Endpoints for:
 - Model registry management
 """
 
-import os
 import asyncio
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, BackgroundTasks, Query, Depends
-from app.core.permissions import require_permission
-from sqlalchemy.ext.asyncio import AsyncSession
-from pydantic import BaseModel
-from typing import Optional, Literal
+import os
+from typing import Literal
 
-from app.core.database import get_db, async_session_factory
-from app.core.security import get_current_user
-from app.core.config import get_settings
-from app.core.logging import get_logger
-from app.models.training import TrainingJobModel
-from sqlalchemy import select
-from app.ml.training.lora_trainer import (
-    TrainingJob, train_threat_classifier, train_zero_day_embeddings,
-    validate_jsonl_dataset, _active_jobs,
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    File,
+    HTTPException,
+    UploadFile,
 )
+from pydantic import BaseModel
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.config import get_settings
+from app.core.database import async_session_factory, get_db
+from app.core.logging import get_logger
+from app.core.permissions import require_permission
+from app.core.security import get_current_user
+from app.ml.training.lora_trainer import (
+    TrainingJob,
+    _active_jobs,
+    train_threat_classifier,
+    train_zero_day_embeddings,
+    validate_jsonl_dataset,
+)
+from app.models.training import TrainingJobModel
 
 logger = get_logger("api.training")
 settings = get_settings()
@@ -39,9 +50,9 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 class TrainingRequest(BaseModel):
     model_type: Literal["threat_classifier", "zero_day_embedding"] = "threat_classifier"
-    base_model: Optional[str] = None
+    base_model: str | None = None
     epochs: int = 5
-    dataset_id: Optional[str] = None
+    dataset_id: str | None = None
 
 
 class TrainingJobResponse(BaseModel):
@@ -56,9 +67,9 @@ class TrainingJobResponse(BaseModel):
     metrics: dict
     output_dir: str
     created_at: str
-    started_at: Optional[str] = None
-    completed_at: Optional[str] = None
-    error: Optional[str] = None
+    started_at: str | None = None
+    completed_at: str | None = None
+    error: str | None = None
 
 
 class DatasetInfo(BaseModel):
@@ -182,7 +193,6 @@ async def start_training(
     _active_jobs[job.id] = job
 
     # Persist to DB
-    from app.core.database import async_session_factory
     async with async_session_factory() as session:
         db_job = TrainingJobModel(
             id=job.id,
@@ -213,7 +223,7 @@ async def start_training(
                 db_job.metrics = job.metrics
                 db_job.output_dir = job.output_dir
                 db_job.error = job.error
-                from datetime import datetime, timezone
+                from datetime import datetime
                 if job.completed_at:
                     db_job.completed_at = datetime.fromisoformat(job.completed_at)
                 if job.started_at:
@@ -344,9 +354,9 @@ async def gpu_status(
 # WS6: FAIRNESS JOB QUEUE
 # ═══════════════════════════════════════════════════════
 
+import heapq
 from collections import defaultdict
 from datetime import datetime, timezone
-import heapq
 
 # Per-org job queue with priority + fairness
 _job_queue: list = []  # min-heap of (priority, timestamp, job_id, org_id)
@@ -408,9 +418,9 @@ MAX_QUEUE_SIZE = 100
 
 class QueueJobRequest(BaseModel):
     model_type: Literal["threat_classifier", "zero_day_embedding"] = "threat_classifier"
-    base_model: Optional[str] = None
+    base_model: str | None = None
     epochs: int = 5
-    dataset_id: Optional[str] = None
+    dataset_id: str | None = None
     priority: int = 5  # 1=highest, 10=lowest
     backend: str = "local"  # local, sagemaker, runpod, lambda
 
@@ -553,11 +563,11 @@ async def list_gpu_backends(
 
 class BackendConfig(BaseModel):
     backend_id: str
-    api_key: Optional[str] = None
-    endpoint_id: Optional[str] = None
-    instance_type: Optional[str] = None
-    role_arn: Optional[str] = None
-    output_path: Optional[str] = None
+    api_key: str | None = None
+    endpoint_id: str | None = None
+    instance_type: str | None = None
+    role_arn: str | None = None
+    output_path: str | None = None
 
 
 @router.put("/backends/{backend_id}/configure")
@@ -658,7 +668,7 @@ async def set_gpu_budget(
 
 class DeployRequest(BaseModel):
     job_id: str
-    deploy_name: Optional[str] = None
+    deploy_name: str | None = None
     auto_scale: bool = True
     min_replicas: int = 1
     max_replicas: int = 3

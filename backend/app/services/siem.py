@@ -8,12 +8,13 @@ Slack, ServiceNow, Jira, Amazon Security Lake, Sumo Logic, Opsgenie,
 Microsoft Teams, and generic webhooks.
 """
 
-import httpx
-import json
-import hmac
 import hashlib
+import hmac
+import json
 from datetime import datetime, timezone
-from typing import Optional
+
+import httpx
+
 from app.core.config import get_settings
 from app.core.logging import get_logger
 from app.services.siem_connectors.registry import get_connector
@@ -26,7 +27,7 @@ class SIEMIntegration:
     """Pushes security events to SIEM platforms."""
 
     def __init__(self):
-        self._client: Optional[httpx.AsyncClient] = None
+        self._client: httpx.AsyncClient | None = None
 
     async def _get_client(self) -> httpx.AsyncClient:
         if not self._client:

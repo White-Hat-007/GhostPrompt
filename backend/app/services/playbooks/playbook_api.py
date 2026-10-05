@@ -1,12 +1,11 @@
 """Playbook API — CRUD + execution endpoints."""
 
+
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from typing import Optional
 
-from app.core.security import get_current_user
-from app.core.permissions import require_permission
 from app.core.logging import get_logger
+from app.core.security import get_current_user
 from app.services.playbooks.playbook_engine import playbook_engine
 
 logger = get_logger("api.playbooks")
@@ -23,13 +22,13 @@ class PlaybookCreate(BaseModel):
 
 
 class PlaybookUpdate(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    trigger_type: Optional[str] = None
-    trigger_conditions: Optional[dict] = None
-    nodes: Optional[list] = None
-    edges: Optional[list] = None
-    status: Optional[str] = None
+    name: str | None = None
+    description: str | None = None
+    trigger_type: str | None = None
+    trigger_conditions: dict | None = None
+    nodes: list | None = None
+    edges: list | None = None
+    status: str | None = None
 
 
 @router.get("/")

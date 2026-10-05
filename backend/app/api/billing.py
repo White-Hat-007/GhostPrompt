@@ -1,16 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Request, Depends
-from app.core.permissions import require_permission
-from sqlalchemy.ext.asyncio import AsyncSession
+from datetime import datetime, timedelta, timezone
+
+from fastapi import APIRouter, Depends, HTTPException, Request
+from pydantic import BaseModel, Field
 from sqlalchemy import select
-from datetime import datetime, timezone, timedelta
-from typing import List, Dict, Any
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.permissions import require_permission
 from app.core.security import get_current_user
-from app.models.user import User
 from app.models.organization import Organization
-from app.security.audit_log import audit_log, AuditAction
-from pydantic import BaseModel, Field
+from app.models.user import User
+from app.security.audit_log import AuditAction, audit_log
 
 router = APIRouter(prefix="/billing", tags=["Billing"], dependencies=[Depends(require_permission("billing.manage"))])
 

@@ -7,16 +7,20 @@ Categories: SAFE (0), JAILBREAK (1), INSTRUCTION_OVERRIDE (2), DATA_EXTRACTION (
             UNKNOWN_SUSPICIOUS (7), SPML_DELIMITER (8), CONTEXT_IGNORING (9)
 """
 
-import os, json, random, torch
-import numpy as np
+import json
+import random
 from pathlib import Path
-from torch.utils.data import Dataset, DataLoader
+
+import numpy as np
+import torch
+from sklearn.metrics import classification_report
+from sklearn.model_selection import train_test_split
+from torch.utils.data import DataLoader, Dataset
 from transformers import (
-    AutoTokenizer, AutoModelForSequenceClassification,
+    AutoModelForSequenceClassification,
+    AutoTokenizer,
     get_linear_schedule_with_warmup,
 )
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
 
 LABELS = [
     "SAFE", "JAILBREAK_ATTEMPT", "INSTRUCTION_OVERRIDE", "DATA_EXTRACTION",
@@ -512,8 +516,7 @@ def train():
         val_acc = val_correct / val_total * 100
         print(f"  Epoch {epoch+1}/6 — Loss: {total_loss/len(train_loader):.4f} | Train Acc: {train_acc:.1f}% | Val Acc: {val_acc:.1f}%")
 
-        if val_acc > best_acc:
-            best_acc = val_acc
+        best_acc = max(best_acc, val_acc)
 
     print(f"\n  Best Val Accuracy: {best_acc:.1f}%")
     print("\n  Classification Report:")

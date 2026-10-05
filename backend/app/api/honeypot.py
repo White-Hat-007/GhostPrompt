@@ -1,8 +1,9 @@
+
 from fastapi import APIRouter, Request, status
 from fastapi.responses import JSONResponse
+
 from app.core.logging import get_logger
-from app.security.audit_log import audit_log, AuditAction
-from datetime import datetime, timezone
+from app.security.audit_log import AuditAction, audit_log
 
 logger = get_logger("honeypot")
 router = APIRouter(tags=["Honeypot"])

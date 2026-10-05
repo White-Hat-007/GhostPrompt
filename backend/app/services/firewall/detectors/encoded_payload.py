@@ -5,11 +5,12 @@ Detects hidden instructions and payloads encoded in Base64, hex,
 unicode escapes, ROT13, URL encoding, Base32, Morse code, and other formats.
 """
 
-import re
 import base64
 import codecs
-from app.schemas.schemas import DetectionResult
+import re
+
 from app.core.logging import get_logger
+from app.schemas.schemas import DetectionResult
 
 logger = get_logger("detector.encoded_payload")
 

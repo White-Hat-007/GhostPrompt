@@ -9,9 +9,10 @@ Endpoints for the in-app notification system:
 """
 
 from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update, func, desc
 
 from app.core.database import get_db
 from app.core.security import get_current_user

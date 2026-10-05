@@ -13,15 +13,15 @@ Every sensitive action is logged to an append-only audit trail:
 Supports filtering, search, and export.
 """
 
-from datetime import datetime, timezone, timedelta
-from typing import Optional, Literal
-from fastapi import APIRouter, Depends, Query, Depends
-from app.core.permissions import require_permission
-from pydantic import BaseModel
 from collections import defaultdict
+from datetime import datetime, timezone
 
-from app.core.security import get_current_user
+from fastapi import APIRouter, Depends, Query
+from pydantic import BaseModel
+
 from app.core.logging import get_logger
+from app.core.permissions import require_permission
+from app.core.security import get_current_user
 
 logger = get_logger("audit_log")
 router = APIRouter(prefix="/audit", tags=["Audit Log"], dependencies=[Depends(require_permission("audit.view"))])
@@ -36,10 +36,10 @@ class AuditEntry(BaseModel):
     actor_id: str
     action: str
     resource_type: str
-    resource_id: Optional[str] = None
-    details: Optional[dict] = None
-    ip_address: Optional[str] = None
-    user_agent: Optional[str] = None
+    resource_id: str | None = None
+    details: dict | None = None
+    ip_address: str | None = None
+    user_agent: str | None = None
     org_id: str
 
 
@@ -54,10 +54,10 @@ def record_audit_event(
     org_id: str,
     action: str,
     resource_type: str,
-    resource_id: Optional[str] = None,
-    details: Optional[dict] = None,
-    ip_address: Optional[str] = None,
-    user_agent: Optional[str] = None,
+    resource_id: str | None = None,
+    details: dict | None = None,
+    ip_address: str | None = None,
+    user_agent: str | None = None,
 ):
     """Record an immutable audit event."""
     global _log_counter
@@ -91,10 +91,10 @@ def record_audit_event(
 
 @router.get("", response_model=list[AuditEntry])
 async def get_audit_log(
-    action: Optional[str] = Query(None),
-    resource_type: Optional[str] = Query(None),
-    actor: Optional[str] = Query(None),
-    since: Optional[str] = Query(None, description="ISO 8601 timestamp"),
+    action: str | None = Query(None),
+    resource_type: str | None = Query(None),
+    actor: str | None = Query(None),
+    since: str | None = Query(None, description="ISO 8601 timestamp"),
     limit: int = Query(50, le=500),
     offset: int = Query(0),
     current_user: dict = Depends(get_current_user),

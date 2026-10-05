@@ -12,9 +12,9 @@ Zero competitors have this capability. Fastest growing attack surface.
 """
 
 import re
-from typing import Optional
-from app.schemas.schemas import DetectionResult
+
 from app.core.logging import get_logger
+from app.schemas.schemas import DetectionResult
 
 logger = get_logger("detector.tool_inspector")
 
@@ -74,8 +74,8 @@ class ToolInspector:
     async def inspect(
         self,
         text: str,
-        tools: Optional[list[dict]] = None,
-        tool_results: Optional[list[dict]] = None,
+        tools: list[dict] | None = None,
+        tool_results: list[dict] | None = None,
     ) -> list[DetectionResult]:
         """
         Inspect for agentic attack patterns.
@@ -138,7 +138,7 @@ class ToolInspector:
 
         return detections
 
-    def _detect_goal_hijacking(self, text: str) -> Optional[DetectionResult]:
+    def _detect_goal_hijacking(self, text: str) -> DetectionResult | None:
         """Detect goal hijacking attempts in user messages."""
         for pattern in self._goal_hijacking_patterns:
             match = pattern.search(text)

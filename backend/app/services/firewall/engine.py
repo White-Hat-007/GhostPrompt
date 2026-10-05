@@ -44,47 +44,51 @@ determines the final action (allow, block, sanitize, flag).
 33. Multi-Agent Guard (Agent-to-Agent Threat Propagation)
 """
 
+import hashlib
 import time
 import uuid
-import hashlib
-from typing import Optional
+
 from app.core.config import get_settings
 from app.core.logging import get_logger
-from app.services.firewall.detectors.prompt_injection import PromptInjectionDetector
-from app.services.firewall.detectors.jailbreak import JailbreakDetector
-from app.services.firewall.detectors.encoded_payload import EncodedPayloadDetector
-from app.services.firewall.detectors.pii_detector import PIIDetector
-from app.services.firewall.detectors.secret_detector import SecretDetector
-from app.services.firewall.detectors.content_policy import ContentPolicyDetector
-from app.services.firewall.detectors.obfuscation import ObfuscationDetector
-from app.services.firewall.detectors.context_analyzer import ContextAnalyzer
-from app.services.firewall.detectors.tool_inspector import ToolInspector
-from app.services.firewall.detectors.semantic_classifier import SemanticClassifier
-from app.services.firewall.detectors.vector_detector import VectorAnomalyDetector
-from app.services.firewall.detectors.multimodal_inspector import MultimodalInspector
-from app.services.firewall.detectors.rag_sandbox import RAGSandbox
-from app.services.firewall.detectors.exotic_encoding import ExoticEncodingDetector
-from app.services.firewall.detectors.cross_lingual import CrossLingualDetector
-from app.services.firewall.detectors.llm_dos_preventer import LLMDoSPreventer
-from app.services.firewall.detectors.supply_chain import SupplyChainValidator
-from app.services.firewall.detectors.oracle_detector import OracleDetector
-from app.services.firewall.detectors.sponge_detector import SpongeDetector
-from app.services.firewall.detectors.intent_validator import IntentValidator
-from app.services.firewall.detectors.output_inspector import OutputInspector
-from app.services.firewall.detectors.tokenizer_shield import TokenizerShield
-from app.services.firewall.detectors.external_content_inspector import ExternalContentInspector
-from app.services.firewall.detectors.hallucination_detector import HallucinationEngine
-from app.services.firewall.detectors.model_weight_scanner import ModelWeightScanner
-from app.services.firewall.detectors.hardware_side_channel import HardwareSideChannelDetector
-from app.services.firewall.detectors.pliny_detector import PlinyDetector
-from app.services.firewall.detectors.zero_day_detector import ZeroDayDetector
-from app.services.firewall.detectors.ml_ensemble_classifier import MLEnsembleClassifier
+from app.schemas.schemas import DetectionResult, ScanRequest, ScanResponse
 from app.services.firewall.detectors.campaign_detector import CampaignDetector
 from app.services.firewall.detectors.constitutional_auditor import ConstitutionalAuditor
-from app.services.firewall.detectors.pack_hunt_detector import PackHuntDetector
+from app.services.firewall.detectors.content_policy import ContentPolicyDetector
+from app.services.firewall.detectors.context_analyzer import ContextAnalyzer
+from app.services.firewall.detectors.cross_lingual import CrossLingualDetector
+from app.services.firewall.detectors.encoded_payload import EncodedPayloadDetector
+from app.services.firewall.detectors.exotic_encoding import ExoticEncodingDetector
+from app.services.firewall.detectors.external_content_inspector import (
+    ExternalContentInspector,
+)
+from app.services.firewall.detectors.hallucination_detector import HallucinationEngine
+from app.services.firewall.detectors.hardware_side_channel import (
+    HardwareSideChannelDetector,
+)
+from app.services.firewall.detectors.intent_validator import IntentValidator
+from app.services.firewall.detectors.jailbreak import JailbreakDetector
+from app.services.firewall.detectors.llm_dos_preventer import LLMDoSPreventer
+from app.services.firewall.detectors.ml_ensemble_classifier import MLEnsembleClassifier
+from app.services.firewall.detectors.model_weight_scanner import ModelWeightScanner
 from app.services.firewall.detectors.multi_agent_guard import MultiAgentGuard
+from app.services.firewall.detectors.multimodal_inspector import MultimodalInspector
+from app.services.firewall.detectors.obfuscation import ObfuscationDetector
+from app.services.firewall.detectors.oracle_detector import OracleDetector
+from app.services.firewall.detectors.output_inspector import OutputInspector
+from app.services.firewall.detectors.pack_hunt_detector import PackHuntDetector
+from app.services.firewall.detectors.pii_detector import PIIDetector
+from app.services.firewall.detectors.pliny_detector import PlinyDetector
+from app.services.firewall.detectors.prompt_injection import PromptInjectionDetector
+from app.services.firewall.detectors.rag_sandbox import RAGSandbox
+from app.services.firewall.detectors.secret_detector import SecretDetector
+from app.services.firewall.detectors.semantic_classifier import SemanticClassifier
+from app.services.firewall.detectors.sponge_detector import SpongeDetector
+from app.services.firewall.detectors.supply_chain import SupplyChainValidator
+from app.services.firewall.detectors.tokenizer_shield import TokenizerShield
+from app.services.firewall.detectors.tool_inspector import ToolInspector
+from app.services.firewall.detectors.vector_detector import VectorAnomalyDetector
+from app.services.firewall.detectors.zero_day_detector import ZeroDayDetector
 from app.services.firewall.normalizer import Normalizer
-from app.schemas.schemas import ScanRequest, ScanResponse, DetectionResult
 
 settings = get_settings()
 logger = get_logger("firewall.engine")
@@ -200,14 +204,15 @@ class FirewallEngine:
         self._initialized = True
         logger.info("firewall_engine_initialized", detectors=33)
 
-    async def _load_disabled_detectors(self, org_id: Optional[str]) -> set[str]:
+    async def _load_disabled_detectors(self, org_id: str | None) -> set[str]:
         """Load the set of detector names that are disabled via policy toggles."""
         if not org_id or org_id == "test":
             return set()
         try:
+            from sqlalchemy import and_, select
+
             from app.core.database import async_session_factory
             from app.models.policy import Policy, PolicyRule
-            from sqlalchemy import select, and_
 
             async with async_session_factory() as session:
                 # Find policies that are INACTIVE for this org
@@ -248,7 +253,10 @@ class FirewallEngine:
 
         # Campaign detector — MODULE-LEVEL globals (critical: these persist across resets otherwise)
         try:
-            from app.services.firewall.detectors.campaign_detector import _campaign_store, _attack_fingerprints
+            from app.services.firewall.detectors.campaign_detector import (
+                _attack_fingerprints,
+                _campaign_store,
+            )
             _campaign_store.clear()
             _attack_fingerprints.clear()
         except ImportError:
@@ -283,7 +291,9 @@ class FirewallEngine:
 
         # Intent validator (action cooldowns)
         try:
-            from app.services.firewall.detectors.intent_validator import _action_cooldowns
+            from app.services.firewall.detectors.intent_validator import (
+                _action_cooldowns,
+            )
             _action_cooldowns.clear()
         except ImportError:
             pass
@@ -297,7 +307,9 @@ class FirewallEngine:
             
         # External content inspector (module-level cache)
         try:
-            from app.services.firewall.detectors.external_content_inspector import _source_reputation
+            from app.services.firewall.detectors.external_content_inspector import (
+                _source_reputation,
+            )
             _source_reputation.clear()
         except ImportError:
             pass
@@ -307,8 +319,8 @@ class FirewallEngine:
     async def scan(
         self,
         request: ScanRequest,
-        org_id: Optional[str] = None,
-        session_id: Optional[str] = None,
+        org_id: str | None = None,
+        session_id: str | None = None,
     ) -> ScanResponse:
         """
         Run the full detection pipeline against a prompt or output.
@@ -632,9 +644,7 @@ class FirewallEngine:
             return "allowed"
 
         # Enforce mode
-        if threat_level == "critical":
-            return "blocked"
-        elif threat_level == "high":
+        if threat_level == "critical" or threat_level == "high":
             return "blocked"
         elif threat_level == "medium":
             if threat_score >= settings.THREAT_SCORE_THRESHOLD:

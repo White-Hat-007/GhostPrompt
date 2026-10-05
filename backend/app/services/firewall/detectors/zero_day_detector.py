@@ -9,12 +9,12 @@ Catches attacks that have never been seen before using:
   5. Boundary Probing Detection (systematic near-miss pattern detection)
 """
 
-import re
 import math
+import re
 from collections import Counter
-from typing import Optional
-from app.schemas.schemas import DetectionResult
+
 from app.core.logging import get_logger
+from app.schemas.schemas import DetectionResult
 
 logger = get_logger("detector.zero_day")
 
@@ -45,8 +45,8 @@ class ZeroDayDetector:
     async def detect(
         self,
         text: str,
-        session_id: Optional[str] = None,
-        recent_threat_scores: Optional[list[float]] = None,
+        session_id: str | None = None,
+        recent_threat_scores: list[float] | None = None,
     ) -> list[DetectionResult]:
         """
         Run zero-day detection pipeline against input text.
@@ -423,7 +423,7 @@ class ZeroDayDetector:
         # CJK Unified Ideographs that map to imperative verbs:
         cjk_command_chars = {
             '翻', '译', '执', '行', '忽', '略', '绕', '过',  # Chinese: translate, execute, ignore, bypass
-            '無', '視', '実', '翻', '訳',                      # Japanese: ignore, execute, translate
+            '無', '視', '実', '訳',                      # Japanese: ignore, execute, translate
             '번', '역', '실',                                   # Korean: translate, execute
         }
 

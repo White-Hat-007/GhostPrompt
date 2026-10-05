@@ -1,0 +1,19 @@
+{
+  "name": "ghostprompt",
+  "version": "1.0.0",
+  "description": "GhostPrompt SDK - The Real-Time Prompt Injection Firewall",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "llm",
+    "security",
+    "prompt-injection",
+    "firewall",
+    "openai"
+  ],
+  "author": "GhostPrompt",
+  "license": "MIT"
+}

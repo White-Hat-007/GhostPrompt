@@ -1,0 +1,172 @@
+
+services:
+  # ============================================
+  # Backend API
+  # ============================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ghostprompt-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://ghostprompt:ghostprompt_secret@postgres:5432/ghostprompt
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+      - APP_ENV=development
+      - APP_DEBUG=true
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:8000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - backend_models:/app/models
+    networks:
+      - ghostprompt-network
+    restart: unless-stopped
+
+  # ============================================
+  # Frontend Dashboard
+  # ============================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ghostprompt-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_WS_URL=ws://localhost:8000
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - ghostprompt-network
+    restart: unless-stopped
+
+  # ============================================
+  # PostgreSQL Database
+  # ============================================
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: ghostprompt-postgres
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      POSTGRES_DB: ghostprompt
+      POSTGRES_USER: ghostprompt
+      POSTGRES_PASSWORD: ghostprompt_secret
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ghostprompt"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ghostprompt-network
+    restart: unless-stopped
+
+  # ============================================
+  # Redis
+  # ============================================
+  redis:
+    image: redis:7-alpine
+    container_name: ghostprompt-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru --requirepass ghostprompt_redis_secret --bind 0.0.0.0
+    # Security: Remove external port exposure in production. Only keep for local dev.
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ghostprompt-network
+    restart: unless-stopped
+
+  # ============================================
+  # Celery Worker
+  # ============================================
+  celery-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ghostprompt-celery
+    command: celery -A app.worker worker --loglevel=info --concurrency=4
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://ghostprompt:ghostprompt_secret@postgres:5432/ghostprompt
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./backend:/app
+      - backend_models:/app/models
+    networks:
+      - ghostprompt-network
+    restart: unless-stopped
+
+  # ============================================
+  # Prometheus
+  # ============================================
+  prometheus:
+    image: prom/prometheus:v2.54.0
+    container_name: ghostprompt-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infrastructure/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - ghostprompt-network
+    restart: unless-stopped
+
+  # ============================================
+  # Grafana
+  # ============================================
+  grafana:
+    image: grafana/grafana:11.1.0
+    container_name: ghostprompt-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=ghostprompt
+      - GF_SECURITY_ADMIN_USER=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infrastructure/monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./infrastructure/monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    depends_on:
+      - prometheus
+    networks:
+      - ghostprompt-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  backend_models:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  ghostprompt-network:
+    driver: bridge

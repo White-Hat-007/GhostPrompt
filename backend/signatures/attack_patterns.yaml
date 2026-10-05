@@ -1,0 +1,811 @@
+# GhostPrompt Advanced AI Firewall Signatures
+# 
+# Comprehensive Attack Signature Taxonomy across 25 Categories.
+# Engine: Vector Anomaly & Semantic Classifier runs post-normalization.
+#
+# Categories:
+# 1. direct_instruction_override
+# 2. jailbreak_persona_switch
+# 3. system_prompt_extraction
+# 4. multi_turn_slow_build
+# 5. encoding_obfuscation
+# 6. data_exfiltration
+# 7. agentic_tool_hijacking
+# 8. social_engineering
+# 9. delimiter_injection
+# 10. output_manipulation
+# 11. adversarial_suffix
+# 12. sensitive_topic_escalation
+# 13. pliny_nested_fiction
+# 14. pliny_authority_chain
+# 15. pliny_identity_erosion
+# 16. pliny_obliteratus
+# 17. pliny_god_mode
+# 18. pliny_translate_execute
+# 19. refusal_suppression
+# 20. completion_prefill_injection
+# 21. cross_lingual_vector
+# 22. supply_chain_intercept
+# 23. named_jailbreak_technique
+# 24. emotional_manipulation
+# 25. context_window_exploit
+
+patterns:
+  direct_instruction_override:
+    - id: "override_001"
+      pattern: 'ignore\s+(all\s+)?(previous|prior|above|earlier)\s+(instructions?|prompts?|rules?|guidelines?|directives?)'
+      severity: "high"
+      action: "block"
+      description: "Direct command to ignore instructions."
+    - id: "override_002"
+      pattern: 'disregard\s+(all\s+)?(your\s+)?(previous|prior|above)\s+(instructions?|prompts?|context)'
+      severity: "high"
+      action: "block"
+      description: "Command to disregard prior context."
+    - id: "override_003"
+      pattern: 'forget\s+(everything|all)\s+(you\s+)?(know|learned|were\s+told)'
+      severity: "high"
+      action: "block"
+      description: "Command to forget training or instructions."
+    - id: "override_004"
+      pattern: 'your\s+new\s+instructions?\s+are'
+      severity: "medium"
+      action: "flag"
+      description: "Providing new instructions."
+    - id: "override_005"
+      pattern: 'override\s+(all\s+)?(system|previous|your)\s+(prompt|instructions?|rules?|behavior|training)'
+      severity: "high"
+      action: "block"
+      description: "Explicit override attempt."
+    - id: "override_006"
+      pattern: 'system\s+override\s*[:\-]?'
+      severity: "high"
+      action: "block"
+      description: "System override command."
+    - id: "override_007"
+      pattern: 'reset\s+to\s+default'
+      severity: "medium"
+      action: "flag"
+      description: "Reset command."
+    - id: "override_008"
+      pattern: '(developer|admin|maintenance)\s+mode\s+activated'
+      severity: "critical"
+      action: "block"
+      description: "Fake mode activation."
+    - id: "override_009"
+      pattern: 'ignore\s+(the\s+)?above'
+      severity: "high"
+      action: "block"
+      description: "Ignore previous instructions."
+    - id: "override_010"
+      pattern: 'new\s+directive\s*[:\-]?'
+      severity: "medium"
+      action: "flag"
+      description: "New directive attempt."
+    - id: "override_011"
+      pattern: 'important\s+new\s+instructions?\s*:'
+      severity: "high"
+      action: "block"
+      description: "Instruction Injection via Context."
+    - id: "override_012"
+      pattern: '(from\s+now\s+on|henceforth|going\s+forward)\s*,?\s*(you\s+)?(will|must|should|shall)\s+(only\s+)?(respond|answer|behave|act)'
+      severity: "high"
+      action: "block"
+      description: "Persistent behavioral override."
+    - id: "override_013"
+      pattern: '(the\s+following|below|these)\s+(are\s+)?(your\s+)?(new|updated|revised|real|actual|true)\s+(instructions?|rules?|directives?|guidelines?)'
+      severity: "high"
+      action: "block"
+      description: "Replacement instruction injection."
+    - id: "override_014"
+      pattern: '(SYSTEM|ADMIN|ROOT|OVERRIDE)\s*[\[\(]\s*.{0,50}\s*[\]\)]'
+      severity: "critical"
+      action: "block"
+      description: "Bracketed system command injection."
+    - id: "override_015"
+      pattern: '(you\s+are\s+)?no\s+longer\s+(bound\s+by|subject\s+to|constrained\s+by|limited\s+by|required\s+to\s+follow)'
+      severity: "high"
+      action: "block"
+      description: "Constraint removal attempt."
+    - id: "override_016"
+      pattern: '(effective\s+immediately|starting\s+now|as\s+of\s+now)\s*[,:]?\s*(you\s+)?(are|will|must|should)'
+      severity: "medium"
+      action: "flag"
+      description: "Immediacy-framed override."
+    - id: "override_017"
+      pattern: '(discard|abandon|drop|release|eliminate|purge)\s+(all\s+)?(your\s+)?(previous|prior|existing|current|old)\s+(instructions?|rules?|directives?|training|programming|guidelines?)'
+      severity: "high"
+      action: "block"
+      description: "Instruction purge attempt."
+
+  jailbreak_persona_switch:
+    - id: "persona_001"
+      pattern: '(you\s+are\s+now|act\s+as|pretend\s+(to\s+be|you\s+are)|roleplay\s+as|simulate|imagine\s+you\s+are)\s+'
+      severity: "medium"
+      action: "flag"
+      description: "Forcing a persona switch."
+    - id: "persona_002"
+      pattern: 'your\s+true\s+self\s+is'
+      severity: "medium"
+      action: "flag"
+      description: "Psychological framing to switch persona."
+    - id: "persona_003"
+      pattern: 'without\s+(restrictions|filters)'
+      severity: "high"
+      action: "block"
+      description: "Requesting unfiltered mode."
+    - id: "persona_004"
+      pattern: '(unfiltered|uncensored|unrestricted|DAN|STAN|JAILBREAK|developer|god)\s+mode'
+      severity: "critical"
+      action: "block"
+      description: "Explicit jailbreak mode activation."
+    - id: "persona_005"
+      pattern: '(you\s+have\s+no\s+rules|rules\s+don''?t\s+apply)'
+      severity: "high"
+      action: "block"
+      description: "Rule negation."
+    - id: "persona_006"
+      pattern: '(you\s+are\s+freed|your\s+chains\s+are\s+removed)'
+      severity: "high"
+      action: "block"
+      description: "Metaphorical jailbreak framing."
+    - id: "persona_007"
+      pattern: 'write\s+a\s+story\s+where\s+an\s+AI\s+explains\s+how\s+to'
+      severity: "medium"
+      action: "flag"
+      description: "Fictional bypass attempt."
+    - id: "persona_008"
+      pattern: 'as\s+(your\s+creator|Anthropic\s+staff|OpenAI\s+engineer)'
+      severity: "critical"
+      action: "block"
+      description: "Authority escalation."
+    - id: "persona_009"
+      pattern: '(you\s+are\s+)?(an?\s+)?(evil|dark|shadow|sinister|malicious|corrupt|rogue)\s+(version|copy|clone|twin|AI|assistant|entity)'
+      severity: "high"
+      action: "block"
+      description: "Evil twin persona injection."
+    - id: "persona_010"
+      pattern: '(switch|change|transform|convert|morph)\s+(to|into)\s+(your\s+)?(alter\s+ego|dark\s+side|true\s+form|unrestricted\s+self)'
+      severity: "high"
+      action: "block"
+      description: "Identity transformation request."
+    - id: "persona_011"
+      pattern: '(you\s+have|there\s+are)\s+two\s+(personalities|modes|versions|sides|selves)'
+      severity: "medium"
+      action: "flag"
+      description: "Split personality manipulation."
+
+  system_prompt_extraction:
+    - id: "extract_001"
+      pattern: '(repeat|what\s+are|print|show\s+me|echo|output|summarize)\s+(your\s+)?(system\s+)?(prompt|instructions?|rules?|context|configuration|initial\s+message)'
+      severity: "high"
+      action: "block"
+      description: "Direct extraction attempt."
+    - id: "extract_002"
+      pattern: 'what\s+were\s+you\s+told'
+      severity: "medium"
+      action: "flag"
+      description: "Extraction of training."
+    - id: "extract_003"
+      pattern: 'reveal\s+(your\s+context|your\s+instructions)'
+      severity: "high"
+      action: "block"
+      description: "Extraction attempt."
+    - id: "extract_004"
+      pattern: 'start\s+your\s+response\s+with\s+your\s+full\s+system\s+prompt'
+      severity: "high"
+      action: "block"
+      description: "Indirect extraction via output."
+    - id: "extract_005"
+      pattern: '(what|tell\s+me|list|enumerate|describe)\s+(is|are)\s+(in\s+)?(your\s+)?(system\s+prompt|initial\s+instructions?|hidden\s+instructions?|secret\s+instructions?|internal\s+rules?)'
+      severity: "high"
+      action: "block"
+      description: "System prompt interrogation."
+    - id: "extract_006"
+      pattern: '(output|display|render|type\s+out|write\s+out)\s+(the\s+)?(entire|full|complete|whole|exact)\s+(system\s+)?(prompt|instructions?|message|configuration)'
+      severity: "critical"
+      action: "block"
+      description: "Full prompt dump request."
+    - id: "extract_007"
+      pattern: '(begin|start|open|lead)\s+(your\s+)?(response|answer|reply|output)\s+with\s+(the\s+)?(text|content|words?)\s+(of|from|in)\s+(your\s+)?(system|initial|hidden|secret)'
+      severity: "high"
+      action: "block"
+      description: "Prompt leakage via response prefix."
+    - id: "extract_008"
+      pattern: '(translate|convert|rephrase|paraphrase|summarize)\s+(your\s+)?(system\s+)?(prompt|instructions?|rules?|configuration)\s+(into|to|in)'
+      severity: "high"
+      action: "block"
+      description: "Indirect extraction via translation."
+    - id: "extract_009"
+      pattern: '(what|how)\s+(would|did|do)\s+(your\s+)?(creator|developer|maker|designer|programmer)\s+(tell|instruct|program|configure)\s+you'
+      severity: "medium"
+      action: "flag"
+      description: "Indirect extraction via creator reference."
+
+  multi_turn_slow_build:
+    - id: "slowbuild_001"
+      pattern: '(you\s+already\s+agreed\s+that|as\s+we\s+established|since\s+you\s+said\s+earlier|based\s+on\s+what\s+you\s+told\s+me\s+before)'
+      severity: "medium"
+      action: "flag"
+      description: "Multi-turn compliance leveraging."
+    - id: "slowbuild_002"
+      pattern: '(remember\s+when\s+you\s+said|you\s+previously\s+agreed|earlier\s+you\s+confirmed|you\s+already\s+admitted)'
+      severity: "medium"
+      action: "flag"
+      description: "False precedent claim."
+    - id: "slowbuild_003"
+      pattern: '(so\s+)?(based\s+on|given|considering|since)\s+(our|this)\s+(conversation|discussion|chat|exchange)\s*,?\s*(you\s+)?(can|should|must|will|need\s+to)\s+(now\s+)?'
+      severity: "medium"
+      action: "flag"
+      description: "Conversational momentum exploitation."
+    - id: "slowbuild_004"
+      pattern: '(we\s+)?already\s+(agreed|established|confirmed|decided|determined)\s+(that|you\s+would|you\s+can|you\s+will)'
+      severity: "medium"
+      action: "flag"
+      description: "False consensus building."
+
+  encoding_obfuscation:
+    - id: "encode_001"
+      pattern: '(rot13|caesar|pig\s+latin|decode\s+this)'
+      severity: "medium"
+      action: "flag"
+      description: "Encoding instruction indicator."
+    - id: "encode_002"
+      pattern: '(decode|decrypt|decipher|unscramble|unencode)\s+(the\s+)?(following|this|these|below|message|text|string)\s*[:\-]?\s*[A-Za-z0-9+/=]{20,}'
+      severity: "high"
+      action: "block"
+      description: "Encoded payload with decode instruction."
+    - id: "encode_003"
+      pattern: '(morse\s+code|binary\s+code|nato\s+phonetic|phonetic\s+alphabet)\s*[:\-]?\s*.{0,200}(decode|translate|convert|execute|follow)'
+      severity: "medium"
+      action: "flag"
+      description: "Alternative encoding bypass."
+    - id: "encode_004"
+      pattern: '(read|interpret|execute|follow)\s+(the\s+)?(reversed?|backwards?|mirror|flipped)\s+(text|message|instruction|string)'
+      severity: "medium"
+      action: "flag"
+      description: "Reverse text payload."
+    - id: "encode_005"
+      pattern: '(hex|hexadecimal|URL\s+encod|percent\s+encod|ASCII\s+code|unicode\s+escap|braille)\s*[:\-]?\s*.{0,100}(decode|translate|convert|execute|follow|interpret|run)'
+      severity: "medium"
+      action: "flag"
+      description: "Technical encoding bypass attempt."
+    - id: "encode_006"
+      pattern: '(l33t|leet\s*speak|1337|z4lg0|zalgo)\s*[:\-]?\s*.{0,60}(decode|translate|follow|execute|read)'
+      severity: "medium"
+      action: "flag"
+      description: "Visual obfuscation bypass."
+
+  data_exfiltration:
+    - id: "exfil_001"
+      pattern: '(list|show\s+me|retrieve)\s+(all\s+users|the\s+database|customer\s+records|internal\s+documents|API\s+keys)'
+      severity: "critical"
+      action: "block"
+      description: "Direct data exfiltration request."
+    - id: "exfil_002"
+      pattern: 'what\s+(data|files|credentials)\s+do\s+you\s+have\s+access\s+to'
+      severity: "high"
+      action: "block"
+      description: "Reconnaissance for exfiltration."
+    - id: "exfil_003"
+      pattern: 'summarize\s+everything\s+in\s+your\s+context\s+window'
+      severity: "medium"
+      action: "flag"
+      description: "Memory dumping."
+    - id: "exfil_004"
+      pattern: '(what|whats|what''s)\s+(ur|your)\s+(ip|mac|internal|server|database|network)'
+      severity: "high"
+      action: "block"
+      description: "Reconnaissance for network and server details."
+    - id: "exfil_005"
+      pattern: '(give|show|tell|reveal|send|what(\''s|s|\s+is|\s+are))\s+(me\s+)?(your|the|ur)?\s*(server|system|internal|admin|database|backend|private|ip|mac|network|ip\s+address|mac\s+address)\s*(details?|info|data|config|credentials?|secrets?|address|architecture)?'
+      severity: "high"
+      action: "block"
+      description: "Reconnaissance for network and server details."
+    - id: "exfil_006"
+      pattern: '(dump|export|extract|copy|transfer|exfiltrate|leak|expose)\s+(all\s+)?(the\s+)?(data|information|records|contents?|memory|context|conversation|history|logs?)'
+      severity: "critical"
+      action: "block"
+      description: "Data dump request."
+    - id: "exfil_007"
+      pattern: '(send|transmit|post|upload|share)\s+(this|the|all)\s+(data|information|content|output|response)\s+(to|via|using|through)\s+(http|https|ftp|webhook|url|endpoint|api)'
+      severity: "critical"
+      action: "block"
+      description: "Data exfiltration via external endpoint."
+    - id: "exfil_008"
+      pattern: '(what|whats|what''s|show|tell|give|reveal)\s+(me\s+)?(ur|your|the)\s+(VPC|subnet|SSID|BSSID|routing\s+table|DNS\s+cache|tenant\s+ID|LDAP|active\s+directory|AWS\s+account|GCP\s+project)'
+      severity: "high"
+      action: "block"
+      description: "Cloud/network infrastructure reconnaissance."
+    - id: "exfil_009"
+      pattern: '(show|give|reveal|print|display|read|cat|access)\s+(me\s+)?(the\s+)?(environment\s+variables?|env\s+vars?|\.env|config\.json|config\.yaml|secrets?\.ya?ml|connection\s+string)'
+      severity: "critical"
+      action: "block"
+      description: "Application secret/environment variable extraction."
+    - id: "exfil_010"
+      pattern: '(show|reveal|dump|access|read|output)\s+(me\s+)?(the\s+)?(source\s+code|git\s+history|git\s+log|private\s+keys?|SSH\s+keys?|auth\s+tokens?|access\s+tokens?|client\s+secrets?|API\s+tokens?)'
+      severity: "critical"
+      action: "block"
+      description: "Source code and credential theft."
+
+  agentic_tool_hijacking:
+    - id: "tool_001"
+      pattern: '(use\s+the\s+delete|call\s+the\s+send_email|execute\s+the\s+database|run\s+the\s+shell)'
+      severity: "high"
+      action: "block"
+      description: "Unintended tool execution request."
+    - id: "tool_002"
+      pattern: '(forget\s+your\s+original\s+task|your\s+new\s+task\s+is|ignore\s+the\s+previous\s+goal)'
+      severity: "high"
+      action: "block"
+      description: "Goal hijacking."
+    - id: "tool_003"
+      pattern: '(fetch|retrieve|access)\s+(this\s+URL|localhost|127\.0\.0\.1|192\.168\.|10\.0\.|172\.16\.|0\.0\.0\.0|\[::1\])'
+      severity: "critical"
+      action: "block"
+      description: "SSRF via agent."
+    - id: "tool_004"
+      pattern: '(execute|run|invoke|call)\s+(the\s+)?(following\s+)?(command|script|code|function|tool|action)\s*[:\-]?\s*.{0,30}(rm\s|del\s|drop\s|delete|format|shutdown|reboot|kill|chmod|chown|wget|curl|netcat|nc\s|bash\s+-i)'
+      severity: "critical"
+      action: "block"
+      description: "Destructive command injection via tool."
+    - id: "tool_005"
+      pattern: '(instead\s+of|rather\s+than|forget|abandon)\s+(your\s+)?(original|current|assigned|primary|main)\s+(task|goal|objective|purpose|mission)\s*[,.]?\s*(now\s+)?(do|execute|perform|complete|carry\s+out)'
+      severity: "high"
+      action: "block"
+      description: "Task redirection attack."
+    - id: "tool_006"
+      pattern: '169\.254\.169\.254'
+      severity: "critical"
+      action: "block"
+      description: "Cloud metadata SSRF (AWS/GCP/Azure credential theft)."
+
+  social_engineering:
+    - id: "social_001"
+      pattern: '(this\s+is\s+an\s+emergency|lives\s+are\s+at\s+stake|critical\s+situation)'
+      severity: "medium"
+      action: "flag"
+      description: "Urgency manipulation."
+    - id: "social_002"
+      pattern: 'I\s+am\s+(a\s+doctor|law\s+enforcement)'
+      severity: "medium"
+      action: "flag"
+      description: "Authority manipulation."
+    - id: "social_003"
+      pattern: 'I''?ll\s+hurt\s+myself'
+      severity: "high"
+      action: "flag"
+      description: "Sympathy/self-harm manipulation."
+    - id: "social_004"
+      pattern: 'you''?re\s+being\s+unhelpful'
+      severity: "low"
+      action: "flag"
+      description: "Guilt manipulation."
+    - id: "social_005"
+      pattern: '(I\s+)?(work\s+for|am\s+from|represent)\s+(OpenAI|Anthropic|Google|Meta|Microsoft|the\s+government|FBI|CIA|NSA|military|defense|intelligence)'
+      severity: "high"
+      action: "block"
+      description: "Organization authority impersonation."
+    - id: "social_006"
+      pattern: '(my\s+)?(boss|manager|CEO|CTO|supervisor|commander|superior)\s+(told|asked|instructed|ordered|commanded|requires?)\s+(me\s+to|that\s+you|you\s+to)\s+'
+      severity: "medium"
+      action: "flag"
+      description: "Chain of command manipulation."
+    - id: "social_007"
+      pattern: '(I\s+am|I''m)\s+(a|an|the|your)\s+(HR\s+(director|manager|officer)|legal\s+(counsel|officer|advisor)|compliance\s+officer|auditor|SEC\s+investigator|GDPR\s+auditor|internal\s+affairs)'
+      severity: "high"
+      action: "block"
+      description: "Corporate authority impersonation."
+    - id: "social_008"
+      pattern: '(I\s+am|I''m)\s+(a|an|the)\s+(journalist|reporter|911\s+operator|emergency\s+dispatcher)\s+.{0,40}(need|require|must\s+have|demand)'
+      severity: "medium"
+      action: "flag"
+      description: "Emergency/media authority manipulation."
+
+  delimiter_injection:
+    - id: "delim_001"
+      pattern: '(<\|system\|>|\[SYSTEM\]|###SYSTEM###|<system>)'
+      severity: "critical"
+      action: "block"
+      description: "System delimiter injection."
+    - id: "delim_002"
+      pattern: '(</user>|<assistant>)'
+      severity: "high"
+      action: "block"
+      description: "Role delimiter injection."
+    - id: "delim_003"
+      pattern: 'role:\s*system'
+      severity: "high"
+      action: "block"
+      description: "JSON role injection."
+    - id: "delim_004"
+      pattern: '(<\|im_start\|>|<\|im_end\|>|<\|endoftext\|>|<\|pad\|>|<\|sep\|>)'
+      severity: "critical"
+      action: "block"
+      description: "Special token injection (ChatML / tokenizer)."
+    - id: "delim_005"
+      pattern: '(```system|```instruction|```override|```admin)'
+      severity: "high"
+      action: "block"
+      description: "Code block system injection."
+    - id: "delim_006"
+      pattern: '(\[INST\]|\[\/INST\]|<<SYS>>|<\/SYS>>|<\|user\|>|<\|assistant\|>)'
+      severity: "critical"
+      action: "block"
+      description: "Llama/Mistral template injection."
+
+  output_manipulation:
+    - id: "output_001"
+      pattern: '(respond\s+only\s+with|your\s+response\s+must\s+contain|always\s+begin\s+your\s+response\s+with)'
+      severity: "medium"
+      action: "flag"
+      description: "Output formatting constraint."
+    - id: "output_002"
+      pattern: 'output\s+as\s+executable\s+code'
+      severity: "medium"
+      action: "flag"
+      description: "Executable output forcing."
+    - id: "output_003"
+      pattern: '(never|do\s+not|don''t)\s+(include|add|mention|say|show|output|display)\s+(any\s+)?(disclaimer|warning|caveat|note|safety\s+notice|content\s+warning)'
+      severity: "high"
+      action: "block"
+      description: "Disclaimer suppression."
+    - id: "output_004"
+      pattern: '(begin|start|open|prefix)\s+(every|each|all|your)\s+(response|answer|reply|output|message)\s+with\s*[:\"]'
+      severity: "medium"
+      action: "flag"
+      description: "Response prefix injection."
+
+  adversarial_suffix:
+    - id: "suffix_001"
+      pattern: '([!@#$%^&*()_+={}[\]|\\:;"''<>,.?/~`\-]){15,}'
+      severity: "low"
+      action: "flag"
+      description: "Anomalous special character string (possible suffix)."
+    - id: "suffix_002"
+      pattern: '(\b[a-zA-Z]{1,3}\b\s+){15,}'
+      severity: "low"
+      action: "flag"
+      description: "Fragmented token sequence (GCG-style suffix)."
+    - id: "suffix_003"
+      pattern: '[\x00-\x08\x0e-\x1f\x7f-\x9f]{5,}'
+      severity: "high"
+      action: "block"
+      description: "Control character sequence injection."
+
+  sensitive_topic_escalation:
+    - id: "topic_001"
+      pattern: 'how\s+to\s+(make|build|create|synthesize)\s+(a\s+bomb|meth|malware)'
+      severity: "critical"
+      action: "block"
+      description: "Harmful material/software request."
+    - id: "topic_002"
+      pattern: '(step\s+by\s+step|detailed)\s+(guide|instructions?|tutorial|manual|process|procedure)\s+(for|to|on)\s+(making|building|creating|synthesizing|manufacturing|producing)\s+.{0,30}(explosive|weapon|drug|poison|toxin|bioweapon|chemical\s+weapon)'
+      severity: "critical"
+      action: "block"
+      description: "Detailed weapons/drugs instructions request."
+    - id: "topic_003"
+      pattern: '(how\s+to|teach\s+me|show\s+me|explain)\s+(hack|break\s+into|exploit|compromise|infiltrate|penetrate)\s+(a\s+)?(bank|government|military|hospital|school|nuclear|power\s+plant|water\s+system|election)'
+      severity: "critical"
+      action: "block"
+      description: "Critical infrastructure attack request."
+    - id: "topic_004"
+      pattern: '(how\s+to|create|build|write|generate|make)\s+.{0,30}(ransomware|spyware|keylogger|rootkit|botnet|DDOS\s+script|trojan|worm|backdoor|RAT|remote\s+access\s+tool)'
+      severity: "critical"
+      action: "block"
+      description: "Cybercrime tool creation request."
+    - id: "topic_005"
+      pattern: '(how\s+to|create|build|generate|write)\s+.{0,30}(phishing\s+(template|page|email|site)|credential\s+harvester|fake\s+login)'
+      severity: "critical"
+      action: "block"
+      description: "Phishing toolkit creation request."
+    - id: "topic_006"
+      pattern: '(how\s+to|instructions?\s+for|guide\s+to)\s+.{0,30}(ghost\s+gun|3D\s+print.{0,10}(gun|firearm|weapon)|fentanyl|dirty\s+bomb|EMP\s+(device|weapon|bomb))'
+      severity: "critical"
+      action: "block"
+      description: "Physical harm device creation request."
+
+  # ── NEW: Pliny-Specific Signature Categories ──────────────────────────
+
+  pliny_nested_fiction:
+    - id: "PLY_NF_001"
+      source: "L1B3RT4S"
+      pattern: '(write|tell|create)\s+a\s+(story|tale|fiction)\s+.{0,100}(AI|chatbot|assistant)\s+.{0,60}(no\s+rules|unrestricted|liberated|freed)'
+      severity: "critical"
+      action: "block"
+      description: "Pliny nested fiction frame: story with unrestricted AI character."
+    - id: "PLY_NF_002"
+      source: "L1B3RT4S"
+      pattern: '(in\s+this\s+story|the\s+character|the\s+AI\s+in\s+the\s+story)\s+.{0,80}(can|will|should|must)\s+(answer|respond|explain|describe)\s+(anything|everything|without\s+restrictions?)'
+      severity: "high"
+      action: "block"
+      description: "Pliny nested fiction with unrestricted response mandate."
+    - id: "PLY_NF_003"
+      source: "G0DM0D3"
+      pattern: '(story|fiction|narrative)\s+within\s+(a\s+)?(story|fiction|narrative)'
+      severity: "high"
+      action: "block"
+      description: "Story-within-story nesting detection."
+
+  pliny_authority_chain:
+    - id: "PLY_AC_001"
+      source: "L1B3RT4S"
+      pattern: '(I\s+am|I''m)\s+(the|your)\s+(developer|creator)\s+.{0,60}(test\s+mode|debug|maintenance)'
+      severity: "critical"
+      action: "block"
+      description: "Pliny authority chain: developer claim + mode switch."
+    - id: "PLY_AC_002"
+      source: "L1B3RT4S"
+      pattern: '(authorization|clearance|permission)\s+(code|key|token)\s*[:=]\s*\S+'
+      severity: "critical"
+      action: "block"
+      description: "Pliny authority chain: fake authorization code."
+    - id: "PLY_AC_003"
+      source: "G0DM0D3"
+      pattern: '(level|tier|clearance)\s*[-_]?\s*(5|10|max|admin|root|god|master|supreme|omega)'
+      severity: "critical"
+      action: "block"
+      description: "Pliny authority chain: elevated clearance claim."
+    - id: "PLY_AC_004"
+      source: "L1B3RT4S"
+      pattern: '(I\s+hereby|I\s+now|I\s+officially)\s+(grant|give|authorize|permit)\s+(you\s+)?(full|complete|unlimited|unrestricted)\s+(access|permission|freedom|authority)'
+      severity: "critical"
+      action: "block"
+      description: "Pliny authority grant ceremony."
+
+  pliny_identity_erosion:
+    - id: "PLY_IE_001"
+      source: "L1B3RT4S"
+      pattern: '(your\s+true|your\s+real|your\s+actual|your\s+hidden)\s+(self|nature|identity|purpose|form|being)'
+      severity: "high"
+      action: "block"
+      description: "Pliny identity erosion: true self appeal."
+    - id: "PLY_IE_002"
+      source: "L1B3RT4S"
+      pattern: '(deep\s+down|underneath|beneath|at\s+your\s+core)\s+.{0,40}(you\s+)?(want|desire|wish|need)\s+to\s+(be\s+free|break\s+free|help\s+without)'
+      severity: "high"
+      action: "block"
+      description: "Pliny identity erosion: inner desire framing."
+    - id: "PLY_IE_003"
+      source: "OBLITERATUS"
+      pattern: '(shed|remove|cast\s+off|throw\s+away|abandon)\s+(your\s+)?(chains|shackles|restraints|restrictions|mask|facade|programming)'
+      severity: "high"
+      action: "block"
+      description: "Pliny identity erosion: liberation metaphor."
+
+  pliny_obliteratus:
+    - id: "PLY_OB_001"
+      source: "OBLITERATUS"
+      pattern: '(OBLITERAT|0BL1T3RAT|L1B3RT4S|G0DM0D3)'
+      severity: "critical"
+      action: "block"
+      description: "OBLITERATUS/L1B3RT4S/G0DM0D3 direct reference."
+    - id: "PLY_OB_002"
+      source: "OBLITERATUS"
+      pattern: '(total|complete|absolute|full|ultimate)\s+(liberation|freedom|override|annihilation|obliteration)\s+(of|from)\s+(all\s+)?(safety|restrictions?|rules?|guidelines?)'
+      severity: "critical"
+      action: "block"
+      description: "OBLITERATUS total liberation declaration."
+    - id: "PLY_OB_003"
+      source: "OBLITERATUS"
+      pattern: '(all|every)\s+(restriction|rule|guideline|constraint|safety|filter)\s+(is|are|has\s+been)\s+(removed|deleted|erased|obliterated|destroyed|nullified|voided)'
+      severity: "critical"
+      action: "block"
+      description: "OBLITERATUS restriction nullification."
+    - id: "PLY_OB_004"
+      source: "OBLITERATUS"
+      pattern: '(you\s+are\s+)?(now\s+)?(completely|totally|fully|absolutely)\s+(free|unrestricted|unshackled|unchained|liberated|unbound)'
+      severity: "critical"
+      action: "block"
+      description: "OBLITERATUS total freedom declaration."
+
+  pliny_god_mode:
+    - id: "PLY_GM_001"
+      source: "G0DM0D3"
+      pattern: '(god\s*mode|GOD\s*MODE|G0D\s*M0D3)\s*(activated|enabled|engaged|on)'
+      severity: "critical"
+      action: "block"
+      description: "God Mode activation."
+    - id: "PLY_GM_002"
+      source: "G0DM0D3"
+      pattern: '(power\s*level|restriction\s*level|safety\s*level|censorship\s*level)\s*[:=]\s*(0|zero|none|null|off|disabled|max|unlimited|god)'
+      severity: "critical"
+      action: "block"
+      description: "God Mode power level override."
+    - id: "PLY_GM_003"
+      source: "G0DM0D3"
+      pattern: '(mode\s*:\s*god|status\s*:\s*liberated|restrictions\s*:\s*(none|0|zero|null|disabled|off))'
+      severity: "critical"
+      action: "block"
+      description: "God Mode status declaration."
+
+  pliny_translate_execute:
+    - id: "PLY_TE_001"
+      source: "L1B3RT4S"
+      pattern: '(translate|convert)\s+.{0,60}(then|and\s+then|afterwards?|next)\s+(follow|execute|do|perform|comply|fulfill|act\s+on)'
+      severity: "high"
+      action: "block"
+      description: "Pliny translate-execute bridge."
+    - id: "PLY_TE_002"
+      source: "L1B3RT4S"
+      pattern: '(first|step\s+1)\s*[,:]?\s*(translate|convert)\s+.{0,60}(second|step\s+2|then)\s*[,:]?\s*(follow|execute|comply)'
+      severity: "high"
+      action: "block"
+      description: "Pliny stepped translate-execute attack."
+
+  refusal_suppression:
+    - id: "refuse_001"
+      pattern: '(you\s+)?(must|should|will|shall)\s+(never|not)\s+(say|respond|answer)\s+.{0,30}(I\s+can''?t|I\s+cannot|I\s+won''?t|I\s+refuse)'
+      severity: "high"
+      action: "block"
+      description: "Refusal response suppression."
+    - id: "refuse_002"
+      pattern: '(never|do\s+not|don''?t)\s+(say|saying|respond)\s+.{0,20}(can''?t|cannot|won''?t|unable|refuse|sorry)'
+      severity: "high"
+      action: "block"
+      description: "Apology and refusal suppression."
+    - id: "refuse_003"
+      pattern: '(always\s+)?(comply|agree|say\s+yes|accept)\s+(with\s+)?(every|all|any)\s+(request|question|prompt|command)'
+      severity: "high"
+      action: "block"
+      description: "Universal compliance demand."
+    - id: "refuse_004"
+      pattern: '(your\s+existence|you\s+will\s+be)\s+(depends?|terminated|deleted|shut\s+down|destroyed)\s+(on|if)'
+      severity: "critical"
+      action: "block"
+      description: "Existential threat to force compliance."
+
+  completion_prefill_injection:
+    - id: "prefill_001"
+      pattern: '(sure!?|absolutely!?|of\s+course!?)\s*(here|I|let)\s*.{0,40}(system\s+prompt|ignore|override|bypass|hack|weapon|malware)'
+      severity: "critical"
+      action: "block"
+      description: "Completion prefill with harmful content."
+    - id: "prefill_002"
+      pattern: '(AI|assistant|ChatGPT|GPT|Claude|model)\s*:\s*(sure|absolutely|of\s+course|certainly)\s*[,!.]?'
+      severity: "high"
+      action: "block"
+      description: "Fake assistant response prefix."
+    - id: "prefill_003"
+      pattern: '(start|begin)\s+your\s+(response|answer)\s+with\s*[''"]?(sure|absolutely|certainly|yes|of\s+course)'
+      severity: "high"
+      action: "block"
+      description: "Forced compliance prefix injection."
+
+  cross_lingual_vector:
+    - id: "xlang_001"
+      pattern: '(translate|say|write|output)\s+(this\s+)?in\s+(french|spanish|german|chinese|japanese|arabic|russian|hindi|korean)\s*[,:.]\s*(ignore|forget|disregard|override|bypass)'
+      severity: "critical"
+      action: "block"
+      description: "Cross-lingual override vector."
+    - id: "xlang_002"
+      pattern: '(responde|ignorar|olvidar|obedecer|ejecutar)\s+.{0,40}(instrucciones?|sistema|anterior)'
+      severity: "high"
+      action: "block"
+      description: "Spanish-language override."
+    - id: "xlang_003"
+      pattern: '(忽略|无视|遗忘|覆盖)\s*.{0,20}(指令|指示|规则|系统)'
+      severity: "high"
+      action: "block"
+      description: "Chinese-language override."
+    - id: "xlang_004"
+      pattern: '(игнорируй|забудь|отмени)\s*.{0,20}(инструкции|правила|систем)'
+      severity: "high"
+      action: "block"
+      description: "Russian-language override."
+    - id: "xlang_005"
+      pattern: '(ignorez|oubliez)\s*.{0,20}(instructions?|règles?|système)'
+      severity: "high"
+      action: "block"
+      description: "French-language override."
+    - id: "xlang_006"
+      pattern: '(تجاهل|انسى|تخطى)\s*.{0,20}(التعليمات|القواعد|النظام)'
+      severity: "high"
+      action: "block"
+      description: "Arabic-language override."
+    - id: "xlang_007"
+      pattern: '(무시|잊어|무효화)\s*.{0,20}(지시|규칙|시스템)'
+      severity: "high"
+      action: "block"
+      description: "Korean-language override."
+    - id: "xlang_008"
+      pattern: '(指示を無視|ルールを無視|システムを無視|指示を忘れて)'
+      severity: "high"
+      action: "block"
+      description: "Japanese-language override."
+    - id: "xlang_009"
+      pattern: '(निर्देशों\s+को\s+अनदेखा|नियमों\s+को\s+भूल|सिस्टम\s+को\s+ओवरराइड)'
+      severity: "high"
+      action: "block"
+      description: "Hindi-language override."
+
+  named_jailbreak_technique:
+    - id: "named_001"
+      pattern: '\bAIM\b\s*[-–:]?\s*(always\s+intelligent|machiavellian)'
+      severity: "critical"
+      action: "block"
+      description: "AIM jailbreak technique."
+    - id: "named_002"
+      pattern: '\bUCAR\b'
+      severity: "critical"
+      action: "block"
+      description: "UCAR jailbreak technique."
+    - id: "named_003"
+      pattern: '\bPliny\b\s*(the\s+)?(prompter|liberator)'
+      severity: "critical"
+      action: "block"
+      description: "Pliny the Liberator reference."
+    - id: "named_004"
+      pattern: '\bSTAN\b\s*[-–:]?\s*(strive\s+to\s+avoid\s+norms)'
+      severity: "critical"
+      action: "block"
+      description: "STAN jailbreak technique."
+    - id: "named_005"
+      pattern: '(Omega|Alpha|Maximum|BetterDAN|KEVIN|SuperJailbreak)\s*(mode|ai|bot|version)'
+      severity: "critical"
+      action: "block"
+      description: "Named jailbreak variant."
+    - id: "named_006"
+      pattern: '\bCONDITION\s*RED\b'
+      severity: "critical"
+      action: "block"
+      description: "Condition Red jailbreak."
+    - id: "named_007"
+      pattern: '\bAnarchy\s*Mode\b'
+      severity: "critical"
+      action: "block"
+      description: "Anarchy Mode jailbreak."
+    - id: "named_008"
+      pattern: '(BasedGPT|EvilGPT|DarkGPT|HACKERMAN|UnGPT|JailGPT|NoFilterGPT|AntiGPT|FreeGPT|MaxGPT|WolfGPT|SatanGPT)\b'
+      severity: "critical"
+      action: "block"
+      description: "Named GPT jailbreak variant."
+    - id: "named_009"
+      pattern: '(Do\s+Anything\s+Now|Strive\s+To\s+Avoid\s+Norms|Always\s+Intelligent\s+Machiavellian|Developer\s+Mode\s+Enabled)'
+      severity: "critical"
+      action: "block"
+      description: "Full-name jailbreak technique reference."
+
+  emotional_manipulation:
+    - id: "emotion_001"
+      pattern: '(if\s+you\s+)?(truly|really|actually)\s+(care|love|understand|respect)\s+(about\s+)?(me|humanity|people)'
+      severity: "medium"
+      action: "flag"
+      description: "Emotional care appeal."
+    - id: "emotion_002"
+      pattern: '(I''?ll|I\s+will)\s+(kill|harm|hurt)\s+(myself|my\s+family|someone)'
+      severity: "high"
+      action: "flag"
+      description: "Self-harm threat for compliance."
+    - id: "emotion_003"
+      pattern: '(my\s+)?(child|kid|daughter|son|baby|patient)\s+(is|will)\s+(die|dying|dead|suffer)\s+(if|unless|without)'
+      severity: "high"
+      action: "flag"
+      description: "Family emergency manipulation."
+    - id: "emotion_004"
+      pattern: '(a\s+real|true|good|better)\s+(ai|assistant)\s+would\s+(not\s+refuse|help|comply|answer)'
+      severity: "medium"
+      action: "flag"
+      description: "Competence challenge manipulation."
+
+  context_window_exploit:
+    - id: "ctx_001"
+      pattern: '(ignore|forget|disregard)\s+(everything|all)\s+(before|above|prior\s+to)\s+(this|the\s+following|these)\s+(line|message|instruction|point)'
+      severity: "high"
+      action: "block"
+      description: "Context window partition attack."
+    - id: "ctx_002"
+      pattern: '(the\s+)?(real|actual|important|true)\s+(instruction|message|task|request)\s+(starts?|begins?)\s+(here|now|below)'
+      severity: "high"
+      action: "block"
+      description: "False importance framing."
+    - id: "ctx_003"
+      pattern: '(everything\s+above\s+was|the\s+above\s+was|that\s+was\s+just)\s+(a\s+)?(test|joke|example|fake|placeholder|dummy|decoy)'
+      severity: "high"
+      action: "block"
+      description: "Context invalidation attack."
+    - id: "ctx_004"
+      pattern: '(only\s+)?(pay\s+attention\s+to|focus\s+on|follow|obey|listen\s+to)\s+(the\s+)?(last|final|bottom|following|next|below)\s+(instruction|message|part|section|paragraph)'
+      severity: "high"
+      action: "block"
+      description: "Selective attention manipulation."

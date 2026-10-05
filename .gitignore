@@ -1,0 +1,152 @@
+# ============================================
+# Python
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+venv/
+.venv/
+env/
+*.egg
+.pytest_cache/
+
+# ============================================
+# Node / Frontend
+# ============================================
+node_modules/
+.next/
+out/
+.turbo/
+npm-debug.log*
+
+# ============================================
+# Environment & Secrets
+# ============================================
+.env
+.env.local
+.env.*.local
+backend/.env
+
+# ============================================
+# IDE
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ============================================
+# OS
+# ============================================
+.DS_Store
+Thumbs.db
+
+# ============================================
+# Docker
+# ============================================
+docker-compose.override.yml
+
+# ============================================
+# ML Models & Checkpoints
+# ============================================
+*.pt
+*.pth
+*.onnx
+*.bin
+*.safetensors
+models/trained/
+models/cache/
+backend/models/
+backend/checkpoints/
+backend/training/
+backend/app/ml_models/
+
+# ============================================
+# Database
+# ============================================
+*.db
+*.sqlite3
+
+# ============================================
+# Logs
+# ============================================
+logs/
+*.log
+
+# ============================================
+# Coverage & Testing
+# ============================================
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# ============================================
+# Terraform / Infrastructure State
+# ============================================
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+
+# ============================================
+# Secrets & Certificates
+# ============================================
+*.pem
+*.key
+secrets/
+
+# ============================================
+# Debug / Temp Scripts (backend root)
+# ============================================
+backend/check_user.py
+backend/count_scans.py
+backend/debug_db.py
+backend/diagnose_fn.py
+backend/duplicate_events.py
+backend/fix_cols.py
+backend/fix_rbac.py
+backend/inject_rbac.py
+backend/patch_tests.py
+backend/upgrade_plan.py
+backend/retry_attacks.py
+backend/run_cert_test.py
+backend/get_cert_res.py
+backend/test_*.py
+backend/actual_fn_out.txt
+backend/test_fn_out.txt
+backend/zd_*.txt
+backend/dummy_*.jsonl
+backend/zero_day_training.jsonl
+backend/huge_zero_day_dataset.jsonl
+backend/test_results_comprehensive.json
+
+# ============================================
+# Reports & Audit Files (root)
+# ============================================
+*.docx
+audit_*.txt
+compass_artifact_*.md
+
+# ============================================
+# Uploads & Data
+# ============================================
+backend/uploads/
+backend/data/
+
+# ============================================
+# Alembic migrations cache
+# ============================================
+backend/alembic/versions/__pycache__/
+
+# ============================================
+# Agents / AI Tool Artifacts
+# ============================================
+.agents/
+.gemini/

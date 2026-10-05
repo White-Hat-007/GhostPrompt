@@ -1,0 +1,126 @@
+# GhostPrompt Helm Chart Values
+
+replicaCount:
+  backend: 3
+  frontend: 2
+  worker: 2
+
+image:
+  backend:
+    repository: ghostprompt/backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  frontend:
+    repository: ghostprompt/frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+
+service:
+  backend:
+    type: ClusterIP
+    port: 8000
+  frontend:
+    type: ClusterIP
+    port: 3000
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+  hosts:
+    - host: api.ghostprompt.ai
+      paths:
+        - path: /
+          pathType: Prefix
+          service: backend
+    - host: app.ghostprompt.ai
+      paths:
+        - path: /
+          pathType: Prefix
+          service: frontend
+  tls:
+    - secretName: ghostprompt-tls
+      hosts:
+        - api.ghostprompt.ai
+        - app.ghostprompt.ai
+
+resources:
+  backend:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+  frontend:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  worker:
+    requests:
+      cpu: 500m
+      memory: 2Gi
+    limits:
+      cpu: 2000m
+      memory: 8Gi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 50
+  targetCPU: 70
+  targetMemory: 80
+
+postgresql:
+  enabled: true
+  auth:
+    database: ghostprompt
+    username: ghostprompt
+    existingSecret: ghostprompt-db-secret
+  primary:
+    persistence:
+      size: 100Gi
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1Gi
+
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: false
+  master:
+    persistence:
+      size: 10Gi
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+
+monitoring:
+  prometheus:
+    enabled: true
+  grafana:
+    enabled: true
+    adminPassword: changeme
+
+config:
+  appEnv: production
+  firewallMode: enforce
+  threatScoreThreshold: 0.7
+  rateLimitPerMinute: 100
+  logLevel: INFO
+  logFormat: json
+
+secrets:
+  secretKey: ""
+  jwtSecretKey: ""
+  databaseUrl: ""
+  redisUrl: ""

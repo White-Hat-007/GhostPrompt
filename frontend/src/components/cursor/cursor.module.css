@@ -1,0 +1,213 @@
+/**
+ * GhostPrompt Cursor System — Layer Styles
+ *
+ * Five composited GPU layers. Each on its own will-change layer.
+ * All pointer-events: none. All positioned fixed at z-index: 2147483647.
+ *
+ * "Control is an illusion." — but this cursor isn't.
+ */
+
+/* ── Root Container ── */
+.gc-root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2147483647;
+  pointer-events: none;
+  overflow: hidden;
+
+  --cursor-primary: #00D4FF;
+  --cursor-accent: #00FF88;
+  --cursor-warn: #FF3B47;
+}
+
+/* ── Layer 1: Core Reticle ── */
+.gc-reticle {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  will-change: transform, opacity;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  transition: opacity 200ms ease-out;
+}
+
+/* Crosshair lines via pseudo-elements */
+.gc-reticle::before,
+.gc-reticle::after {
+  content: '';
+  position: absolute;
+  background-color: var(--reticle-color, #E8FAFF);
+  filter: drop-shadow(0 0 4px var(--reticle-glow, #00D4FF));
+}
+
+/* Horizontal crosshair: two 3px segments with 2px gap */
+.gc-reticle::before {
+  width: 8px;
+  height: 1px;
+  top: 0;
+  left: -4px;
+  /* Use clip-path to create the 2px center gap */
+  clip-path: polygon(
+    0 0, 37.5% 0, 37.5% 100%, 0 100%,
+    62.5% 0, 100% 0, 100% 100%, 62.5% 100%
+  );
+}
+
+/* Vertical crosshair */
+.gc-reticle::after {
+  width: 1px;
+  height: 8px;
+  top: -4px;
+  left: 0;
+  clip-path: polygon(
+    0 0, 100% 0, 100% 37.5%, 0 37.5%,
+    0 62.5%, 100% 62.5%, 100% 100%, 0 100%
+  );
+}
+
+/* Center dot — rendered via box-shadow on the element itself */
+.gc-reticle {
+  box-shadow: 0 0 0 1px var(--reticle-color, #E8FAFF);
+  width: 2px;
+  height: 2px;
+  margin-left: -1px;
+  margin-top: -1px;
+  border-radius: 0;
+  filter: drop-shadow(0 0 4px var(--reticle-glow, #00D4FF));
+}
+
+/* ── I-beam mode (input state) ── */
+.gc-reticle--ibeam {
+  position: fixed;
+  top: 0;
+  left: 0;
+  will-change: transform, opacity;
+  pointer-events: none;
+  mix-blend-mode: normal;
+  width: 2px;
+  height: 18px;
+  margin-left: -1px;
+  margin-top: -9px;
+  background-color: #00FF88;
+  box-shadow: 0 0 6px rgba(0, 255, 136, 0.5);
+  border-radius: 0;
+  filter: none;
+  transition: opacity 200ms ease-out;
+}
+
+.gc-reticle--ibeam::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 0;
+  height: 0;
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+  border-top: 3px solid #00FF88;
+  background: none;
+  filter: none;
+  clip-path: none;
+}
+
+.gc-reticle--ibeam::after {
+  content: none;
+}
+
+/* ── Layer 2: Tracking Ring ── */
+.gc-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 28px;
+  height: 28px;
+  margin-left: -14px;
+  margin-top: -14px;
+  border: 1px solid var(--cursor-primary);
+  border-radius: 50%;
+  will-change: transform, opacity, width, height;
+  pointer-events: none;
+  transition: width 180ms cubic-bezier(0.22, 1, 0.36, 1),
+              height 180ms cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 200ms ease-out;
+}
+
+/* Dynamic margin adjustment (JS sets width/height, this keeps it centered) */
+
+/* ── Layer 3: Outer Sweep ── */
+.gc-sweep {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 56px;
+  height: 56px;
+  margin-left: -28px;
+  margin-top: -28px;
+  border: 1px dashed var(--cursor-primary);
+  border-radius: 50%;
+  will-change: transform, opacity;
+  pointer-events: none;
+  transition: border-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
+              border-style 180ms ease,
+              opacity 200ms ease-out;
+}
+
+/* ── Layer 4: HUD Telemetry ── */
+.gc-hud {
+  position: fixed;
+  top: 0;
+  left: 0;
+  will-change: transform, opacity;
+  pointer-events: none;
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+  font-size: 10px;
+  line-height: 1.2;
+  color: var(--cursor-accent);
+  padding: 4px 8px;
+  padding-left: 10px;
+  border-left: 1px solid var(--cursor-accent);
+  background: rgba(10, 14, 26, 0.4);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 0 4px 4px 0;
+  white-space: nowrap;
+  transition: opacity 200ms ease-out;
+  user-select: none;
+}
+
+.gc-hud-coords {
+  display: block;
+  color: var(--cursor-accent);
+  opacity: 0.7;
+  letter-spacing: 0.5px;
+}
+
+.gc-hud-label {
+  display: block;
+  opacity: 0.9;
+  letter-spacing: 1px;
+  font-weight: 500;
+}
+
+/* ── Layer 5: Trail Canvas ── */
+.gc-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  will-change: contents;
+}
+
+/* ── Ring centering: dynamically set via JS, but default margin keeps it centered ── */
+.gc-ring {
+  /* The JS engine sets width/height dynamically. We need the margin to be half of that.
+     Since JS also sets the transform, the margin here is the default for 28px. */
+}

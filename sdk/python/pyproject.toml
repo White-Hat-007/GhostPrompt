@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ghostprompt"
+version = "1.0.0"
+description = "Official Python SDK for the GhostPrompt AI Runtime Security Platform"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+authors = [
+    {name = "GhostPrompt", email = "sdk@ghostprompt.ai"},
+]
+keywords = ["ai-security", "prompt-injection", "jailbreak", "llm-security", "ai-firewall"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "httpx>=0.25.0",
+]
+
+[project.optional-dependencies]
+async = ["httpx[http2]>=0.25.0"]
+dev = ["pytest", "pytest-asyncio", "pytest-cov", "ruff"]
+
+[project.urls]
+Homepage = "https://ghostprompt.ai"
+Documentation = "https://docs.ghostprompt.ai"
+Repository = "https://github.com/ghostprompt/ghostprompt-python"
+
+[tool.setuptools.packages.find]
+include = ["ghostprompt*"]

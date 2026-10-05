@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGlow" cx="50%" cy="45%" r="60%">
+      <stop offset="0%" stop-color="#141026" />
+      <stop offset="60%" stop-color="#080C14" />
+      <stop offset="100%" stop-color="#05070a" />
+    </radialGradient>
+    
+    <!-- Neon Glow Filter -->
+    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur1" />
+      <feGaussianBlur stdDeviation="12" result="blur2" />
+      <feMerge>
+        <feMergeNode in="blur2" />
+        <feMergeNode in="blur1" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="textGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur1" />
+      <feMerge>
+        <feMergeNode in="blur1" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    
+    <!-- Extreme Eye Glow Filter -->
+    <filter id="eyeGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="blur1" />
+      <feGaussianBlur stdDeviation="20" result="blur2" />
+      <feGaussianBlur stdDeviation="40" result="blur3" />
+      <feMerge>
+        <feMergeNode in="blur3" />
+        <feMergeNode in="blur2" />
+        <feMergeNode in="blur1" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    
+    <!-- Matrix Pattern inside ghost -->
+    <pattern id="matrixPattern" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(-5)">
+      <text x="0" y="20" fill="#6C5CE7" opacity="0.7" font-family="monospace" font-size="14" font-weight="bold">0 1</text>
+      <text x="20" y="40" fill="#A29BFE" opacity="0.4" font-family="monospace" font-size="12">1 0</text>
+      <text x="5" y="10" fill="#6C5CE7" opacity="0.9" font-family="monospace" font-size="16" font-weight="bold">1</text>
+      <text x="25" y="30" fill="#FFFFFF" opacity="0.5" font-family="monospace" font-size="14">0</text>
+    </pattern>
+
+    <!-- Scanline Pattern -->
+    <pattern id="scanlines" width="10" height="4" patternUnits="userSpaceOnUse">
+      <rect width="10" height="1" fill="#000000" opacity="0.4" />
+      <rect width="10" height="1" y="2" fill="#6C5CE7" opacity="0.03" />
+    </pattern>
+
+    <!-- Circuit Trace Pattern -->
+    <pattern id="circuitBg" width="300" height="300" patternUnits="userSpaceOnUse">
+      <path d="M 0,50 L 50,50 L 100,100 L 100,300 M 150,0 L 150,150 L 250,250 L 300,250 M 50,300 L 50,200 L 0,150" fill="none" stroke="#6C5CE7" stroke-width="1.5" opacity="0.1" />
+      <circle cx="50" cy="50" r="3" fill="#6C5CE7" opacity="0.2"/>
+      <circle cx="150" cy="150" r="3" fill="#6C5CE7" opacity="0.2"/>
+      <circle cx="250" cy="250" r="4" fill="#6C5CE7" opacity="0.2"/>
+    </pattern>
+  </defs>
+
+  <!-- Background Layer -->
+  <rect width="1920" height="1080" fill="url(#bgGlow)" />
+  
+  <!-- Background Circuits -->
+  <rect width="1920" height="1080" fill="url(#circuitBg)" />
+  
+  <!-- Subtle Vignette -->
+  <rect width="1920" height="1080" fill="none" stroke="#000000" stroke-width="150" opacity="0.5" />
+
+  <!-- Ghost Element (Center) -->
+  <g transform="translate(960, 420)">
+    
+    <!-- Ghost Body / Hood Silhouette -->
+    <!-- Creating a symmetrical ominous mask/hood shape -->
+    <path d="M -220,280 
+             C -280,100 -200,-180 0,-250 
+             C 200,-180 280,100 220,280 
+             C 180,350 120,300 80,360
+             C 40,320 0,380 -40,320
+             C -80,360 -120,300 -180,350 Z" 
+          fill="url(#matrixPattern)" 
+          stroke="#6C5CE7" stroke-width="5" filter="url(#neonGlow)" opacity="0.9" />
+
+    <!-- Additional inner contour for circuit feel -->
+    <path d="M -180,240 
+             C -230,100 -160,-150 0,-200 
+             C 160,-150 230,100 180,240 
+             L 160,200 L 100,250 L 50,210 L 0,260 L -50,210 L -100,250 L -160,200 Z" 
+          fill="none" 
+          stroke="#A29BFE" stroke-width="1.5" opacity="0.6" stroke-dasharray="10 5" />
+          
+    <!-- Eyes - Sharp, ominous, angled -->
+    <!-- Left Eye -->
+    <g transform="translate(-75, -20) rotate(-15)">
+      <path d="M -40,0 L 0,-15 L 40,0 L 0,10 Z" fill="#FFFFFF" filter="url(#eyeGlow)" />
+      <path d="M -40,0 L 0,-15 L 40,0 L 0,10 Z" fill="#E2D9FF" />
+    </g>
+    
+    <!-- Right Eye -->
+    <g transform="translate(75, -20) rotate(15)">
+      <path d="M -40,0 L 0,-15 L 40,0 L 0,10 Z" fill="#FFFFFF" filter="url(#eyeGlow)" />
+      <path d="M -40,0 L 0,-15 L 40,0 L 0,10 Z" fill="#E2D9FF" />
+    </g>
+
+    <!-- Circuit lines extending dynamically from the ghost -->
+    <g fill="none" stroke="#6C5CE7" stroke-width="3" filter="url(#neonGlow)" opacity="0.8">
+      <path d="M -200,-50 L -350,-50 L -450,-150 L -600,-150" />
+      <circle cx="-600" cy="-150" r="5" fill="#A29BFE" />
+      
+      <path d="M 200,-50 L 350,-50 L 450,-150 L 600,-150" />
+      <circle cx="600" cy="-150" r="5" fill="#A29BFE" />
+      
+      <path d="M -150,-180 L -250,-280 L -300,-280" />
+      <path d="M 150,-180 L 250,-280 L 300,-280" />
+      
+      <path d="M -220,150 L -300,150 L -350,200 L -400,200" />
+      <path d="M 220,150 L 300,150 L 350,200 L 400,200" />
+    </g>
+  </g>
+
+  <!-- Global Scanlines on top of ghost -->
+  <rect width="1920" height="1080" fill="url(#scanlines)" />
+
+  <!-- Typography Section -->
+  <!-- Main Title -->
+  <text x="960" y="860" font-family="'Arial Black', Impact, sans-serif" font-size="110" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="18" filter="url(#textGlow)">
+    GHOSTPROMPT
+  </text>
+  <!-- Sharp non-blurred overlay for crisp text -->
+  <text x="960" y="860" font-family="'Arial Black', Impact, sans-serif" font-size="110" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="18">
+    GHOSTPROMPT
+  </text>
+  
+  <!-- Tagline -->
+  <text x="960" y="940" font-family="'Courier New', Courier, monospace" font-size="32" font-weight="bold" fill="#A29BFE" text-anchor="middle" letter-spacing="10" filter="url(#neonGlow)">
+    HELLO FRIEND. WE ARE THE AI FIREWALL.
+  </text>
+  <!-- Crisp tagline overlay -->
+  <text x="960" y="940" font-family="'Courier New', Courier, monospace" font-size="32" font-weight="bold" fill="#E2D9FF" text-anchor="middle" letter-spacing="10">
+    HELLO FRIEND. WE ARE THE AI FIREWALL.
+  </text>
+  
+  <!-- Sub-Tagline -->
+  <text x="960" y="990" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#6C5CE7" text-anchor="middle" letter-spacing="5" opacity="0.8">
+    PROTECTING AI. SECURING THE FUTURE.
+  </text>
+</svg>

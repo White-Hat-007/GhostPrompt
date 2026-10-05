@@ -1,0 +1,2 @@
+# GhostPrompt Public Directory Placeholder
+This directory contains static assets for the GhostPrompt frontend.

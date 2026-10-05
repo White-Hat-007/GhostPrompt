@@ -7,7 +7,7 @@
 **The enterprise-grade firewall for Large Language Models.**<br/>
 Real-time threat detection, prompt injection defense, and complete AI observability — in a single deployment.
 
-[![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
+
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11+-3776AB.svg?logo=python&logoColor=white)](https://python.org)
 [![Next.js 14](https://img.shields.io/badge/Next.js-14-000000.svg?logo=next.js)](https://nextjs.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
@@ -284,7 +284,7 @@ python -c "from app.redteam import run_suite; run_suite()"
 - **Audit Logging** — Complete immutable trail of every action
 - **Secret Scanning** — The firewall detects its own API keys in transit
 
-See [SECURITY.md](SECURITY.md) for our vulnerability disclosure policy.
+
 
 ---
 
@@ -310,7 +310,7 @@ See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for detailed deployment guides.
 | [Security](docs/SECURITY.md) | Threat model & security controls |
 | [Deployment](docs/DEPLOYMENT.md) | Production deployment guide |
 | [Contributing](CONTRIBUTING.md) | Contribution guidelines |
-| [License](LICENSE) | MIT License |
+
 
 ---
 
@@ -355,11 +355,7 @@ make lint           # Lint & format check
 
 ---
 
-## 📜 License
 
-This project is **proprietary software**. The source code is publicly viewable for portfolio and educational purposes only. Cloning, copying, redistribution, and commercial use are **strictly prohibited** without written permission. See the [LICENSE](LICENSE) file for details.
-
----
 
 <div align="center">
 

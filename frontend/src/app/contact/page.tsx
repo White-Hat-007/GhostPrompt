@@ -13,16 +13,16 @@ export default function ContactPage() {
         <div className="grid md:grid-cols-3 gap-6 mb-16">
           <div className="bg-surface-1 border border-white/5 p-8 rounded-2xl text-center">
             <Mail className="w-8 h-8 text-ghost-400 mx-auto mb-4" />
-            <h3 className="font-bold mb-2">Email Us</h3>
-            <p className="text-gray-400 text-sm mb-4">For general inquiries and sales.</p>
-            <a href="mailto:admin@ghostprompt.dev" className="text-ghost-400 hover:text-white font-medium">admin@ghostprompt.dev</a>
+            <h3 className="font-bold mb-2">Open an Issue</h3>
+            <p className="text-gray-400 text-sm mb-4">For bugs, features, and inquiries.</p>
+            <a href="https://github.com/White-Hat-007/GhostPrompt/issues" target="_blank" rel="noopener" className="text-ghost-400 hover:text-white font-medium">GitHub Issues</a>
           </div>
           
           <div className="bg-surface-1 border border-white/5 p-8 rounded-2xl text-center">
             <Phone className="w-8 h-8 text-cyber-400 mx-auto mb-4" />
-            <h3 className="font-bold mb-2">Call Us</h3>
-            <p className="text-gray-400 text-sm mb-4">Available Mon-Fri, 9am - 6pm.</p>
-            <a href="tel:+18885550199" className="text-cyber-400 hover:text-white font-medium">+1 (888) 555-0199</a>
+            <h3 className="font-bold mb-2">Discussions</h3>
+            <p className="text-gray-400 text-sm mb-4">Community support & Q&A.</p>
+            <a href="https://github.com/White-Hat-007/GhostPrompt/discussions" target="_blank" rel="noopener" className="text-cyber-400 hover:text-white font-medium">GitHub Discussions</a>
           </div>
           
           <div className="bg-surface-1 border border-white/5 p-8 rounded-2xl text-center">

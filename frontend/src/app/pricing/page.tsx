@@ -129,7 +129,7 @@ export default function PricingPage() {
     setIsLoading(planId);
     try {
       if (planId === "custom") {
-        alert("Please contact our sales team at admin@ghostprompt.dev or call us at +1 (888) 555-0199");
+        alert("Please open an issue on GitHub for enterprise pricing: https://github.com/White-Hat-007/GhostPrompt/issues");
         setIsLoading(null);
         return;
       }

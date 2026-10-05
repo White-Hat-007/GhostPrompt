@@ -17,7 +17,7 @@ export default function PrivacyPage() {
           <p className="mb-4">We collect aggregated, anonymized telemetry on threat vectors and attack signatures to improve our global threat intelligence networks.</p>
 
           <h2 className="text-2xl font-semibold text-white mt-8 mb-4">4. Contact Information</h2>
-          <p>For privacy inquiries, please contact us at <strong>admin@ghostprompt.dev</strong>.</p>
+          <p>For privacy inquiries, please open an issue at <a href="https://github.com/White-Hat-007/GhostPrompt/issues" target="_blank" rel="noopener"><strong>GitHub Issues</strong></a>.</p>
         </div>
         <div className="mt-12 pt-8 border-t border-white/5">
           <Link href="/" className="text-ghost-400 hover:text-ghost-300">← Back to Home</Link>

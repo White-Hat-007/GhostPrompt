@@ -319,7 +319,7 @@ export default function SuperAdminDashboard() {
                             <div>
                               <span className="text-white text-sm font-medium flex items-center gap-1.5">
                                 {u.full_name || u.email.split('@')[0]}
-                                {u.email === 'admin@ghostprompt.dev' && <Crown className="w-3 h-3 text-amber-400" />}
+                                {u.email === (process.env.NEXT_PUBLIC_SUPERADMIN_EMAIL || '') && <Crown className="w-3 h-3 text-amber-400" />}
                               </span>
                               <p className="text-[11px] text-gray-600 font-mono">{u.email}</p>
                             </div>
@@ -345,7 +345,7 @@ export default function SuperAdminDashboard() {
                               className="p-1.5 text-gray-600 hover:text-amber-400 hover:bg-amber-500/10 rounded-lg transition-colors">
                               <Eye className="w-3.5 h-3.5" />
                             </button>
-                            <button onClick={() => deleteUser(u.id)} disabled={u.email === 'admin@ghostprompt.dev'}
+                            <button onClick={() => deleteUser(u.id)} disabled={u.email === (process.env.NEXT_PUBLIC_SUPERADMIN_EMAIL || '')}
                               className="p-1.5 text-gray-600 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-20">
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>

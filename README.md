@@ -14,9 +14,6 @@ Real-time threat detection, prompt injection defense, and complete AI observabil
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker&logoColor=white)](docker-compose.yml)
 [![CI](https://img.shields.io/badge/CI-GitHub_Actions-2088FF.svg?logo=github-actions&logoColor=white)](.github/workflows/ci.yml)
 
-<br/>
-
-<img src="frontend/public/og-image.png" alt="GhostPrompt Dashboard" width="800"/>
 
 </div>
 

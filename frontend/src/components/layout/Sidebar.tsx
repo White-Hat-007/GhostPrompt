@@ -110,7 +110,7 @@ function formatNumber(n: number): string {
   return n.toString();
 }
 
-export default function Sidebar({ activeSection, onSectionChange, liveStats, className = '', isAdmin = false, isSuperadmin = false, userPlan = 'starter', userEmail = 'admin@ghostprompt.ai', isConnected = false }: SidebarProps) {
+export default function Sidebar({ activeSection, onSectionChange, liveStats, className = '', isAdmin = false, isSuperadmin = false, userPlan = 'starter', userEmail = '', isConnected = false }: SidebarProps) {
   const router = useRouter();
   const scans = liveStats?.scansToday ?? 0;
   const blocked = liveStats?.blockedToday ?? 0;

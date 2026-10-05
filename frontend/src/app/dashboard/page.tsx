@@ -397,7 +397,7 @@ export default function DashboardPage() {
         const billing = billRes.ok ? await billRes.json() : null;
 
         // Admin and Superadmin definitions
-        const userIsSuperadmin = user.email === 'admin@ghostprompt.dev';
+        const userIsSuperadmin = user.email === (process.env.NEXT_PUBLIC_SUPERADMIN_EMAIL || '');
         const userIsAdmin = user.role === 'owner' || user.role === 'admin' || userIsSuperadmin;
         setIsAdmin(userIsAdmin);
         setIsSuperadmin(userIsSuperadmin);

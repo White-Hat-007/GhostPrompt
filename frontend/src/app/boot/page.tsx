@@ -40,7 +40,7 @@ export default function BootSequencePage() {
             headers: { Authorization: `Bearer ${token}` }
           });
           const user = await meRes.json();
-          const isSuperadmin = user.email === 'admin@ghostprompt.dev';
+          const isSuperadmin = user.email === (process.env.NEXT_PUBLIC_SUPERADMIN_EMAIL || '');
 
           const billRes = await fetch(`/api/v1/billing/status`, {
             headers: { Authorization: `Bearer ${token}` }

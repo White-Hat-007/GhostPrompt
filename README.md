@@ -1,6 +1,6 @@
 <div align="center">
 
-# 👻 GhostPrompt
+# 👻 GhostPrompt 🛡️
 
 ### AI Runtime Security & Operations Platform
 

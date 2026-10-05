@@ -129,7 +129,7 @@ export default function PricingPage() {
     setIsLoading(planId);
     try {
       if (planId === "custom") {
-        alert("Please open an issue on GitHub for enterprise pricing: https://github.com/White-Hat-007/GhostPrompt/issues");
+        alert("Please contact me on LinkedIn for enterprise pricing: https://www.linkedin.com/in/darshchatrani/");
         setIsLoading(null);
         return;
       }

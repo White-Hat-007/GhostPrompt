@@ -365,6 +365,6 @@ This project is **proprietary software**. The source code is publicly viewable f
 
 **Built with 🔥 for the AI security community**
 
-[Report Bug](https://github.com/White-Hat-007/GhostPrompt/issues) · [Request Feature](https://github.com/White-Hat-007/GhostPrompt/issues) · [Documentation](docs/)
+[Contact on LinkedIn](https://www.linkedin.com/in/darshchatrani/) · [Documentation](docs/)
 
 </div>

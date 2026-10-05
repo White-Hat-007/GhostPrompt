@@ -12,7 +12,7 @@ export default function SecurityPage() {
           <div className="bg-surface-1 p-6 rounded-2xl border border-white/5">
             <ShieldCheck className="w-8 h-8 text-ghost-400 mb-4" />
             <h3 className="font-bold text-lg mb-2">SOC 2 Type II</h3>
-            <p className="text-sm text-gray-400">Our platform undergoes rigorous annual audits to ensure compliance with enterprise security standards.</p>
+            <p className="text-sm text-gray-400">Our platform will undergoe rigorous annual audits to ensure compliance with enterprise security standards.</p>
           </div>
           <div className="bg-surface-1 p-6 rounded-2xl border border-white/5">
             <Lock className="w-8 h-8 text-cyber-400 mb-4" />

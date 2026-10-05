@@ -15,7 +15,7 @@ export default function ContactPage() {
             <Mail className="w-8 h-8 text-ghost-400 mx-auto mb-4" />
             <h3 className="font-bold mb-2">Open an Issue</h3>
             <p className="text-gray-400 text-sm mb-4">For bugs, features, and inquiries.</p>
-            <a href="https://github.com/White-Hat-007/GhostPrompt/issues" target="_blank" rel="noopener" className="text-ghost-400 hover:text-white font-medium">GitHub Issues</a>
+            <a href="https://www.linkedin.com/in/darshchatrani/" target="_blank" rel="noopener" className="text-ghost-400 hover:text-white font-medium">LinkedIn Profile</a>
           </div>
           
           <div className="bg-surface-1 border border-white/5 p-8 rounded-2xl text-center">

@@ -943,7 +943,7 @@ export default function LandingPage() {
             <ul className="space-y-2 text-sm text-gray-500">
               <li><Link href="/about" className="hover:text-white transition-colors duration-200">About</Link></li>
               <li><Link href="/blog" className="hover:text-white transition-colors duration-200">Blog</Link></li>
-              <li><a href="https://github.com/White-Hat-007/GhostPrompt/issues" target="_blank" rel="noopener" className="hover:text-white transition-colors duration-200">Contact</a></li>
+              <li><a href="https://www.linkedin.com/in/darshchatrani/" target="_blank" rel="noopener" className="hover:text-white transition-colors duration-200">Contact</a></li>
             </ul>
           </div>
           <div>
